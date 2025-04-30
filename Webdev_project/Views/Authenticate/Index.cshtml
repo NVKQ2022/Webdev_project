@@ -1,0 +1,183 @@
+﻿@model Webdev_project.Models.User
+@{
+    var sessionId = Context.Request.Cookies["SessionId"];
+    var name = ViewBag.Name;
+    var ip = ViewBag.Ip;
+    var time = ViewBag.Time;
+    // Layout = null;
+}
+@* <div>
+    <h4>User</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Id)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Id)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.IsAdmin)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.IsAdmin)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Email)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Email)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Password)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Password)
+        </dd>
+    </dl>
+</div> *@
+
+<!DOCTYPE html>
+@* <html lang="en"> *@
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bai tap 4</title>
+    <link rel="stylesheet" href="~/css/style.css" asp-append-version="true">
+
+</head>
+
+
+<h1 id="Header">✨Welcome to my profile✨</h1>
+<div class="container">
+    <div class="left">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSgIpQ92quZJ8lahm45qfl5WHjar2grQ4rY1Q&s">
+        <h3 style="text-align: left; ">💼 KINH NGHIỆM LÀM VIỆC</h3>
+        <table style="width: 100%;border-collapse: collapse">
+            <tr>
+                <th>Vị trí</th>
+                <th>Đơn vị</th>
+                <th>Thời gian</th>
+            </tr>
+            <tr>
+                <td>Lập trình viên</td>
+                <td>Công ty ABC</td>
+                <td>Tháng 3/2019 - 5/2021</td>
+            </tr>
+            <tr>
+                <td>Leader</td>
+                <td>Công ty ABC</td>
+                <td>Tháng 4/2021 - 9/2023</td>
+            </tr>
+            <tr>
+                <td>Giấm đốc </td>
+                <td>Công ty XYZ</td>
+                <td>Tháng 11/2023 - hiện nay</td>
+            </tr>
+        </table>
+
+        <h3 style="text-align: left; ">🚀 DỰ ÁN ĐÃ THỰC HIỆN</h3>
+        <table style="width: 100%;border-collapse: collapse">
+            <tr>
+                <th>Tên dự án</th>
+                <th>Mô tả</th>
+                <th>Thời gian</th>
+            </tr>
+            <tr>
+                <td>Hệ thống E-Learning</td>
+                <td>Phát triển nền tảng học trực tuyến</td>
+                <td>2022 - 2023</td>
+            </tr>
+            <tr>
+                <td>Ứng dụng AI Chatbot</td>
+                <td>Chatbot tự động hỗ trợ khách hàng</td>
+                <td>2023 - nay</td>
+            </tr>
+            <tr>
+                <td>Ví điện tử </td>
+                <td>Phát triển hệ thống thanh toán online</td>
+                <td>2023 - nay</td>
+            </tr>
+        </table>
+
+    </div>
+
+    <div class="right">
+        <table class="basic-info">
+            <tr>
+                <td class="label">Họ và tên</td>
+                <td>@name</td>
+            </tr>
+            <tr>
+                <td class="label">Tuổi</td>
+                <td>@time </td>
+            </tr>
+            <tr>
+                <td class="label">Email</td>
+                <td><a href="mailto:capybaranguyen@example.com">capybaranguyen@example.com</a></td>
+            </tr>
+            <tr>
+                <td class="label">Nghề nghiệp</td>
+                <td>@ip</td>
+            </tr>
+        </table>
+        <h1>GIỚI THIỆU</h1>
+        <p>Tôi là <strong>Capybara</strong>, một lập trình viên với hơn 5 năm kinh nghiệm trong lĩnh vực phát triển Web. Đam mê học hỏi và sáng tạo các giải pháp tối ưu.</p>
+        <div class="skill">
+            <h1>KĨ NĂNG</h1>
+            <ul>
+                <li>Lập trình Python</li>
+                <li>Phát triển Web với HTML, CSS, JS</li>
+                <li>Bảo mật mạng</li>
+                <li>Blockchain & Smart Contract</li>
+            </ul>
+        </div>
+
+        <div class="hobby">
+            <h1>SỞ THÍCH</h1>
+            <ul>
+                <li>Chơi cờ vua</li>
+                <li>Đọc sách công nghệ</li>
+                <li>Du lịch khám phá</li>
+                <li>Thể thao & Gym</li>
+            </ul>
+        </div>
+    </div>
+</div>
+<section class="contact-section">
+    <h2>LIÊN HỆ</h2>
+    <form class="contact-form">
+        <label for="name">Họ tên:</label> <br>
+        <input type="text" id="name" name="name" required>
+        <br>
+        <label for="email">Email:</label>
+        <br>
+        <input type="email" id="email" name="email" required>
+        <br>
+        <label for="message">Tin nhắn:</label> <br>
+        <textarea id="message" name="message" rows="4" required></textarea>
+        <br>
+        <button type="submit">Gửi</button>
+    </form>
+</section>
+
+<!-- Link cuộn xuống liên hệ -->
+<p><a href="#contact-section"><button class="contact-button" onclick="scrollToSection()">Liên hệ ngay</button></a></p>
+<h2 id="contact-section"></h2>
+
+
+
+@* </html> *@
+
+@* <div>
+    @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
+    <a asp-action="Index">Back to List</a>
+</div>
+ *@

@@ -1,0 +1,235 @@
+﻿@* <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Webdev_project</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/Webdev_project.styles.css" asp-append-version="true" />
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Webdev_project</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2025 - Webdev_project - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
+ *@
+@{
+    ViewData["Title"] = "Home Page";
+    var isLoggedIn = ViewBag.isLoggedIn;
+    var userName = ViewBag.userName;
+
+}
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - ShopeeClone</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/css/site.css" />
+</head>
+<body>
+    @* <header class="bg-primary text-white py-3">
+        <div class="container d-flex justify-content-between align-items-center">
+            <h3 class="m-0">ShopeeClone</h3>
+            <nav>
+                <a class="text-white me-3" href="/">Home</a>
+                <a class="text-white me-3" href="/Products">Products</a>
+                <a class="text-white me-3" href="/Account/Login">Login</a>
+                <a class="text-white" href="/Account/Register">Register</a>
+            </nav>
+        </div>
+    </header> *@
+    <style>
+        form.input-group {
+            width: 100%;
+            max-width: 1000px;
+        }
+
+        .dropdown:hover .dropdown-menu {
+            display: block;
+            margin-top: 0; /* remove delay */
+        }
+
+        .dropdown-menu {
+            transition: all 0.2s ease;
+        }
+    </style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Shopee-style Navbar (Unified with background) -->
+    <div class="shopee-navbar" style="background: linear-gradient(to right, #f53d2d, #f63); color: white;">
+
+        <!-- Top Bar -->
+        @* <div class="container py-2 d-flex justify-content-between align-items-center small">
+            <div>
+                <a href="#" class="text-white me-3 text-decoration-none">Kênh Người Bán</a>
+                <a href="#" class="text-white me-3 text-decoration-none">Tải ứng dụng</a>
+                <a href="#" class="text-white text-decoration-none">
+                    Kết nối <i class="fab fa-facebook-f mx-1"></i><i class="fab fa-instagram"></i>
+                </a>
+            </div>
+            <div>
+                <a href="#" class="text-white me-3 text-decoration-none"><i class="fas fa-bell"></i> Thông Báo</a>
+                <a href="#" class="text-white me-3 text-decoration-none"><i class="fas fa-question-circle"></i> Hỗ Trợ</a>
+                <a href="#" class="text-white me-3 text-decoration-none"><i class="fas fa-globe"></i> Tiếng Việt</a>
+                @if(true ){
+                    <div class="dropdown" >
+                        <a class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
+                           href="#" role="button" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTM9eDR87r3p64w_TkB2yGvWzwxYWfx9QvWuA&s" alt="avatar" width="30" height="30" class="rounded-circle me-2" />
+                            <span>kyquannguyen881</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end text-dark shadow" aria-labelledby="userMenu">
+                            <li><a class="dropdown-item" href="/Account/Profile">Tài Khoản Của Tôi</a></li>
+                            <li><a class="dropdown-item" href="/Orders/MyOrders">Đơn Mua</a></li>
+                            <li><a class="dropdown-item" href="/Account/Logout">Đăng Xuất</a></li>
+                        </ul>
+                    </div>
+
+                }
+                <a href="#" class="text-white me-2 text-decoration-none">Login</a> 
+                @* <img src="/images/avatar.jpg" class="rounded-circle" width="24" height="24" alt="Avatar"> 
+            </div>
+        </div>
+ *@
+        <div class="container py-2 d-flex justify-content-between align-items-center small">
+            <!-- Left side -->
+            <div>
+                <a href="#" class="text-white me-3 text-decoration-none">Kênh Người Bán</a>
+                <a href="#" class="text-white me-3 text-decoration-none">Tải ứng dụng</a>
+                <a href="#" class="text-white text-decoration-none">
+                    Kết nối <i class="fab fa-facebook-f mx-1"></i><i class="fab fa-instagram"></i>
+                </a>
+            </div>
+
+            <!-- Right side -->
+            <div class="d-flex align-items-center">
+                <a href="#" class="text-white me-3 text-decoration-none"><i class="fas fa-bell"></i> Thông Báo</a>
+                <a href="#" class="text-white me-3 text-decoration-none"><i class="fas fa-question-circle"></i> Hỗ Trợ</a>
+                <a href="#" class="text-white me-3 text-decoration-none"><i class="fas fa-globe"></i> Tiếng Việt</a>
+
+                @if (isLoggedIn!=null )
+                {
+                    <div class="dropdown">
+                        <a class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
+                           href="#" role="button" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTM9eDR87r3p64w_TkB2yGvWzwxYWfx9QvWuA&s"
+                                 alt="avatar" width="30" height="30" class="rounded-circle me-2" />
+                            <span>@userName</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end text-dark shadow" aria-labelledby="userMenu">
+                            <li><a class="dropdown-item" href="/Account/Profile">Tài Khoản Của Tôi</a></li>
+                            <li><a class="dropdown-item" href="/Orders/MyOrders">Đơn Mua</a></li>
+                            <li><a class="dropdown-item" href="/Account/Logout">Đăng Xuất</a></li>
+                        </ul>
+                    </div>
+                }
+                else
+                {
+                    <a href="/Authenticate/MyLogin" class="text-white me-2 text-decoration-none">Login</a>
+                }
+            </div>
+        </div>
+        <!-- Main Navbar: All elements in one row -->
+        <div class="container py-3 d-flex justify-content-between align-items-center">
+
+            <!-- Logo -->
+            <div class="d-flex align-items-center">
+                <img src="/images/shopee-logo.png" width="40" class="me-2" />
+                <h4 class="text-white m-0 fw-bold">Shopee</h4>
+            </div>
+
+            <!-- Search Bar (centered, full width in the middle) -->
+            <form class="input-group flex-grow-1 mx-4" style="max-width: 750px;">
+                <input class="form-control border-0 rounded-start-pill" type="search"
+                       placeholder="LANEIGE DEAL HỜI QUÀ KHỦNG B1G1" />
+
+                @* <button class="btn btn-light border border-danger rounded-end-pill">🔍</button> *@
+                @* <button class="btn bg-orange border border-white text-white rounded-end-pill">
+                🔍
+            </button *@
+                <button class="btn rounded-end-pill"
+                        style="background-color: #ee4d2d; border: 2px solid white;">
+                    🔍
+                </button>
+            </form>
+
+
+            <!-- Cart -->
+            <div class="position-relative">
+                <a href="#" class="text-white fs-4 text-decoration-none">🛒</a>
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-light text-danger">5</span>
+            </div>
+        </div>
+
+
+        <!-- Centered Trending Search -->
+        <div class="container mt-2 text-center">
+            <div class="d-flex justify-content-center flex-wrap gap-3 small">
+                <a href="/Products/Product" class="text-white text-decoration-none">dong ho</a>
+                <a href="#" class="text-white text-decoration-none">Bàn Phím Cơ Thanh Lý</a>
+                <a href="#" class="text-white text-decoration-none">Áo khoac</a>
+                <a href="#" class="text-white text-decoration-none">Cây Lười Hổ</a>
+                <a href="#" class="text-white text-decoration-none">caosu Mềm</a>
+                <a href="#" class="text-white text-decoration-none">Gấu Bông </a>
+                <a href="#" class="text-white text-decoration-none">Mèo Thật 100%</a>
+                <a href="#" class="text-white text-decoration-none">trai cay kho</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Font Awesome -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+
+
+    <main role="main" class="pb-3">
+        @RenderBody()
+    </main>
+
+    <footer class="bg-light text-center py-3">
+        <p class="mb-0">&copy; 2025 ShopeeClone</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/site.js"></script>
+</body>
+</html>

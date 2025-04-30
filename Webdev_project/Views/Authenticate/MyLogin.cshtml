@@ -1,0 +1,228 @@
+﻿@model Product
+@{
+    var message =ViewBag.Message;
+    Layout = null;
+
+     var product= new Product()
+            {
+                Name = "Laptop Asus Vivobook 15 OLED A1505VA",
+                Decription = "tu asus",
+                Price = 18000000,
+                ImageURL = new List<string>
+            {
+                "https://phucanhcdn.com/media/product/55711_laptop_asus_vivobook_15_oled_a1505va_ma469w_6.jpg",
+                "https://cdn.tgdd.vn/Products/Images/44/306196/asus-vivobook-15-oled-a1505va-i9-l1201w-thumb-1-600x600.jpg",
+                "https://cdn.tgdd.vn/Products/Images/44/306196/Slider/vi-vn-asus-vivobook-15-oled-a1505va-i9-l1201w-slider-1.jpg"
+            },
+                Detail = new Dictionary<string, string>
+            {
+                {"Kho", "7"},
+                {"Thương hiệu", "Asus"},
+                {"Kích thước màn hình laptop", "14 Inches"},
+                {"Loại laptop", "Ultrabook"},
+                {"Nhà sản xuất chip đồ họa", "Integrated"},
+                {"Dung lượng lưu trữ", "512GB"},
+                {"Loại lưu trữ", "SSD"},
+                {"Cổng/ Giao diện", "HDMI, USB 3.0, USB Type-C, 3.5mm"},
+                {"Hệ điều hành", "Windows"},
+                {"Tình trạng", "Mới"},
+                {"Hạn bảo hành", "24 tháng"},
+                {"Loại bảo hành", "Bảo hành nhà sản xuất"},
+                {"Tích hợp pin", "Có"},
+                {"Tần số CPU", "4.7Ghz"},
+                {"Bộ xử lý", "Intel Core i5-13500H"},
+                {"Trọng lượng", "1.6kg"},
+                {"Gửi từ", "Hà Nội"}
+            }
+            };
+}
+@* 
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <section class="card shadow-sm p-4">
+            <h2 class="text-center text-primary">Welcome Back!</h2>
+            @if(message ==null){
+                <p class="text-center text-muted">Log in to continue</p>
+            }
+            else{
+                <p class="text-center text-muted">@message</p>
+            }
+            
+            <hr />
+            <form id="account" action="/Authenticate/MyLogin"   method="post">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                <div class="form-floating mb-3">
+                    <input  class="form-control" type="email" name="email" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                    <label ><i class="fa fa-envelope"></i> Email</label>
+                    <span class="text-danger"></span>
+                </div>
+
+                <div class="form-floating mb-3">
+                    <input type="password" class="form-control" name="password" autocomplete="current-password" aria-required="true" placeholder="password" />
+                    <label ><i class="fa fa-lock"></i> Password</label>
+                    <span class="text-danger"></span>
+                </div>
+
+                <div class="form-check mb-3">
+                    <input class="form-check-input"  />
+                    <label class="form-check-label" >
+                      //  @Html.DisplayNameFor(m => m.Input.RememberMe) 
+                    </label>
+                </div>
+
+                <button id="login-submit" type="submit" class="w-100 btn btn-lg btn-primary">
+                    <i class="fa fa-sign-in-alt"></i> Log in
+                </button>
+
+                <div class="text-center mt-3">
+                    <a id="forgot-password" class="text-decoration-none">Forgot password?</a> |
+                    <a class="text-decoration-none" href="/Authenticate/MyRegister" >Register</a>
+                </div>
+            </form>
+        </section>
+    </div>
+</div> *@
+
+@* 
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <section class="card shadow-sm p-4 mt-4">
+            <h2 class="text-center text-primary">Welcome Back!</h2>
+            @if (message == null)
+            {
+                <p class="text-center text-muted">Log in to continue</p>
+            }
+            else
+            {
+                <p class="text-center text-muted">@message</p>
+            }
+
+            <hr />
+            <form id="account" action="/Authenticate/MyLogin" method="post">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                <div class="form-floating mb-3">
+                    <input class="form-control" type="email" name="email" autocomplete="username" required placeholder="name@example.com" />
+                    <label><i class="fa fa-envelope"></i> Email</label>
+                </div>
+
+                <div class="form-floating mb-3">
+                    <input type="password" class="form-control" name="password" autocomplete="current-password" required placeholder="password" />
+                    <label><i class="fa fa-lock"></i> Password</label>
+                </div>
+
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" name="remember" id="rememberMe" />
+                    <label class="form-check-label" for="rememberMe">
+                        Remember Me
+                    </label>
+                </div>
+
+                <button id="login-submit" type="submit" class="w-100 btn btn-lg btn-primary">
+                    <i class="fa fa-sign-in-alt"></i> Log in
+                </button>
+
+                <div class="text-center mt-3">
+                    <a id="forgot-password" class="text-decoration-none" href="#">Forgot password?</a> |
+                    <a class="text-decoration-none" href="/Authenticate/MyRegister">Register</a>
+                </div>
+            </form>
+        </section>
+    </div>
+</div>
+ *@
+
+
+<head>
+    <meta charset="utf-8" />
+    <title>Product Detail</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+
+    <style>
+        .carousel-item {
+            height: 400px;
+            background-color: #f8f9fa;
+        }
+
+        .image-wrapper {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+            .image-wrapper img {
+                max-height: 100%;
+                max-width: 100%;
+                object-fit: cover;
+            }
+    </style>
+</head>
+
+<body>
+    <div class="container mt-5">
+        <div class="row">
+            <!-- Hình ảnh sản phẩm -->
+            <div class="col-md-6">
+                <div id="carouselImages" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        @for (int i = 0; i < @product.ImageURL.Count; i++)
+                        {
+                            <div class="carousel-item @(i == 0 ? "active" : "")">
+                                <div class="image-wrapper">
+                                    <img src="@product.ImageURL[i]" class="img-fluid" alt="Image @(i + 1)">
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselImages" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon"></span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carouselImages" data-bs-slide="next">
+                        <span class="carousel-control-next-icon"></span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Thông tin sản phẩm -->
+            <div class="col-md-6">
+                <h3 class="fw-bold">@product.Name</h3>
+                <p class="text-muted">@product.Decription</p>
+                <h4 class="text-danger fw-bold">₫@product.Price.ToString("N0")</h4>
+                <p><strong>Kho còn:</strong> @product.Detail["Kho"]</p>
+                <p><strong>Gửi từ:</strong> @product.Detail["Gửi từ"]</p>
+                <p><strong>Tình trạng:</strong> @product.Detail["Tình trạng"]</p>
+
+                <div class="d-flex mt-3 gap-2">
+                    <button class="btn btn-outline-primary">Thêm vào giỏ hàng</button>
+                    <button class="btn btn-success">Mua ngay</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chi tiết kỹ thuật -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <h5 class="fw-bold mb-3">Thông số kỹ thuật</h5>
+                <table class="table table-bordered">
+                    <tbody>
+                        @foreach (var spec in @product.Detail)
+                        {
+                            <tr>
+                                <th>@spec.Key</th>
+                                <td>@spec.Value</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+
