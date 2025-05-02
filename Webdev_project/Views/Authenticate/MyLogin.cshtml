@@ -5,6 +5,7 @@
 
     var product= new Product()
             {
+                ProductID = 1,
                 Name = "Laptop Asus Vivobook 15 OLED A1505VA",
                 Description = "tu asus",
                 Price = 18000000,
@@ -44,7 +45,31 @@
                 {"Gửi từ", "Hà Nội"}
             }
             };
+    var rating = new List<Rating>
+    {
+        new Rating
+        {
+            RatingID = 1,
+            ProductID = 1,
+            UserID = 1,
+            Stars = 5,
+            Comment = "Rất hài lòng với sản phẩm này, khuyến khích nên mua",
+            CreatedTime = DateTime.Now
+        },
+        new Rating
+        {
+            RatingID = 2,
+            ProductID = 1,
+            UserID = 2,
+            Stars = 1,
+            Comment = "Rất tệ, hư ngay sau khi droptest",
+            CreatedTime = DateTime.Now,
+            MediaURLs = new List<string> { "https://thanhnien.mediacdn.vn/Uploaded/baont/2022_03_12/gearvn-tran-hung-dao-1-9145.jpg" }
+        }
+    };
+    var averageRating = rating.Any() ? rating.Average(r => r.Stars) : 0;
 }
+
 @* 
 <div class="row justify-content-center">
     <div class="col-md-5">
@@ -267,6 +292,19 @@
             <!-- Thông tin sản phẩm -->
             <div class="col-md-6">
                 <h3 class="fw-bold">@product.Name</h3>
+                <h5 class="text-warning">
+                    @for (int i = 1; i <= 5; i++)
+                    {
+                        if (i <= averageRating)
+                        {
+                            <i class="bi bi-star-fill text-warning"></i>
+                        }
+                        else
+                        {
+                            <i class="bi bi-star text-muted"></i>
+                        }
+                    }
+                </h5>
                 <p class="text-muted">@product.Description</p>
                 <h4 class="text-danger fw-bold">₫@product.Price.ToString("N0")</h4>
                 <p><strong>Kho còn:</strong> @product.Detail["Kho"]</p>
@@ -332,6 +370,77 @@
                         }
                     </tbody>
                 </table>
+            </div>
+        </div>
+    </div>
+    <!-- Đánh giá sản phẩm -->
+    <div class="container mt-3">
+        <div class="row">
+            <div class="col-12">
+                <h5 class="fw-bold mb-3">Đánh giá sản phẩm</h5>
+                <!-- Đánh giá của bản thân -->
+                <h6 class="fw-bold mt-4">Xếp hạng ứng dụng này</h6>
+                <form method="post" action="">
+                    <div class="mb-3">
+                        <div class="d-flex align-items-center">
+                            <label for="stars" class="form-label mb-0 me-2">Chọn số sao: </label>
+                            <select id="stars" name="stars" class="form-select w-auto">
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    <option value="@i">@i sao</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="media" class="form-label">Tải ảnh (tùy chọn)</label>
+                        <input type="file" name="mediaFiles" id="media" class="form-control" accept="image/*" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="comment" class="form-label">Viết đánh giá chất lượng sản phẩm</label>
+                        <textarea id="comment" name="comment" class="form-control" rows="3" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-purple">Gửi</button>
+                </form>
+                <!-- Đánh giá từ người dùng khác -->
+                <h6 class="fw-bold mt-4">Đánh giá từ người dùng khác</h6>
+                @foreach (var r in rating)
+                {
+                    <div class="card border p-3 mb-2">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <strong>Người dùng @r.UserID</strong>
+                                <div>
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        if (i <= r.Stars)
+                                        {
+                                            <i class="bi bi-star-fill text-warning"></i>
+                                        }
+                                        else
+                                        {
+                                            <i class="bi bi-star text-muted"></i>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                            <small class="text-muted">@r.CreatedTime.ToString("dd/MM/yyyy HH:mm")</small>
+                        </div>
+                        <p class="mt-2">@r.Comment</p>
+                        @if (r.MediaURLs != null && r.MediaURLs.Any(url => url.EndsWith(".jpg") || url.EndsWith(".jpeg") || url.EndsWith(".png") || url.EndsWith(".gif") || url.EndsWith(".webp")))
+                        {
+                            <div class="mt-2 d-flex flex-wrap gap-2">
+                                @foreach (var media in r.MediaURLs)
+                                {
+                                    if (media.EndsWith(".jpg") || media.EndsWith(".jpeg") || media.EndsWith(".png") || media.EndsWith(".gif") || media.EndsWith(".webp"))
+                                    {
+                                        <img src="@media" alt="User image" style="max-width: 150px; height: auto;" class="img-thumbnail" />
+                                    }
+                                }
+                            </div>
+                        }
+                    </div>
+                }
             </div>
         </div>
     </div>
