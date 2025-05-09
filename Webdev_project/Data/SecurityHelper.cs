@@ -8,9 +8,9 @@ namespace Webdev_project.Data
 {
     public class SecurityHelper
     {
-        private static readonly string myPepper;
-        private readonly string serverEmail;
-        private readonly string serverEmailPassword;
+        private static readonly string myPepper = Environment.GetEnvironmentVariable("Security:Pepper");
+        private static readonly string serverEmail = Environment.GetEnvironmentVariable("Security:Email");
+        private static readonly string serverEmailPassword = Environment.GetEnvironmentVariable("Security:Email");
         public  SecurityHelper(/*IConfiguration configuration*/)
         {
             //myPepper = configuration["Security:Pepper"];

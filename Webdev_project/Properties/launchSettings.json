@@ -10,26 +10,30 @@
       "applicationUrl": "http://localhost:5153"
     },
     "https": {
-      "commandName": "Project",
-      "launchBrowser": true,
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      },
-      "dotnetRunMessages": true,
-      "applicationUrl": "https://192.168.0.111:7264;http://localhost:5153"
+        "commandName": "Project",
+        "launchBrowser": true,
+        "environmentVariables": {
+            "ASPNETCORE_ENVIRONMENT": "Development"
+        },
+        "dotnetRunMessages": true,
+        //"applicationUrl": "https://192.168.0.111:7264;http://localhost:5153",
+        "applicationUrl": "https://localhost:5153"
     },
     "IIS Express": {
         "commandName": "IISExpress",
         "launchBrowser": true,
         "environmentVariables": {
-            
+
             "ASPNETCORE_ENVIRONMENT": "Development",
-            
+
             "GoogleMaps:ApiKey": "YOUR_SECRET_API_KEY",
 
             "Security:Pepper": "MyWebApp",
             "Security:Email": "nguyenvietkyquan@gmail.com",
-            "Security:Password": "willconfiglater"
+            "Security:Password": "willconfiglater",
+
+            "ConnectionString:UserDatabase": "Data Source=LAPTOP-JK0OARBJ\\SQLEXPRESS;Initial Catalog=WebProject_database;Integrated Security=True;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True;Application Intent=ReadWrite;Multi Subnet Failover=False"
+
         }
 
     },

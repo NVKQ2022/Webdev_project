@@ -1,0 +1,245 @@
+﻿@{
+    var message =ViewBag.Message;
+    Layout = null;
+
+    var product = ViewBag.Product;
+    var review = ViewBag.Review;
+}
+
+
+
+
+<head>
+    <meta charset="utf-8" />
+    <title>Product Detail</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+
+    <style>
+        body {
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            background-color: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .carousel-item {
+            height: 400px;
+            background-color: #f8f9fa;
+        }
+
+        .image-wrapper {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+            .image-wrapper img {
+                max-height: 100%;
+                max-width: 100%;
+                object-fit: cover;
+            }
+
+        .btn-outline-purple {
+            color: #6f42c1;
+            border: 2px solid #6f42c1;
+            background-color: transparent;
+            font-weight: 500;
+        }
+
+            .btn-outline-purple:hover {
+                background-color: #6f42c1;
+                color: #fff;
+            }
+
+        .btn-purple {
+            background-color: #6f42c1;
+            color: white;
+            border: none;
+            font-weight: 500;
+        }
+
+            .btn-purple:hover {
+                background-color: #5a32a3;
+                color: white;
+            }
+
+        .btn i {
+            margin-right: 6px;
+        }
+
+        .thumbnail-scroll {
+            scrollbar-width: thin;
+            scrollbar-color: #ccc transparent;
+        }
+
+            .thumbnail-scroll::-webkit-scrollbar {
+                height: 6px;
+            }
+
+            .thumbnail-scroll::-webkit-scrollbar-thumb {
+                background-color: #ccc;
+                border-radius: 10px;
+            }
+
+    </style>
+</head>
+
+<body>
+    <div class="container mt-5">
+        <div class="row">
+            <!-- Hình ảnh sản phẩm -->
+            <div class="col-md-6">
+                <div id="carouselImages" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        @for (int i = 0; i < @product.ImageURL.Count; i++)
+                        {
+                            <div class="carousel-item @(i == 0 ? "active" : "")">
+                                <div class="image-wrapper">
+                                    <img src="@product.ImageURL[i]" class="img-fluid" alt="Image @(i + 1)">
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselImages" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon"></span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carouselImages" data-bs-slide="next">
+                        <span class="carousel-control-next-icon"></span>
+                    </button>
+                </div>
+                <!-- Toàn bộ ảnh dưới hình ảnh sản phẩm -->
+                <div class="mt-3 position-relative">
+                    <div class="thumbnail-scroll d-flex overflow-auto gap-2 px-5" style="scroll-snap-type: x mandatory;">
+                        @for (int i = 0; i < @product.ImageURL.Count; i++)
+                        {
+                            <img src="@product.ImageURL[i]"
+                            class="img-thumbnail"
+                            data-bs-target="#carouselImages"
+                            data-bs-slide-to="@i"
+                            style="width: 80px; height: 80px; object-fit: cover; cursor: pointer; scroll-snap-align: start;" />
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Thông tin sản phẩm -->
+            <div class="col-md-6">
+                <h3 class="fw-bold">@product.Name</h3>
+                <p class="text-muted">@product.Description</p>
+                <h4 class="text-danger fw-bold">₫@product.Price.ToString("N0")</h4>
+                <p><strong>Kho còn:</strong> @product.Detail["Kho"]</p>
+                <p><strong>Gửi từ:</strong> @product.Detail["Gửi từ"]</p>
+                <p><strong>Tình trạng:</strong>@product.Detail["Tình trạng"]</p>
+                @if (@product.Color != null && @product.Color.Count > 0)
+                {
+                    <p><strong>Màu sắc:</strong>
+                        <div class="d-flex flex-wrap gap-2">
+                            @foreach (var color in @product.Color)
+                            {
+                                <button class="btn btn-outline-dark">@color</button>
+                            }
+                        </div>                   
+                    </p>
+                }
+                <div class="d-flex mt-3 gap-2">
+                    <button class="btn btn-outline-purple">
+                        <i class="bi bi-cart-plus"></i> Thêm vào giỏ hàng
+                    </button>
+                    <button class="btn btn-purple">Mua ngay</button>
+                </div>
+            </div>
+            <!-- Chính sách sản phẩm -->
+            <div class="container mt-4">
+                <h5 class="fw-bold mb-3">Chính sách sản phẩm</h5>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <div class="border rounded p-3 h-100">
+                            <h6><i class="bi bi-shield-check text-success"></i> Bảo hành</h6>
+                            <p>Bảo hành chính hãng 24 tháng.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="border rounded p-3 h-100">
+                            <h6><i class="bi bi-arrow-repeat text-primary"></i> Trả hàng dễ dàng</h6>
+                            <p>Trả hàng miễn phí trong vòng 7 ngày</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="border rounded p-3 h-100">
+                            <h6><i class="bi bi-truck text-warning"></i> Miễn phí giao hàng toàn quốc</h6>
+                            <p> Đơn hàng đặt sau 13h thứ 6 sẽ được giao vào tuần sau.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Chi tiết kỹ thuật -->
+    <div class="container mt-3">
+        <div class="row">
+            <div class="col-12">
+                <h5 class="fw-bold mb-3">Thông số kỹ thuật</h5>
+                <table class="table table-bordered">
+                    <tbody>
+                        @foreach (var spec in @product.Detail)
+                        {
+                            <tr>
+                                <th>@spec.Key</th>
+                                <td>@spec.Value</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    </body>
+
+    <!-- Đánh giá từ người dùng khác -->
+    @* <h6 class="fw-bold mt-4">Đánh giá từ người dùng khác</h6>
+    @foreach (var r in rating)
+    {
+        <div class="card border p-3 mb-2">
+            <div class="d-flex justify-content-between">
+                <div>
+                    <strong>Người dùng @r.UserID</strong>
+                    <div>
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            if (i <= r.Stars)
+                            {
+                                <i class="bi bi-star-fill text-warning"></i>
+                            }
+                            else
+                            {
+                                <i class="bi bi-star text-muted"></i>
+                            }
+                        }
+                    </div>
+                </div>
+                <small class="text-muted">@r.CreatedTime.ToString("dd/MM/yyyy HH:mm")</small>
+            </div>
+            <p class="mt-2">@r.Comment</p>
+            @if (r.MediaURLs != null && r.MediaURLs.Any(url => url.EndsWith(".jpg") || url.EndsWith(".jpeg") || url.EndsWith(".png") || url.EndsWith(".gif") || url.EndsWith(".webp")))
+            {
+                <div class="mt-2 d-flex flex-wrap gap-2">
+                    @foreach (var media in r.MediaURLs)
+                    {
+                        if (media.EndsWith(".jpg") || media.EndsWith(".jpeg") || media.EndsWith(".png") || media.EndsWith(".gif") || media.EndsWith(".webp"))
+                        {
+                            <img src="@media" alt="User image" style="max-width: 150px; height: auto;" class="img-thumbnail" />
+                        }
+                    }
+                </div>
+            }
+        </div>
+    }
+</body> *@

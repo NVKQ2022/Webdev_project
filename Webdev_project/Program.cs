@@ -1,4 +1,5 @@
 using Webdev_project.Data;
+using Webdev_project.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.ConfigureKestrel(serverOptions =>
@@ -18,8 +19,11 @@ builder.Configuration.AddEnvironmentVariables();
 builder.Services.AddControllersWithViews();
 
 // Add users repository
-builder.Services.AddSingleton<UserRepository>();
+builder.Services.AddSingleton<AuthenticationRepository>();
 
+// Register the Services 
+builder.Services.AddScoped<IUserRepository, AuthenticationRepository>();
+builder.Services.AddScoped<ISessionRepository, SessionRepository>();
 
 var app = builder.Build();
 

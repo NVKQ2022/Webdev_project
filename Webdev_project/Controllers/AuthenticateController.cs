@@ -2,17 +2,19 @@
 //using NuGet.Protocol.Plugins;
 using Webdev_project.Data;
 using Webdev_project.Models;
+using Webdev_project.Interfaces;
 namespace Webdev_project.Controllers
 {
     public class AuthenticateController : Controller
     {
         //public IConfiguration configuration;
-        //private UserRepository _userRepository= new UserRepository(configuration);
-        private readonly UserRepository _userRepository;
-
-        public AuthenticateController(UserRepository userRepository)
+        
+        private readonly IUserRepository userRepository;
+        private readonly ISessionRepository sessionRepository;
+        public AuthenticateController(IUserRepository userRepository, ISessionRepository sessionRepository)
         {
-            _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
+            this.userRepository=userRepository ?? throw new ArgumentNullException(nameof(userRepository));
+            this.sessionRepository = sessionRepository ?? throw new ArgumentNullException(nameof(sessionRepository));
         }
         [HttpGet]
         public IActionResult MyLogin()
@@ -36,11 +38,11 @@ namespace Webdev_project.Controllers
             string? ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
             DateTime requestTime = DateTime.UtcNow;
             var userAgent =Request.Headers["User-Agent"].ToString();
-            User? user = _userRepository.AuthenticateUser(email, password);
+            User? user = userRepository.AuthenticateUser(email, password);
             if (user != null)
             {   ViewBag.isLoggedIn=true;
                 ViewBag.userName=user.Username;
-                HttpContext.Response.Cookies.Append("SessionId", _userRepository.SessionGenerator(user,ipAddress, requestTime, userAgent));
+                HttpContext.Response.Cookies.Append("SessionId", sessionRepository.CreateSession(user,ipAddress, requestTime, userAgent));
                 return View("~/Views/Home/Index.cshtml");// need to make index
 
             }

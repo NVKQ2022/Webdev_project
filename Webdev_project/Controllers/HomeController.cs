@@ -12,7 +12,7 @@ namespace Webdev_project.Controllers
         {
             _logger = logger;
         }
-
+        
         public IActionResult Index()
         {
             
