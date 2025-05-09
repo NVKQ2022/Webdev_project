@@ -1,5 +1,6 @@
 using Webdev_project.Data;
 using Webdev_project.Interfaces;
+using Webdev_project.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.ConfigureKestrel(serverOptions =>
@@ -13,6 +14,9 @@ builder.WebHost.ConfigureKestrel(serverOptions =>
 
 builder.Configuration.AddEnvironmentVariables();
 
+// Add a configure class 
+builder.Services.Configure<MongoDbSettings>(
+    builder.Configuration.GetSection("MongoDbSettings"));
 
 
 // Add services to the container.
@@ -24,6 +28,7 @@ builder.Services.AddSingleton<AuthenticationRepository>();
 // Register the Services 
 builder.Services.AddScoped<IUserRepository, AuthenticationRepository>();
 builder.Services.AddScoped<ISessionRepository, SessionRepository>();
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
 
 var app = builder.Build();
 

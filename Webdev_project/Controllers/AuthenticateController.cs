@@ -11,10 +11,12 @@ namespace Webdev_project.Controllers
         
         private readonly IUserRepository userRepository;
         private readonly ISessionRepository sessionRepository;
-        public AuthenticateController(IUserRepository userRepository, ISessionRepository sessionRepository)
+        private readonly IProductRepository productRepository;
+        public AuthenticateController(IUserRepository userRepository, ISessionRepository sessionRepository, IProductRepository productRepository)
         {
-            this.userRepository=userRepository ?? throw new ArgumentNullException(nameof(userRepository));
+            this.userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
             this.sessionRepository = sessionRepository ?? throw new ArgumentNullException(nameof(sessionRepository));
+            this.productRepository = productRepository; 
         }
         [HttpGet]
         public IActionResult MyLogin()
@@ -25,11 +27,35 @@ namespace Webdev_project.Controllers
         {
             return View();
         }
+
+
+
+
         [HttpPost]
         public IActionResult Create(string name, string email)// havent made yet
         {
             var user = new User { Username = name, Email = email };
             return View(user);
+        }
+        [HttpGet]
+        public async Task<IActionResult> Profile(string category)
+        {
+            User? user=  sessionRepository.RetrieveFromSession(HttpContext.Request.Cookies["sessionId"]);
+            ViewBag.User = user;
+            if (user!= null && user.IsAdmin)
+            {
+                //List<Product> products = await productRepository.GetAllAsync();
+                //ViewBag.Products = products;
+
+                var categories = await productRepository.GetAllCategoriesAsync();
+                var products = string.IsNullOrEmpty(category) ? new List<Product>() : await productRepository.GetByCategoryAsync(category);
+
+                ViewBag.User = user;
+                ViewBag.Products = products;
+                ViewBag.Categories = categories;
+                ViewBag.SelectedCategory = category;
+            }
+            return View();
         }
 
         [HttpPost]
