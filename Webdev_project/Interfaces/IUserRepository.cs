@@ -6,6 +6,9 @@ namespace Webdev_project.Interfaces
     {
         void AddUser(User user);
         User? AuthenticateUser(string email, string password);
+
+        bool AdminAuthorize(string userId);
+        
     }
 
 }

@@ -31,6 +31,14 @@ namespace Webdev_project.Controllers
             var user = new User { Username = name, Email = email };
             return View(user);
         }
+        [HttpGet]
+        public IActionResult Profile()
+        {
+            User? user=  sessionRepository.RetrieveFromSession(HttpContext.Request.Cookies["sessionId"]);
+            ViewBag.User = user;
+
+            return View();
+        }
 
         [HttpPost]
         public IActionResult MyLogin(string email, string password)

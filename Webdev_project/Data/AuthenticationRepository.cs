@@ -43,7 +43,7 @@ namespace Webdev_project.Data
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                string query = "SELECT Id, Email, Username FROM users WHERE Email = @Email AND Password = @Password";
+                string query = "SELECT Id, Email, Username , IsAdmin FROM users WHERE Email = @Email AND Password = @Password";
 
                 SqlCommand command = new SqlCommand(query, connection);
                 command.Parameters.AddWithValue("@Email", email);
@@ -60,6 +60,8 @@ namespace Webdev_project.Data
                         Id = reader.GetInt32(0),
                         Email = reader.GetString(1),
                         Username = reader.GetString(2),
+                        IsAdmin =reader.GetBoolean(3)
+
                         
                     };
                 }
@@ -113,6 +115,27 @@ namespace Webdev_project.Data
         //        }
         //    }
         //}
+
+        public bool AdminAuthorize(string userId)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                string query = "SELECT IsAdmin FROM users WHERE Id=@Id";
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@Id", userId);
+
+
+                connection.Open();
+                SqlDataReader reader = command.ExecuteReader();
+
+                if (reader.Read())
+                {
+                    return reader.GetBoolean(0);
+                }
+
+                return false; // Trả về null nếu sai tài khoản/mật khẩu
+            }
+        }
 
     }
 }

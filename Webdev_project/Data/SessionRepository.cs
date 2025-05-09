@@ -31,8 +31,8 @@ namespace Webdev_project.Data
             string sessionId = SecurityHelper.GenerateSessionId();
 
             using var connection = new SqlConnection(_connectionString);
-            string query = @"INSERT INTO session (UserId, UserName, LoginTime , IpAddress, UserAgent, SessionId) 
-                         VALUES (@UserId, @UserName, @LoginTime, @IpAddress, @UserAgent, @SessionId)";
+            string query = @"INSERT INTO session (UserId, UserName, LoginTime , IpAddress, UserAgent, SessionId, IsAdmin) 
+                         VALUES (@UserId, @UserName, @LoginTime, @IpAddress, @UserAgent, @SessionId, @IsAdmin)";
 
             using var cmd = new SqlCommand(query, connection);
             cmd.Parameters.AddWithValue("@UserId", user.Id);
@@ -41,11 +41,52 @@ namespace Webdev_project.Data
             cmd.Parameters.AddWithValue("@IpAddress", ipAddress);
             cmd.Parameters.AddWithValue("@UserAgent", userAgent);
             cmd.Parameters.AddWithValue("@SessionId", sessionId);
+            cmd.Parameters.AddWithValue("@IsAdmin", user.IsAdmin);
+
 
             connection.Open();
             cmd.ExecuteNonQuery();
 
             return sessionId;
+        }
+         public string RetrieveIdFromSession(string? sessionId)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            string query = @"SELECT UserId FROM session WHERE SessionId = @SessionId)";
+            using var cmd = new SqlCommand(query, connection);
+            cmd.Parameters.AddWithValue("@SessionId" , sessionId);
+
+            connection.Open();
+            SqlDataReader reader = cmd.ExecuteReader();
+
+            if (reader.Read())
+            {
+                return reader.GetString(0);
+            }
+            return new string("user not found");
+        }
+        public User? RetrieveFromSession(string? sessionId)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            string query = @"SELECT UserId, Username, IsAdmin FROM session WHERE SessionId = @SessionId  ";
+            using var cmd = new SqlCommand(query, connection);
+            cmd.Parameters.AddWithValue("@SessionId", sessionId);
+
+            connection.Open();
+            SqlDataReader reader = cmd.ExecuteReader();
+
+            if (reader.Read())
+            {
+                return new User
+                {
+
+                    Id = reader.GetInt32(0),
+                    Username = reader.GetString(1),
+                    IsAdmin = reader.GetBoolean(2)
+
+                };
+            }
+            return null;
         }
     }
 }

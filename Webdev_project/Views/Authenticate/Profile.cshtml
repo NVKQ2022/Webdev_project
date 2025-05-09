@@ -1,0 +1,13 @@
+﻿@{
+	User user = ViewBag.User;
+
+}
+
+<h1>@user.IsAdmin</h1>
+@if(user.IsAdmin){
+	<h1>this is admin</h1>
+
+}
+else{
+	<h1>basic user infomation</h1>
+}

@@ -15,6 +15,8 @@ namespace Webdev_project.Models
         public string Password { get; set; }
         [Required]
         public string Salt {  get; set; }
+
+        public bool IsAdmin { get; set; }
         public User()
         {
 
