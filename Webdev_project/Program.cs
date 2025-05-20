@@ -2,6 +2,7 @@ using Webdev_project.Data;
 using Webdev_project.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
+
 builder.WebHost.ConfigureKestrel(serverOptions =>
 {
     // serverOptions.ListenAnyIP(7264); // Listen on all IPs, port 5000
@@ -25,7 +26,11 @@ builder.Services.AddSingleton<AuthenticationRepository>();
 builder.Services.AddScoped<IUserRepository, AuthenticationRepository>();
 builder.Services.AddScoped<ISessionRepository, SessionRepository>();
 
+builder.Services.AddSession();
+
 var app = builder.Build();
+
+
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -38,7 +43,10 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
+
 app.UseRouting();
+
+app.UseSession();
 
 app.UseAuthorization();
 
