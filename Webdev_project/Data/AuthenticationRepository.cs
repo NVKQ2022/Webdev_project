@@ -90,5 +90,26 @@ namespace Webdev_project.Data
             }
         }
 
+        public bool AdminAuthorize(string userId)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                string query = "SELECT IsAdmin FROM users WHERE Id=@Id";
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@Id", userId);
+
+
+                connection.Open();
+                SqlDataReader reader = command.ExecuteReader();
+
+                if (reader.Read())
+                {
+                    return reader.GetBoolean(0);
+                }
+
+                return false; // Trả về null nếu sai tài khoản/mật khẩu
+            }
+        }
+
     }
 }

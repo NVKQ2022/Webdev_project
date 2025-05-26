@@ -2,7 +2,7 @@
 @* 
 @using Webdev_project.Models
 @{
-    User user = ViewBag.User;
+	User user = ViewBag.User;
     List<Product> products = ViewBag.Products;
     Layout = "~/Views/Shared/_Layout.cshtml"; // Optional: if you're using layout
     var groupedProducts = products.GroupBy(p => p.Category);
@@ -56,7 +56,7 @@
                     </tbody>
                 </table>
             </div>
-        }
+}
     }
     else
     {
@@ -139,10 +139,10 @@
         else if (!string.IsNullOrEmpty(selectedCategory))
         {
             <p>No products found in this category.</p>
-        }
+}
         else
         {
             <p>Please select a category.</p>
         }
-    }
+}
 </div>

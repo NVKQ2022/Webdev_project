@@ -1,0 +1,233 @@
+﻿@model List<Webdev_project.Models.CartItem>
+@{
+    ViewData["Title"] = "Giỏ Hàng";
+}
+<!-- ...HTML layout... -->
+
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    //Layout = null;
+}
+
+
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giỏ Hàng Shopee</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #ff5722;
+            padding: 12px 40px;
+        }
+
+        .logo {
+            height: 70px;
+        }
+
+        .nav-menu {
+            display: flex;
+            justify-content: space-between;
+            flex: 1;
+            margin: 0 20px;
+        }
+
+            .nav-menu ul {
+                display: flex;
+                list-style: none;
+                gap: 15px;
+                padding: 0;
+                margin: 0;
+            }
+
+            .nav-menu a {
+                color: white;
+                text-decoration: none;
+            }
+
+        .user-info {
+            color: white;
+        }
+
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 0 40px;
+        }
+
+        .title-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-text {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .title-logo h1 {
+            font-size: 18px;
+            color: #ff5722;
+            margin: 0;
+        }
+
+        .small-logo {
+            height: 50px;
+        }
+
+        .shopee-text {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ff5722;
+        }
+
+        .divider {
+            font-size: 20px;
+            color: #999999;
+            padding: 0 10px;
+        }
+
+        .search-bar {
+            display: flex;
+            width: 50%;
+            background-color: white;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+            .search-bar input, .search-bar button {
+                padding: 10px;
+                border: none;
+            }
+
+            .search-bar input {
+                flex: 1;
+            }
+
+            .search-bar button {
+                background-color: #ff5722;
+                color: white;
+                cursor: pointer;
+            }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <img src="https://www.pngmart.com/files/12/Shopee-Logo-Transparent-Background.png" alt="Shopee Logo" class="logo">
+            <nav class="nav-menu">
+                <ul class="left-menu">
+                    <li><a href="#">Kênh Người Bán</a></li>
+                    <li><a href="#">Tải ứng dụng</a></li>
+                    <li><a href="#">Kết nối</a></li>
+                </ul>
+                <ul class="right-menu">
+                    <li><a href="#">Hỗ Trợ</a></li>
+                    <li><a href="#">Tiếng Việt</a></li>
+                </ul>
+            </nav>
+            <div class="user-info">
+                <span>@* <span>@Model.Username</span> *@
+                </span>  <!-- Sử dụng Model để lấy thông tin người dùng -->
+            </div>
+        </div>
+    </header>
+    <main>
+        <div class="cart-header">
+            <div class="title-logo">
+                <div class="logo-text">
+                    <img src="https://www.pngmart.com/files/12/Shopee-Logo-Transparent-Background.png" alt="Shopee Logo" class="small-logo">
+                    <span class="shopee-text">Shopee</span>
+                </div>
+                <div class="divider">|</div>
+                <h1>Giỏ Hàng</h1>
+            </div>
+            <div class="search-bar">
+                <input type="text" placeholder="SẮC TƯƠI ĐÓN HÈ - 40%">
+                <button>Tìm kiếm</button>
+            </div>
+        </div>
+    </main>
+    
+
+    <!--sản phẩm trong  giỏ hàng-->
+
+    <div class="container" style="max-width: 1100px;">
+        <form>
+            <table class="table align-middle mt-4">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col"><input type="checkbox" /></th>
+                        <th scope="col">Sản phẩm</th>
+                        <th scope="col">Đơn giá</th>
+                        <th scope="col">Số lượng</th>
+                        <th scope="col">Thành tiền</th>
+                        <th scope="col">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td><input type="checkbox" /></td>
+                            <td class="d-flex align-items-center">
+                                <img src="@item.ImageUrl" alt="Product" style="width:60px; height:60px; object-fit:cover;" class="me-2 rounded">
+                                <span>@item.ProductName</span>
+                            </td>
+                            <td class="text-danger">@item.Price.ToString("C0", System.Globalization.CultureInfo.GetCultureInfo("vi-VN"))</td>
+                            <td>
+                                <div class="input-group input-group-sm" style="width:120px;">
+                                    <form asp-action="Decrease" method="post" class="d-inline">
+                                        <input type="hidden" name="productId" value="@item.ProductId" />
+                                        <button class="btn btn-outline-secondary" type="submit">-</button>
+                                    </form>
+                                    <input type="text" class="form-control text-center" value="@item.Quantity" readonly />
+                                    <form asp-action="Increase" method="post" class="d-inline">
+                                        <input type="hidden" name="productId" value="@item.ProductId" />
+                                        <button class="btn btn-outline-secondary" type="submit">+</button>
+                                    </form>
+                                </div>
+                            </td>
+                            <td class="text-danger">@((item.Price * item.Quantity).ToString("C0", System.Globalization.CultureInfo.GetCultureInfo("vi-VN")))</td>
+                            <td>
+                                <!-- Xử lý nút xóa nếu muốn -->                     
+                                <form asp-action="Remove" method="post" style="display:inline;">
+                                    <input type="hidden" name="productId" value="@item.ProductId" />
+                                    <button class="btn btn-link text-danger" type="submit">Xóa</button>
+                                </form>
+                            </td>
+
+                        </tr>
+                    }
+                </tbody>
+
+
+            </table>
+            <div class="d-flex justify-content-end align-items-center mt-4">
+                <span class="me-3 fw-bold">Tổng thanh toán (1 sản phẩm):</span>
+                <span class="fs-4 text-danger fw-bold me-4">₫19.000</span>
+                <button class="btn btn-danger btn-lg px-5">Mua hàng</button>
+            </div>
+        </form>
+    </div>
+    
+
+
+</body>
+</html>
