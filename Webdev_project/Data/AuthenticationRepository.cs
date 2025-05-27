@@ -18,23 +18,22 @@ namespace Webdev_project.Data
 
         }
         //  Thêm User vào Database
-        public void AddUser(User user) // not complete yet
+        public void AddUser(User user)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                string query = "INSERT INTO users (Email, Username, Password, UserType, Salt) VALUES (@Email, @Username, @Password, @UserType, @Salt)";
+                string query = "INSERT INTO users (Email, Username, Password, Salt, IsAdmin) VALUES (@Email, @Username, @Password, @Salt, @IsAdmin)";
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@Email", user.Email);
+                    command.Parameters.AddWithValue("@Username", user.Username);
+                    command.Parameters.AddWithValue("@Password", user.Password);
+                    command.Parameters.AddWithValue("@Salt", user.Salt);
+                    command.Parameters.AddWithValue("@IsAdmin", user.IsAdmin);
 
-                SqlCommand command = new SqlCommand(query, connection);
-
-
-                command.Parameters.AddWithValue("@Email", user.Email);
-                command.Parameters.AddWithValue("@Username", user.Username);
-                command.Parameters.AddWithValue("@Password", user.Password);
-                command.Parameters.AddWithValue("@Salt", user.Salt);
-
-
-                connection.Open();
-                command.ExecuteNonQuery();
+                    connection.Open();
+                    command.ExecuteNonQuery();
+                }
             }
         }
 
