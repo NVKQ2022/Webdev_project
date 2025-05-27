@@ -222,7 +222,9 @@
             <div class="d-flex justify-content-end align-items-center mt-4">
                 <span class="me-3 fw-bold">Tổng thanh toán (1 sản phẩm):</span>
                 <span class="fs-4 text-danger fw-bold me-4">₫19.000</span>
-                <button class="btn btn-danger btn-lg px-5">Mua hàng</button>
+                <form asp-controller="Payment" asp-action="Index" method="post">
+                    <button type="submit" class="btn btn-danger btn-lg px-5">Mua hàng</button>
+                </form>
             </div>
         </form>
     </div>

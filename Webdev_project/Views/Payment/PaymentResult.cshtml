@@ -1,0 +1,73 @@
+﻿@{
+    ViewBag.Title = "Kết quả thanh toán";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var paymentMethod = TempData["PaymentMethod"] as string ?? "COD";
+    var totalAmount = TempData["TotalAmount"] != null ? Convert.ToDecimal(TempData["TotalAmount"]) : 0;
+}
+
+<style>
+    .payment-result-container {
+        max-width: 600px;
+        margin: 60px auto;
+        background: #fff;
+        border-radius: 12px;
+        padding: 40px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        text-align: center;
+    }
+
+        .payment-result-container h2 {
+            color: #28a745;
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .payment-result-container p {
+            font-size: 18px;
+            margin-top: 20px;
+        }
+
+    .payment-amount {
+        color: #6f42c1;
+        font-size: 22px;
+        font-weight: 600;
+    }
+
+    .payment-buttons a {
+        display: inline-block;
+        margin: 15px 10px 0;
+        padding: 12px 24px;
+        font-size: 16px;
+        border-radius: 8px;
+        text-decoration: none;
+    }
+
+    .btn-main {
+        background-color: #6f42c1;
+        color: #fff;
+    }
+
+    .btn-outline {
+        border: 2px solid #6f42c1;
+        color: #6f42c1;
+    }
+
+        .btn-main:hover, .btn-outline:hover {
+            opacity: 0.85;
+        }
+
+    .success-icon {
+        width: 80px;
+        margin-bottom: 20px;
+    }
+</style>
+
+<div class="payment-result-container">
+    <img src="https://cdn-icons-png.flaticon.com/512/845/845646.png" alt="Success" class="success-icon" />
+    <h2>Đặt hàng thành công!</h2>
+    <p>Đơn hàng sẽ được giao đến bạn trong khoảng 2 đến 3 ngày</p>
+    <div class="payment-buttons">
+        <a href="@Url.Action("Index", "Home")" class="btn-main">Về trang chủ</a>
+    </div>
+</div>
