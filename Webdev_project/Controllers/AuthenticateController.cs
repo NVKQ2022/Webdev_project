@@ -63,18 +63,63 @@ namespace Webdev_project.Controllers
         {
             string? ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
             DateTime requestTime = DateTime.UtcNow;
-            var userAgent =Request.Headers["User-Agent"].ToString();
+            var userAgent = Request.Headers["User-Agent"].ToString();
             User? user = userRepository.AuthenticateUser(email, password);
             if (user != null)
-            {   ViewBag.isLoggedIn=true;
-                ViewBag.userName=user.Username;
-                HttpContext.Response.Cookies.Append("SessionId", sessionRepository.CreateSession(user,ipAddress, requestTime, userAgent));
+            {
+                ViewBag.isLoggedIn = true;
+                ViewBag.userName = user.Username;
+                HttpContext.Response.Cookies.Append("SessionId", sessionRepository.CreateSession(user, ipAddress, requestTime, userAgent));
                 return View("~/Views/Home/Index.cshtml");// need to make index
 
             }
             ViewBag.Message = "Sai thông tin!";
-            
+
             return View("MyLogin");
         }
+
+        [HttpPost]
+        public IActionResult MyRegister(string email, string username, string password, string confirmPassword)
+        {
+            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(username) ||
+                string.IsNullOrWhiteSpace(password) || string.IsNullOrWhiteSpace(confirmPassword))
+            {
+                ViewBag.Message = "Vui lòng nhập đầy đủ thông tin.";
+                return View();
+            }
+
+            if (password != confirmPassword)
+            {
+                ViewBag.Message = "Mật khẩu xác nhận không khớp.";
+                return View();
+            }
+
+            string salt = SecurityHelper.GenerateSalt();
+            string hashedPassword = SecurityHelper.HashPassword(password, salt);
+
+            var user = new User
+            {
+                Email = email,
+                Username = username,
+                Password = hashedPassword,
+                Salt = salt,
+                IsAdmin = false
+            };
+
+            try
+            {
+                userRepository.AddUser(user);
+                ViewBag.Message = "Đăng ký thành công! Bạn có thể đăng nhập.";
+                return RedirectToAction("MyLogin");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = "Đăng ký thất bại: " + ex.Message;
+                return View();
+            }
+        }
+
+
+
     }
 }

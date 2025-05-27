@@ -18,56 +18,65 @@ namespace Webdev_project.Data
 
         }
         //  Thêm User vào Database
-        public void AddUser(User user) // not complete yet
+        public void AddUser(User user)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                string query = "INSERT INTO users (Email, Username, Password, UserType, Salt) VALUES (@Email, @Username, @Password, @UserType, @Salt)";
+                string query = "INSERT INTO users (Email, Username, Password, Salt, IsAdmin) VALUES (@Email, @Username, @Password, @Salt, @IsAdmin)";
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@Email", user.Email);
+                    command.Parameters.AddWithValue("@Username", user.Username);
+                    command.Parameters.AddWithValue("@Password", user.Password);
+                    command.Parameters.AddWithValue("@Salt", user.Salt);
+                    command.Parameters.AddWithValue("@IsAdmin", user.IsAdmin);
 
-                SqlCommand command = new SqlCommand(query, connection);
-
-
-                command.Parameters.AddWithValue("@Email", user.Email);
-                command.Parameters.AddWithValue("@Username", user.Username);
-                command.Parameters.AddWithValue("@Password", user.Password);
-                command.Parameters.AddWithValue("@Salt", user.Salt);
-
-
-                connection.Open();
-                command.ExecuteNonQuery();
+                    connection.Open();
+                    command.ExecuteNonQuery();
+                }
             }
         }
 
 
-        public User? AuthenticateUser(string email, string password)// done
+
+        public User? AuthenticateUser(string email, string password)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                string query = "SELECT Id, Email, Username , IsAdmin FROM users WHERE Email = @Email AND Password = @Password";
-
-                SqlCommand command = new SqlCommand(query, connection);
-                command.Parameters.AddWithValue("@Email", email);
-                command.Parameters.AddWithValue("@Password", password); // Nên hash mật khẩu trong thực tế!
+                // Lấy salt từ DB
+                string saltQuery = "SELECT Salt FROM users WHERE Email = @Email";
+                SqlCommand saltCmd = new SqlCommand(saltQuery, connection);
+                saltCmd.Parameters.AddWithValue("@Email", email);
 
                 connection.Open();
-                SqlDataReader reader = command.ExecuteReader();
+                var saltObj = saltCmd.ExecuteScalar();
+                if (saltObj == null) return null;
+                string salt = saltObj.ToString();
 
+                // Hash password nhập vào với salt
+                string hashedPassword = SecurityHelper.HashPassword(password, salt);
+
+                // So sánh với password đã lưu
+                string query = "SELECT Id, Email, Username, IsAdmin FROM users WHERE Email = @Email AND Password = @Password";
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@Email", email);
+                command.Parameters.AddWithValue("@Password", hashedPassword);
+
+                SqlDataReader reader = command.ExecuteReader();
                 if (reader.Read())
                 {
                     return new User
                     {
-
                         Id = reader.GetInt32(0),
                         Email = reader.GetString(1),
                         Username = reader.GetString(2),
-                        IsAdmin =reader.GetBoolean(3)
-
-                        
+                        IsAdmin = reader.GetBoolean(3)
                     };
                 }
             }
-            return null; // Trả về null nếu sai tài khoản/mật khẩu
+            return null;
         }
+
 
         public bool AdminAuthorize(string userId)
         {

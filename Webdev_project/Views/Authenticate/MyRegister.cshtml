@@ -3,7 +3,6 @@
         <section class="card shadow-sm p-4 mt-4">
             <h2 class="text-center text-success">Create a New Account</h2>
             <p class="text-center text-muted">Sign up to get started</p>
-
             <hr />
             <form id="registerform" method="post">
                 <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
@@ -12,10 +11,13 @@
                     <input name="email" class="form-control" type="email" autocomplete="username" required placeholder="name@example.com" />
                     <label><i class="fa fa-envelope"></i> Email</label>
                 </div>
-                
 
+                <div class="form-floating mb-3">
+                    <input name="username" class="form-control" type="text" autocomplete="username" required placeholder="username" />
+                    <label><i class="fa fa-user"></i> Username</label>
+                </div>
 
-                @* <div class="form-floating mb-3">
+                <div class="form-floating mb-3">
                     <input name="password" class="form-control" type="password" autocomplete="new-password" required placeholder="password" />
                     <label><i class="fa fa-lock"></i> Password</label>
                 </div>
@@ -24,7 +26,7 @@
                     <input name="confirmPassword" class="form-control" type="password" autocomplete="new-password" required placeholder="confirm password" />
                     <label><i class="fa fa-lock"></i> Confirm Password</label>
                 </div>
- *@
+
                 <button id="registersubmit" type="submit" class="w-100 btn btn-lg btn-success">
                     <i class="fa fa-user-plus"></i> Register
                 </button>
@@ -32,6 +34,10 @@
                 <div class="text-center mt-3">
                     Already have an account? <a class="text-decoration-none" href="/Authenticate/MyLogin">Login</a>
                 </div>
+                @if (ViewBag.Message != null)
+                {
+                    <div class="alert alert-danger mt-2">@ViewBag.Message</div>
+                }
             </form>
         </section>
     </div>

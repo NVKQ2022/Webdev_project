@@ -4,6 +4,7 @@ using Webdev_project.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
 builder.WebHost.ConfigureKestrel(serverOptions =>
 {
     // serverOptions.ListenAnyIP(7264); // Listen on all IPs, port 5000
@@ -30,6 +31,7 @@ builder.Services.AddSingleton<AuthenticationRepository>();
 builder.Services.AddScoped<IUserRepository, AuthenticationRepository>();
 builder.Services.AddScoped<ISessionRepository, SessionRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
+
 
 builder.Services.AddSession();
 
