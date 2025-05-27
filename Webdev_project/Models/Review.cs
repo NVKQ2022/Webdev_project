@@ -2,16 +2,16 @@
 {
     public class Review
     {
-        ReviewId Id { get; set; }
+        public string ReviewId { get; set; }
+
+        public string ProductID { get; set; }
+        public int UserID { get; set; }
+
         public int Stars { get; set; }
         public string Comment { get; set; }
         public DateTime CreatedTime { get; set; }
         public List<string>? MediaURLs { get; set; }
 
     }
-    struct ReviewId
-    { 
-        public int ProductID { get; set; }
-        public int UserID { get; set; }
-    }
+    
 }

@@ -28,11 +28,17 @@
 
             "GoogleMaps:ApiKey": "YOUR_SECRET_API_KEY",
 
-            "Security:Pepper": "MyWebApp",
-            "Security:Email": "nguyenvietkyquan@gmail.com",
-            "Security:Password": "willconfiglater",
+            "Security__Pepper": "MyWebApp",
+            "Security__Email": "nguyenvietkyquan@gmail.com",
+            "Security__Password": "willconfiglater",
 
-            "ConnectionString:UserDatabase": "Data Source=LAPTOP-JK0OARBJ\\SQLEXPRESS;Initial Catalog=WebProject_database;Integrated Security=True;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True;Application Intent=ReadWrite;Multi Subnet Failover=False"
+            //"ConnectionString__UserDatabase": "Data Source=LAPTOP-JK0OARBJ\\SQLEXPRESS;Initial Catalog=WebProject_database;Integrated Security=True;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True;Application Intent=ReadWrite;Multi Subnet Failover=False",
+
+            "ConnectionString__UserDatabase": "Server=db20448.public.databaseasp.net; Database=db20448; User Id=db20448; Password=F%b28nX!Z5?s; Encrypt=True; TrustServerCertificate=True; MultipleActiveResultSets=True",
+
+            "MongoDbSettings__ConnectionString": "mongodb+srv://quan:08012005@clusterbtweb.kwohvul.mongodb.net/?retryWrites=true&w=majority&appName=ClusterBtWeb",
+            "MongoDbSettings__DatabaseName": "webdev_project",
+            "MongoDbSettings__ProductCollectionName": "Product"
 
         }
 

@@ -1,13 +1,148 @@
-﻿@{
+﻿
+@* 
+@using Webdev_project.Models
+@{
 	User user = ViewBag.User;
-
+    List<Product> products = ViewBag.Products;
+    Layout = "~/Views/Shared/_Layout.cshtml"; // Optional: if you're using layout
+    var groupedProducts = products.GroupBy(p => p.Category);
 }
 
-<h1>@user.IsAdmin</h1>
-@if(user.IsAdmin){
-	<h1>this is admin</h1>
+<div class="container mt-4">
+    <h2 class="mb-4">Welcome, @user.Username</h2>
 
+    @if (user.IsAdmin)
+    {
+        <h3>Admin Dashboard - Products by Category</h3>
+
+        @foreach (var categoryGroup in groupedProducts)
+        {
+            <div class="mb-4">
+                <h4 class="text-primary border-bottom pb-2">@categoryGroup.Key</h4>
+
+                <table class="table table-striped table-bordered">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Product ID</th>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Price</th>
+                            <th>Colors</th>
+                            <th>Images</th>
+                            
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var product in categoryGroup)
+                        {
+                            <tr>
+                                <td>@product.ProductID</td>
+                                <td>@product.Name</td>
+                                <td>@product.Description</td>
+                                <td>@product.Price.ToString("C")</td>
+                                <td>
+                                    @foreach (var color in product.Color)
+                                    {
+                                        <span class="badge bg-secondary">@color</span>
+                                    }
+                                </td>
+                                <td>
+                                   
+                                    <img src="@product.ImageURL[0]" width="50" height="50" class="me-1 mb-1" />
+                                </td>
+                                
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
 }
-else{
-	<h1>basic user infomation</h1>
+    }
+    else
+    {
+        <h3>User Dashboard</h3>
+        <p>Here is your basic information:</p>
+        <ul>
+            <li><strong>Username:</strong> @user.Username</li>
+            <li><strong>Email:</strong> @user.Email</li>
+            <li><strong>Role:</strong> Basic User</li>
+        </ul>
+    }
+</div>
+ *@
+
+
+@using Webdev_project.Models
+@{
+    User user = ViewBag.User;
+    List<Product> products = ViewBag.Products;
+    List<string> categories = ViewBag.Categories;
+    string selectedCategory = ViewBag.SelectedCategory;
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
+
+<div class="container mt-4">
+    <h2 class="mb-4">Welcome, @user.Username</h2>
+
+    @if (user.IsAdmin)
+    {
+        <h3>Admin Dashboard - Products by Category</h3>
+
+        <form method="get" asp-action="Profile" class="mb-3">
+            <label for="category" class="form-label">Select Category:</label>
+            <select name="category" id="category" class="form-select w-auto d-inline-block" onchange="this.form.submit()">
+                <option value="">-- Select --</option>
+                @foreach (var cat in categories)
+                {
+                    var isSelected = (cat == selectedCategory) ? "selected" : "";
+
+                    <option value="@cat" isSelected >@cat</option>
+                }
+
+            </select>
+        </form>
+
+        @if (!string.IsNullOrEmpty(selectedCategory) && products.Any())
+        {
+            <h4 class="text-primary">@selectedCategory</h4>
+            <table class="table table-bordered">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th><th>Name</th><th>Description</th><th>Price</th><th>Colors</th><th>Image</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var p in products)
+                    {
+                        <tr>
+                            <td>@p.ProductID</td>
+                            <td>@p.Name</td>
+                            <td>@p.Description</td>
+                            <td>@p.Price.ToString("C")</td>
+                            <td>
+                                @foreach (var color in p.Color)
+                                {
+                                    <span class="badge bg-secondary">@color</span>
+                                }
+                            </td>
+                            <td>
+                                @if (p.ImageURL?.Any() == true)
+                                {
+                                    <img src="@p.ImageURL[0]" alt="Image" width="50" />
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else if (!string.IsNullOrEmpty(selectedCategory))
+        {
+            <p>No products found in this category.</p>
+}
+        else
+        {
+            <p>Please select a category.</p>
+        }
+}
+</div>

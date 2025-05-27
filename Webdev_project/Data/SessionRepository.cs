@@ -6,7 +6,7 @@ namespace Webdev_project.Data
 {
     public class SessionRepository :ISessionRepository
     {
-        private static readonly string  _connectionString = Environment.GetEnvironmentVariable("ConnectionString:UserDatabase")?? throw new InvalidOperationException("Database connection string not configured");
+        private static readonly string  _connectionString = Environment.GetEnvironmentVariable("ConnectionString__UserDatabase")?? throw new InvalidOperationException("Database connection string not configured");
 
         public SessionRepository(/*IConfiguration configuration*/)
         {
