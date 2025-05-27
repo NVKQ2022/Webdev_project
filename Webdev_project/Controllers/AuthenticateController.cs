@@ -76,5 +76,47 @@ namespace Webdev_project.Controllers
             
             return View("MyLogin");
         }
+
+
+        [HttpPost]
+        public IActionResult MyRegister(string email, string username, string password, string confirmPassword)
+        {
+            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(username) ||
+                string.IsNullOrWhiteSpace(password) || string.IsNullOrWhiteSpace(confirmPassword))
+            {
+                ViewBag.Message = "Vui lòng nhập đầy đủ thông tin.";
+                return View();
+            }
+
+            if (password != confirmPassword)
+            {
+                ViewBag.Message = "Mật khẩu xác nhận không khớp.";
+                return View();
+            }
+
+            string salt = SecurityHelper.GenerateSalt();
+            string hashedPassword = SecurityHelper.HashPassword(password, salt);
+
+            var user = new User
+            {
+                Email = email,
+                Username = username,
+                Password = hashedPassword,
+                Salt = salt,
+                IsAdmin = false
+            };
+
+            try
+            {
+                userRepository.AddUser(user);
+                ViewBag.Message = "Đăng ký thành công! Bạn có thể đăng nhập.";
+                return RedirectToAction("MyLogin");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = "Đăng ký thất bại: " + ex.Message;
+                return View();
+            }
+        }
     }
 }
