@@ -2,12 +2,18 @@
     ViewData["Title"] = "Home Page";
     // Layout = null;
     var isLoggedIn = ViewBag.isLoggedIn;
+    var categoryNumber = 30;
 }
 <style>
     form.input-group {
         width: 100%;
         max-width: 1000px;
     }
+
+    #categoryCarousel::-webkit-scrollbar {
+        display: none;
+    }
+
 </style>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
@@ -51,14 +57,45 @@
 
     <!-- Dành Mục -->
     <h5 class="fw-bold">DANH MỤC</h5>
-    <div class="row text-center mb-5">
-        @for (int i = 0; i < 8; i++) {
-            <div class="col-3 col-md-1 mb-3">
-                <img src="/images/category1.png" class="img-fluid mb-2 rounded-circle" />
-                <p class="small">Danh mục @(i+1)</p>
+
+    <div class="position-relative" style="max-width: 1200px; margin: auto;">
+        <button class="btn btn-light position-absolute start-0"
+                style="top: 30%; transform: translateY(-50%) translateX(-80%); z-index: 2;" onclick="scrollCategory(-1)">
+            <i class="bi bi-chevron-left fs-4"></i>
+        </button>
+
+        
+
+
+
+        <div id="categoryCarousel" class="d-flex overflow-hidden"
+             style="scroll-behavior: smooth;">
+            <div id="categoryItems" class="d-flex">
+                @for (int i = 0; i < categoryNumber; i++) // change to your actual count
+                {
+                    <div class="text-center flex-shrink-0" style="width: 110px; margin-right: 10px;">
+                        <img src="/images/category1.png"
+                             class="img-fluid mb-2 rounded-circle border border-secondary"
+                             style="width: 100px; height: 100px; object-fit: cover;" />
+                        <p class="small">Danh mục @(i + 1)</p>
+                    </div>
+                }
             </div>
-        }
+        </div>
+
+
+        <button class="btn btn-light position-absolute end-0"
+                style="top: 30%; transform: translateY(-50%) translateX(80%); z-index: 2;" onclick="scrollCategory(1)">
+            <i class="bi bi-chevron-right fs-4"></i>
+        </button>
     </div>
+
+
+
+
+
+
+        
 
     <!-- Flash Sale -->
     <h5 class="fw-bold text-danger mb-3">⚡ FLASH SALE</h5>
@@ -82,17 +119,34 @@
 </div>
 
 
+<!-- Bootstrap Icons CDN -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
+<script>
+    const itemsPerPage = 10;
+    const itemWidth = 120; // includes margin-right
+    let currentPage = 0;
 
+    function scrollCategory(direction) {
+        const container = document.getElementById('categoryCarousel');
+        const itemsContainer = document.getElementById('categoryItems');
+        const maxScroll = itemsContainer.scrollWidth - container.clientWidth;
 
+        currentPage += direction;
+        const newScrollLeft = currentPage * itemsPerPage * itemWidth;
 
+        if (newScrollLeft > maxScroll) {
+            currentPage--; // Prevent overflow
+        } else if (newScrollLeft < 0) {
+            currentPage = 0;
+        }
 
-
-
-
-
-
-
+        container.scrollTo({
+            left: currentPage * itemsPerPage * itemWidth,
+            behavior: 'smooth'
+        });
+    }
+</script>
 
 
 
