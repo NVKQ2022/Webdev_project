@@ -2,7 +2,10 @@
 using Microsoft.Extensions.Options;
 using Webdev_project.Models;
 using Webdev_project.Interfaces;
+using MongoDB.Bson;
 
+using System.Collections.Generic;
+using System.Threading.Tasks;
 public class ProductRepository:IProductRepository
 {
     private readonly IMongoCollection<Product> _products;
@@ -54,4 +57,37 @@ public class ProductRepository:IProductRepository
     {
         await _products.DeleteOneAsync(p => p.ProductID == id);
     }
+
+
+
+    public async Task ConvertKhoToStringAsync()
+    {
+        var collection = _products.Database.GetCollection<BsonDocument>(_products.CollectionNamespace.CollectionName);
+
+        var pipeline = new EmptyPipelineDefinition<BsonDocument>()
+            .AppendStage<BsonDocument, BsonDocument, BsonDocument>(
+                new BsonDocument("$set", new BsonDocument("Detail.Kho", new BsonDocument("$toString", "$Detail.Kho")))
+            );
+
+        var filter = Builders<BsonDocument>.Filter.Exists("Detail.Kho");
+
+        await collection.UpdateManyAsync(filter, pipeline);
+    }
+    public async Task EnsureColorIsArrayAsync()
+    {
+        var collection = _products.Database.GetCollection<BsonDocument>(_products.CollectionNamespace.CollectionName);
+
+        var filter = Builders<BsonDocument>.Filter.Or(
+            Builders<BsonDocument>.Filter.Exists("Color", false), // Color does not exist
+            Builders<BsonDocument>.Filter.Not(
+                Builders<BsonDocument>.Filter.Type("Color", BsonType.Array) // Color is not an array
+            )
+        );
+
+        var update = Builders<BsonDocument>.Update.Set("Color", new BsonArray());
+
+        await collection.UpdateManyAsync(filter, update);
+    }
+
+
 }

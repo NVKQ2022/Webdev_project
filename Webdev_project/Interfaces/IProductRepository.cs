@@ -20,8 +20,8 @@ namespace Webdev_project.Interfaces
 
         Task DeleteAsync(string id);
 
+        Task ConvertKhoToStringAsync();
 
-
-
+        Task EnsureColorIsArrayAsync();
     }       
 }
