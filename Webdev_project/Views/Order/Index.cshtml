@@ -1,0 +1,57 @@
+﻿@using Webdev_project.Models
+@{
+    var orders = ViewBag.Orders as List<Order>;
+    ViewBag.Title = "My Orders";
+}
+
+<h2 class="mb-4">My Orders</h2>
+
+@if (orders == null || !orders.Any())
+{
+    <p>No orders found.</p>
+}
+else
+{
+    foreach (var order in orders)
+    {
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <strong>Order ID:</strong> @order.OrderID &nbsp; | &nbsp;
+                <strong>Status:</strong> @order.Status &nbsp; | &nbsp;
+                <strong>Date:</strong> @order.CreatedAt.ToString("yyyy-MM-dd HH:mm")
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Image</th>
+                            <th>Product Name</th>
+                            <th>Quantity</th>
+                            <th>Unit Price (₫)</th>
+                            <th>Total (₫)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in order.Items)
+                        {
+                            <tr>
+                                <td><img src="@item.Image" width="80" height="80" alt="@item.ProductName" /></td>
+                                <td>@item.ProductName</td>
+                                <td>@item.Quantity</td>
+                                <td>@item.UnitPrice.ToString("N0")</td>
+                                <td>@(item.Quantity * item.UnitPrice).ToString("N0")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+                <p class="mt-3">
+                    <strong>Total Amount:</strong> @order.TotalAmount.ToString("N0") ₫ <br />
+                    <strong>Payment Method:</strong> @order.PaymentMethod <br />
+                    <strong>Shipping Address:</strong> @order.ShippingAddress <br />
+                    <strong>Phone:</strong> @order.PhoneNumber
+                </p>
+            </div>
+        </div>
+    }
+}
