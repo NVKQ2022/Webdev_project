@@ -38,7 +38,9 @@
 
             "MongoDbSettings__ConnectionString": "mongodb+srv://quan:08012005@clusterbtweb.kwohvul.mongodb.net/?retryWrites=true&w=majority&appName=ClusterBtWeb",
             "MongoDbSettings__DatabaseName": "webdev_project",
-            "MongoDbSettings__ProductCollectionName": "Product"
+            "MongoDbSettings__ProductCollectionName": "Product",
+            "MongoDbSettings__OrderCollectionName": "Order"
+
 
         }
 

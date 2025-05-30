@@ -44,9 +44,6 @@ namespace Webdev_project.Controllers
             ViewBag.User = user;
             if (user!= null && user.IsAdmin)
             {
-                //List<Product> products = await productRepository.GetAllAsync();
-                //ViewBag.Products = products;
-
                 var categories = await productRepository.GetAllCategoriesAsync();
                 var products = string.IsNullOrEmpty(category) ? new List<Product>() : await productRepository.GetByCategoryAsync(category);
 
@@ -54,6 +51,8 @@ namespace Webdev_project.Controllers
                 ViewBag.Products = products;
                 ViewBag.Categories = categories;
                 ViewBag.SelectedCategory = category;
+
+                await productRepository.EnsureColorIsArrayAsync();
             }
             return View();
         }
