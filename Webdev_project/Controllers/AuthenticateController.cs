@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 //using NuGet.Protocol.Plugins;
-using Webdev_project.Data;
 using Webdev_project.Models;
 using Webdev_project.Interfaces;
+using Webdev_project.Helpers;
 namespace Webdev_project.Controllers
 {
     public class AuthenticateController : Controller
@@ -52,7 +52,7 @@ namespace Webdev_project.Controllers
                 ViewBag.Categories = categories;
                 ViewBag.SelectedCategory = category;
 
-                await productRepository.EnsureColorIsArrayAsync();
+             
             }
             return View();
         }

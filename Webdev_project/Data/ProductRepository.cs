@@ -89,5 +89,28 @@ public class ProductRepository:IProductRepository
         await collection.UpdateManyAsync(filter, update);
     }
 
+    public async Task AddSoldFieldWithRandomValueAsync()
+    {
+        var collection = _products.Database.GetCollection<BsonDocument>(_products.CollectionNamespace.CollectionName);
+
+        var allDocuments = await collection.Find(new BsonDocument()).ToListAsync();
+
+        var random = new Random();
+
+        var tasks = new List<Task>();
+
+        foreach (var doc in allDocuments)
+        {
+            var id = doc["_id"];
+            int soldValue = random.Next(0, 101); // 0 to 100 inclusive
+
+            var filter = Builders<BsonDocument>.Filter.Eq("_id", id);
+            var update = Builders<BsonDocument>.Update.Set("Sold", soldValue);
+
+            tasks.Add(collection.UpdateOneAsync(filter, update));
+        }
+
+        await Task.WhenAll(tasks);
+    }
 
 }

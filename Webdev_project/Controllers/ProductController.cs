@@ -15,7 +15,7 @@ namespace Webdev_project.Controllers
             this.productRepository = productRepository;
         }
 
-        [HttpGet("/Detail/{id}")]
+        [HttpGet("Detail/{id}")]
         public async Task<IActionResult> Detail(string id = null)
         {
             var product = await productRepository.GetByIdAsync(id);

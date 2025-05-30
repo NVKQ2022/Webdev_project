@@ -4,14 +4,14 @@ using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Webdev_project.Data
+namespace Webdev_project.Helpers
 {
     public class SecurityHelper
     {
         private static readonly string myPepper = Environment.GetEnvironmentVariable("Security__Pepper");
         private static readonly string serverEmail = Environment.GetEnvironmentVariable("Security__Email");
         private static readonly string serverEmailPassword = Environment.GetEnvironmentVariable("Security__Password");
-        public  SecurityHelper(/*IConfiguration configuration*/)
+        public SecurityHelper(/*IConfiguration configuration*/)
         {
             //myPepper = configuration["Security:Pepper"];
         }
