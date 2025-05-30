@@ -17,5 +17,6 @@ namespace Webdev_project.Models
         public List<string> ImageURL { get; set; }
         public Dictionary<string, string> Detail { get; set; }
         public string Category { get; set; }
+        public int Sold { get; set; }
     }
 }
