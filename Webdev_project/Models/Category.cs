@@ -15,7 +15,8 @@ namespace Webdev_project.Models
 
         public int ProductQuantity { get; set; }
 
-        public List<Product_zip> Products { get; set; }
+        [BsonRepresentation(BsonType.ObjectId)]
+        public List<string> Products { get; set; }
     }
 
    

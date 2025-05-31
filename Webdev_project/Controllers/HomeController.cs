@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Microsoft.AspNetCore.Mvc;
+using Webdev_project.Helpers;
 using Webdev_project.Interfaces;
 using Webdev_project.Models;
 
@@ -27,7 +28,10 @@ namespace Webdev_project.Controllers
 
         public async Task<IActionResult> Index()
         {
+            ConverterHelper converterHelper = new ConverterHelper();   
             var categories = await productRepository.GetAllCategoriesAsync();
+            List<Product_zip> product_Zips = converterHelper.ConvertProductListToProductZipList(await productRepository.GetAllAsync());
+            ViewBag.product = product_Zips;
             ViewBag.Categories = categories;
             return View();
         }
