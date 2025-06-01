@@ -8,5 +8,7 @@
 
         public string OrderCollectionName { get; set; }
         public string ReviewCollectionName { set; get; }
+
+        public string CategoryCollectionName { get; set; }
     }
 }

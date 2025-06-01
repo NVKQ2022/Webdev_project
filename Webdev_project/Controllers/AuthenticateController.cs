@@ -12,11 +12,13 @@ namespace Webdev_project.Controllers
         private readonly IUserRepository userRepository;
         private readonly ISessionRepository sessionRepository;
         private readonly IProductRepository productRepository;
-        public AuthenticateController(IUserRepository userRepository, ISessionRepository sessionRepository, IProductRepository productRepository)
+        private readonly ICategoryRepository categoryRepository;
+        public AuthenticateController(IUserRepository userRepository, ISessionRepository sessionRepository, IProductRepository productRepository,ICategoryRepository categoryRepository)
         {
             this.userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
             this.sessionRepository = sessionRepository ?? throw new ArgumentNullException(nameof(sessionRepository));
             this.productRepository = productRepository; 
+            this.categoryRepository = categoryRepository;
         }
         [HttpGet]
         public IActionResult MyLogin()
@@ -46,7 +48,7 @@ namespace Webdev_project.Controllers
             {
                 var categories = await productRepository.GetAllCategoriesAsync();
                 var products = string.IsNullOrEmpty(category) ? new List<Product>() : await productRepository.GetByCategoryAsync(category);
-
+                await categoryRepository.InsertCategoryAsync(category);
                 ViewBag.User = user;
                 ViewBag.Products = products;
                 ViewBag.Categories = categories;
@@ -58,6 +60,13 @@ namespace Webdev_project.Controllers
         }
 
         [HttpPost]
+        public  IActionResult Profile()
+        {
+            var product = new Product();
+            productRepository.AddAsync(product);
+            return View();
+        }
+        [HttpPost]
         public IActionResult MyLogin(string email, string password)
         {
             string? ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
@@ -67,7 +76,8 @@ namespace Webdev_project.Controllers
             if (user != null)
             {   ViewBag.isLoggedIn=true;
                 ViewBag.userName=user.Username;
-                HttpContext.Response.Cookies.Append("SessionId", sessionRepository.CreateSession(user,ipAddress, requestTime, userAgent));
+                HttpContext.Response.Cookies.Append("SessionId", sessionRepository.CreateSession(user, ipAddress, requestTime, userAgent));
+                HttpContext.Response.Cookies.Append("Username", user.Username);
                 return View("~/Views/Home/Index.cshtml");// need to make index
 
             }
