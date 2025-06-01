@@ -113,4 +113,11 @@ public class ProductRepository:IProductRepository
         await Task.WhenAll(tasks);
     }
 
+    // Search sản phẩm - Phong
+    public async Task<List<Product>> SearchByNameAsync(string query)
+    {
+        var filter = Builders<Product>.Filter.Regex(p => p.Name, new BsonRegularExpression(query, "i"));
+        return await _products.Find(filter).ToListAsync();
+    }
+
 }
