@@ -1,99 +1,94 @@
 ﻿@{
-    var message =ViewBag.Message;
-    Layout = null;
+    var message = ViewBag.Message;
+    Layout = "~/Views/Shared/_Layout.cshtml";
 
     var product = ViewBag.Product;
     var review = ViewBag.Review;
 }
 
+<style>
+    .product-detail {
+        background-color: #f5f5f5;
+        padding-top: 20px;
+    }
 
+    .product-container {
+        background-color: white;
+        padding: 24px;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        margin-bottom: 20px;
+    }
 
+    .carousel-item {
+        height: 400px;
+        background-color: #f8f9fa;
+    }
 
-<head>
-    <meta charset="utf-8" />
-    <title>Product Detail</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    .image-wrapper {
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 
-
-    <style>
-        body {
-            background-color: #f5f5f5;
+        .image-wrapper img {
+            max-height: 100%;
+            max-width: 100%;
+            object-fit: cover;
         }
 
-        .container {
-            background-color: white;
-            padding: 24px;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-        }
+    .btn-outline-purple {
+        color: #6f42c1;
+        border: 2px solid #6f42c1;
+        background-color: transparent;
+        font-weight: 500;
+    }
 
-        .carousel-item {
-            height: 400px;
-            background-color: #f8f9fa;
-        }
-
-        .image-wrapper {
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-            .image-wrapper img {
-                max-height: 100%;
-                max-width: 100%;
-                object-fit: cover;
-            }
-
-        .btn-outline-purple {
-            color: #6f42c1;
-            border: 2px solid #6f42c1;
-            background-color: transparent;
-            font-weight: 500;
-        }
-
-            .btn-outline-purple:hover {
-                background-color: #6f42c1;
-                color: #fff;
-            }
-
-        .btn-purple {
+        .btn-outline-purple:hover {
             background-color: #6f42c1;
+            color: #fff;
+        }
+
+    .btn-purple {
+        background-color: #6f42c1;
+        color: white;
+        border: none;
+        font-weight: 500;
+    }
+
+        .btn-purple:hover {
+            background-color: #5a32a3;
             color: white;
-            border: none;
-            font-weight: 500;
         }
 
-            .btn-purple:hover {
-                background-color: #5a32a3;
-                color: white;
-            }
+    .btn i {
+        margin-right: 6px;
+    }
 
-        .btn i {
-            margin-right: 6px;
+    .thumbnail-scroll {
+        scrollbar-width: thin;
+        scrollbar-color: #ccc transparent;
+    }
+
+        .thumbnail-scroll::-webkit-scrollbar {
+            height: 6px;
         }
 
-        .thumbnail-scroll {
-            scrollbar-width: thin;
-            scrollbar-color: #ccc transparent;
+        .thumbnail-scroll::-webkit-scrollbar-thumb {
+            background-color: #ccc;
+            border-radius: 10px;
         }
 
-            .thumbnail-scroll::-webkit-scrollbar {
-                height: 6px;
-            }
+    .btn-outline-dark.active {
+        background-color: #6f42c1;
+        color: white;
+        border-color: #6f42c1;
+    }
+</style>
 
-            .thumbnail-scroll::-webkit-scrollbar-thumb {
-                background-color: #ccc;
-                border-radius: 10px;
-            }
-
-    </style>
-</head>
-
-<body>
-    <div class="container mt-5">
+<div class="product-detail">
+    <div class="container product-container">
         <div class="row">
             <!-- Hình ảnh sản phẩm -->
             <div class="col-md-6">
@@ -121,10 +116,10 @@
                         @for (int i = 0; i < @product.ImageURL.Count; i++)
                         {
                             <img src="@product.ImageURL[i]"
-                            class="img-thumbnail"
-                            data-bs-target="#carouselImages"
-                            data-bs-slide-to="@i"
-                            style="width: 80px; height: 80px; object-fit: cover; cursor: pointer; scroll-snap-align: start;" />
+                                 class="img-thumbnail"
+                                 data-bs-target="#carouselImages"
+                                 data-bs-slide-to="@i"
+                                 style="width: 80px; height: 80px; object-fit: cover; cursor: pointer; scroll-snap-align: start;" />
                         }
                     </div>
                 </div>
@@ -140,13 +135,14 @@
                 <p><strong>Tình trạng:</strong>@product.Detail["Tình trạng"]</p>
                 @if (@product.Color != null && @product.Color.Count > 0)
                 {
-                    <p><strong>Màu sắc:</strong>
+                    <p>
+                        <strong>Màu sắc:</strong>
                         <div class="d-flex flex-wrap gap-2">
                             @foreach (var color in @product.Color)
                             {
-                                <button class="btn btn-outline-dark">@color</button>
+                                <button class="btn btn-outline-dark color-select" onclick="selectColor(this, '@color')">@color</button>
                             }
-                        </div>                   
+                        </div>
                     </p>
                 }
                 <div class="d-flex mt-3 gap-2">
@@ -183,7 +179,7 @@
         </div>
     </div>
     <!-- Chi tiết kỹ thuật -->
-    <div class="container mt-3">
+    <div class="container product-container">
         <div class="row">
             <div class="col-12">
                 <h5 class="fw-bold mb-3">Thông số kỹ thuật</h5>
@@ -201,9 +197,23 @@
             </div>
         </div>
     </div>
-    </body>
+</div>
 
-    <!-- Đánh giá từ người dùng khác -->
+<script>
+    let selectedColor = '';
+
+    function selectColor(button, color) {
+        // Remove active class from all color buttons
+        document.querySelectorAll('.color-select').forEach(btn => {
+            btn.classList.remove('active');
+        });
+
+        // Add active class to clicked button
+        button.classList.add('active');
+        selectedColor = color;
+    }
+</script>
+ <!-- Đánh giá từ người dùng khác -->
     @* <h6 class="fw-bold mt-4">Đánh giá từ người dùng khác</h6>
     @foreach (var r in rating)
     {

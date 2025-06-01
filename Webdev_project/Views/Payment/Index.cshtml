@@ -7,6 +7,8 @@
 }
 
 <head>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-geosearch@3.11.0/dist/geosearch.css" />
     <style>
         body {
             background-color: #f5f5f5;
@@ -203,6 +205,28 @@
                 color: #6f42c1;
                 font-weight: bold;
             }
+
+        #map {
+            width: 100%;
+            height: 300px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border: 1px solid #ddd;
+            z-index: 1;
+        }
+
+        /* Fix cho leaflet controls */
+        .leaflet-top,
+        .leaflet-bottom {
+            z-index: 400 !important;
+        }
+
+        .payment-methods {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 15px 0;
+        }
     </style>
 </head>
 
@@ -303,21 +327,136 @@
 @using (Html.BeginForm("PaymentResult", "Payment", FormMethod.Post))
 {
     <div class="payment-container">
-        <h3>Phương thức thanh toán</h3>
+        <div class="row">
+            <!-- Cột trái - Bản đồ -->
+            <div class="col-md-4">
+                <h5><b>Vị trí giao hàng</b></h5>
+                <div id="map"></div>
+            </div>
 
-        <!-- Thêm input ẩn để lưu lựa chọn -->
-        <input type="hidden" id="paymentMethod" name="paymentMethod" value="COD" />
-        <div class="payment-methods">
-            <button type="button" class="payment-option" onclick="selectPaymentMethod(this, 'Card')">Thẻ Tín dụng/Ghi nợ</button>
-            <button type="button" class="payment-option active" onclick="selectPaymentMethod(this, 'COD')">Thanh toán khi nhận hàng</button>
+            <!-- Cột phải - Phương thức thanh toán -->
+            <div class="col-md-8">
+                <h5><b>Phương thức thanh toán</b></h5>
+                <input type="hidden" id="paymentMethod" name="paymentMethod" value="COD" />
+                <div class="payment-methods">
+                    <button type="button" class="payment-option" onclick="selectPaymentMethod(this, 'Card')">Thẻ Tín dụng/Ghi nợ</button>
+                    <button type="button" class="payment-option active" onclick="selectPaymentMethod(this, 'COD')">Thanh toán khi nhận hàng</button>
+                </div>
+
+                <p><strong>Tổng tiền:</strong> @String.Format("{0:N0}đ", ViewBag.TotalAmount)</p>
+                <button type="submit" class="btn-purple">Đặt hàng</button>
+            </div>
         </div>
-
-        <p><strong>Tổng tiền:</strong> @String.Format("{0:N0}đ", ViewBag.TotalAmount)</p>
-
-        <button type="submit" class="btn-purple">Đặt hàng</button>
     </div>
 }
+
+<!-- Thêm thư viện Leaflet và Geosearch -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/leaflet-geosearch@3.11.0/dist/bundle.min.js"></script>
+
 <script>
+    // Đợi cho tất cả resources load xong
+    document.addEventListener('DOMContentLoaded', function() {
+        let map;
+        let marker;
+        const provider = new GeoSearch.OpenStreetMapProvider();
+
+        async function initMap() {
+            try {
+                // Vị trí mặc định (TP.HCM)
+                const defaultLocation = [10.8231, 106.6297];
+                
+                // Khởi tạo bản đồ
+                map = L.map('map', {
+                    center: defaultLocation,
+                    zoom: 15,
+                    scrollWheelZoom: false // Tắt zoom bằng chuột để tránh conflict với scroll trang
+                });
+                
+                // Thêm layer OpenStreetMap
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19,
+                    attribution: '© OpenStreetMap contributors'
+                }).addTo(map);
+
+                // Thêm marker
+                marker = L.marker(defaultLocation).addTo(map);
+
+                // Hiển thị vị trí ban đầu
+                await updateMapFromAddress();
+
+                // Fix cho vấn đề render
+                setTimeout(() => {
+                    map.invalidateSize();
+                }, 100);
+            } catch (error) {
+                console.error('Lỗi khởi tạo bản đồ:', error);
+            }
+        }
+
+        // Hàm cập nhật vị trí trên bản đồ
+        async function updateMapFromAddress() {
+            const addressText = document.querySelector('.address-text')?.textContent;
+            if (!addressText) return;
+
+            try {
+                const results = await provider.search({ query: addressText + ', Vietnam' });
+                if (results.length > 0) {
+                    const { x: lng, y: lat } = results[0];
+                    map.setView([lat, lng], 15);
+                    marker.setLatLng([lat, lng]);
+                }
+            } catch (error) {
+                console.error('Không thể tìm thấy địa chỉ:', error);
+            }
+        }
+
+        // Chọn và cập nhật địa chỉ mới
+        async function selectAddress() {
+            const selectedRadio = document.querySelector('input[name="selectedAddress"]:checked');
+
+            if (!selectedRadio) {
+                alert("Vui lòng chọn một địa chỉ!");
+                return;
+            }
+
+            // Lấy thông tin địa chỉ
+            const addressOption = selectedRadio.parentElement;
+            const nameElement = addressOption.querySelector("strong");
+            const textContent = addressOption.textContent;
+            const addressDetails = addressOption.querySelector(".address-details");
+
+            if (!nameElement || !addressDetails) {
+                alert("Không thể lấy thông tin địa chỉ.");
+                return;
+            }
+
+            const name = nameElement.textContent;
+            const phone = textContent.split('-')[1].trim().split('\n')[0];
+            const address = addressDetails.textContent;
+
+            // Cập nhật hiển thị
+            document.getElementById("currentAddress").innerHTML = `
+                <strong>${name}</strong> (${phone})
+                <span class="address-text">${address}</span>
+                <a class="change-link" onclick="showAddressList()">Thay đổi</a>
+            `;
+
+            // Cập nhật vị trí trên bản đồ
+            await updateMapFromAddress();
+
+            // Ẩn danh sách địa chỉ
+            hideAddressList();
+        }
+
+        // Gán các hàm vào window để có thể gọi từ onclick
+        window.selectAddress = selectAddress;
+        window.updateMapFromAddress = updateMapFromAddress;
+
+        // Khởi tạo bản đồ
+        initMap();
+    });
+
     // Ẩn/Hiện danh sách địa chỉ người nhận
     function showAddressList() {
         document.getElementById("addressList").classList.remove("hidden");
@@ -385,41 +524,6 @@
         hideAddForm();
     }
 
-    // Chọn và cập nhật địa chỉ mới
-    function selectAddress() {
-        const selectedRadio = document.querySelector('input[name="selectedAddress"]:checked');
-
-        if (!selectedRadio) {
-            alert("Vui lòng chọn một địa chỉ!");
-            return;
-        }
-
-        // Lấy thông tin địa chỉ
-        const addressOption = selectedRadio.parentElement;
-        const nameElement = addressOption.querySelector("strong");
-        const textContent = addressOption.textContent;
-        const addressDetails = addressOption.querySelector(".address-details");
-
-        if (!nameElement || !addressDetails) {
-            alert("Không thể lấy thông tin địa chỉ.");
-            return;
-        }
-
-        const name = nameElement.textContent;
-        const phone = textContent.split('-')[1].trim().split('\n')[0];
-        const address = addressDetails.textContent;
-
-        // Cập nhật hiển thị
-        document.getElementById("currentAddress").innerHTML = `
-            <strong>${name}</strong> (${phone})
-            <span class="address-text">${address}</span>
-            <a class="change-link" onclick="showAddressList()">Thay đổi</a>
-        `;
-
-        // Ẩn danh sách địa chỉ
-        hideAddressList();
-    }
-
 	// Tải danh sách tỉnh/thành phố
     const apiBase = "https://provinces.open-api.vn/api";
 
@@ -485,3 +589,9 @@
     }
 
 </script>
+
+<!-- 
+    Leaflet: Thư viện bản đồ chính
+    Geosearch: Plugin để tìm kiếm địa chỉ và chuyển thành tọa độ
+    Sử dụng CDN để load nhanh và cache tốt
+-->
