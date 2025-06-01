@@ -1,4 +1,5 @@
-﻿@model List<Webdev_project.Models.CartItem>
+﻿
+@model List<Webdev_project.Models.CartItem>
 @{
     ViewData["Title"] = "Giỏ Hàng";
 }
@@ -169,63 +170,58 @@
     <!--sản phẩm trong  giỏ hàng-->
 
     <div class="container" style="max-width: 1100px;">
-        <form>
-            <table class="table align-middle mt-4">
-                <thead class="table-light">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Ảnh</th>
+                    <th>Tên sản phẩm</th>
+                    <th>Giá</th>
+                    <th>Số lượng</th>
+                    <th>Thành tiền</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
                     <tr>
-                        <th scope="col"><input type="checkbox" /></th>
-                        <th scope="col">Sản phẩm</th>
-                        <th scope="col">Đơn giá</th>
-                        <th scope="col">Số lượng</th>
-                        <th scope="col">Thành tiền</th>
-                        <th scope="col">Thao tác</th>
+                        <td>
+                            <img src="@item.ImageUrl" alt="@item.ProductName" style="width: 60px; height: 60px; object-fit: cover;" />
+                        </td>
+                        <td>@item.ProductName</td>
+                        <td>₫@item.Price.ToString("N0")</td>
+                        <td>
+                            <form asp-action="Decrease" asp-controller="ShoppingCart" method="post" style="display:inline;">
+                                <input type="hidden" name="productId" value="@item.ProductId" />
+                                <button type="submit" class="btn btn-outline-secondary btn-sm">-</button>
+                            </form>
+                            <span class="mx-2">@item.Quantity</span>
+                            <form asp-action="Increase" asp-controller="ShoppingCart" method="post" style="display:inline;">
+                                <input type="hidden" name="productId" value="@item.ProductId" />
+                                <button type="submit" class="btn btn-outline-secondary btn-sm">+</button>
+                            </form>
+                        </td>
+                        <td>₫@((Convert.ToDecimal(item.Price) * item.Quantity).ToString("N0"))</td>
+
+                        <td>
+                            <form asp-action="Remove" asp-controller="ShoppingCart" method="post" style="display:inline;">
+                                <input type="hidden" name="productId" value="@item.ProductId" />
+                                <button type="submit" class="btn btn-danger btn-sm">Xóa</button>
+                            </form>
+                        </td>
                     </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model)
-                    {
-                        <tr>
-                            <td><input type="checkbox" /></td>
-                            <td class="d-flex align-items-center">
-                                <img src="@item.ImageUrl" alt="Product" style="width:60px; height:60px; object-fit:cover;" class="me-2 rounded">
-                                <span>@item.ProductName</span>
-                            </td>
-                            <td class="text-danger">@item.Price.ToString("C0", System.Globalization.CultureInfo.GetCultureInfo("vi-VN"))</td>
-                            <td>
-                                <div class="input-group input-group-sm" style="width:120px;">
-                                    <form asp-action="Decrease" method="post" class="d-inline">
-                                        <input type="hidden" name="productId" value="@item.ProductId" />
-                                        <button class="btn btn-outline-secondary" type="submit">-</button>
-                                    </form>
-                                    <input type="text" class="form-control text-center" value="@item.Quantity" readonly />
-                                    <form asp-action="Increase" method="post" class="d-inline">
-                                        <input type="hidden" name="productId" value="@item.ProductId" />
-                                        <button class="btn btn-outline-secondary" type="submit">+</button>
-                                    </form>
-                                </div>
-                            </td>
-                            <td class="text-danger">@((item.Price * item.Quantity).ToString("C0", System.Globalization.CultureInfo.GetCultureInfo("vi-VN")))</td>
-                            <td>
-                                <!-- Xử lý nút xóa nếu muốn -->                     
-                                <form asp-action="Remove" method="post" style="display:inline;">
-                                    <input type="hidden" name="productId" value="@item.ProductId" />
-                                    <button class="btn btn-link text-danger" type="submit">Xóa</button>
-                                </form>
-                            </td>
-
-                        </tr>
-                    }
-                </tbody>
+                }
+            </tbody>
+        </table>
 
 
-            </table>
-            <div class="d-flex justify-content-end align-items-center mt-4">
-                <span class="me-3 fw-bold">Tổng thanh toán (1 sản phẩm):</span>
-                <span class="fs-4 text-danger fw-bold me-4">₫19.000</span>
-                <button class="btn btn-danger btn-lg px-5">Mua hàng</button>
-            </div>
-        </form>
+        <div class="d-flex justify-content-end align-items-center mt-4">
+            <span class="me-3 fw-bold">Tổng thanh toán (1 sản phẩm):</span>
+            <span class="fs-4 text-danger fw-bold me-4">₫19.000</span>
+            <button class="btn btn-danger btn-lg px-5">Mua hàng</button>
+        </div>
     </div>
+
     
 
 

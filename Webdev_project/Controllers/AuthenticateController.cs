@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 //using NuGet.Protocol.Plugins;
+using Webdev_project.Data;
 using Webdev_project.Models;
 using Webdev_project.Interfaces;
 using Webdev_project.Helpers;
@@ -8,7 +9,7 @@ namespace Webdev_project.Controllers
     public class AuthenticateController : Controller
     {
         //public IConfiguration configuration;
-        
+
         private readonly IUserRepository userRepository;
         private readonly ISessionRepository sessionRepository;
         private readonly IProductRepository productRepository;
@@ -16,7 +17,7 @@ namespace Webdev_project.Controllers
         {
             this.userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
             this.sessionRepository = sessionRepository ?? throw new ArgumentNullException(nameof(sessionRepository));
-            this.productRepository = productRepository; 
+            this.productRepository = productRepository;
         }
         [HttpGet]
         public IActionResult MyLogin()
@@ -40,10 +41,13 @@ namespace Webdev_project.Controllers
         [HttpGet]
         public async Task<IActionResult> Profile(string category)
         {
-            User? user=  sessionRepository.RetrieveFromSession(HttpContext.Request.Cookies["sessionId"]);
+            User? user = sessionRepository.RetrieveFromSession(HttpContext.Request.Cookies["sessionId"]);
             ViewBag.User = user;
-            if (user!= null && user.IsAdmin)
+            if (user != null && user.IsAdmin)
             {
+                //List<Product> products = await productRepository.GetAllAsync();
+                //ViewBag.Products = products;
+
                 var categories = await productRepository.GetAllCategoriesAsync();
                 var products = string.IsNullOrEmpty(category) ? new List<Product>() : await productRepository.GetByCategoryAsync(category);
 
@@ -51,8 +55,6 @@ namespace Webdev_project.Controllers
                 ViewBag.Products = products;
                 ViewBag.Categories = categories;
                 ViewBag.SelectedCategory = category;
-
-             
             }
             return View();
         }
@@ -62,17 +64,18 @@ namespace Webdev_project.Controllers
         {
             string? ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
             DateTime requestTime = DateTime.UtcNow;
-            var userAgent =Request.Headers["User-Agent"].ToString();
+            var userAgent = Request.Headers["User-Agent"].ToString();
             User? user = userRepository.AuthenticateUser(email, password);
             if (user != null)
-            {   ViewBag.isLoggedIn=true;
-                ViewBag.userName=user.Username;
-                HttpContext.Response.Cookies.Append("SessionId", sessionRepository.CreateSession(user,ipAddress, requestTime, userAgent));
-                return View("~/Views/Home/Index.cshtml");// need to make index
-
+            {
+                ViewBag.isLoggedIn = true;
+                ViewBag.userName = user.Username;
+                // Lưu UserId vào session
+                HttpContext.Session.SetString("UserId", user.Id.ToString());
+                HttpContext.Response.Cookies.Append("SessionId", sessionRepository.CreateSession(user, ipAddress, requestTime, userAgent));
+                return View("~/Views/Home/Index.cshtml");
             }
             ViewBag.Message = "Sai thông tin!";
-            
             return View("MyLogin");
         }
 
@@ -117,5 +120,8 @@ namespace Webdev_project.Controllers
                 return View();
             }
         }
+
+
+
     }
 }
