@@ -5,17 +5,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions; 
-using Webdev_project.Models; 
+using Webdev_project.Models;
+using Webdev_project.Interfaces;
 
 [Route("api/[controller]")]
 [ApiController]
 public class SearchController : ControllerBase
 {
-    private readonly IMongoCollection<Product> _productsCollection;
-
-    public SearchController(IMongoCollection<Product> productsCollection)
+    //private readonly IMongoCollection<Product> _productsCollection;
+    private readonly IProductRepository productRepository;
+    public SearchController(/*IMongoCollection<Product> productsCollection,*/ IProductRepository productRepository)
     {
-        _productsCollection = productsCollection;
+    //    _productsCollection = productsCollection;
+        this.productRepository = productRepository;
     }
 
     public class ProductSuggestionDto
@@ -34,19 +36,10 @@ public class SearchController : ControllerBase
         {
             return Ok(new List<ProductSuggestionDto>());
         }
-        var filter = Builders<Product>.Filter.Regex(p => p.Name, new BsonRegularExpression(new Regex(query, RegexOptions.IgnoreCase | RegexOptions.Multiline)));
+         var productsFromDb= await productRepository.GetSuggestions(query);
 
-        // Lấy tối đa 7 kết quả gợi ý
-        var productsFromDb = await _productsCollection.Find(filter)
-                                                     .Limit(7)
-                                                     .Project(p => new Product
-                                                     {
-                                                         ProductID = p.ProductID,
-                                                         Name = p.Name,
-                                                         Price = p.Price,
-                                                         ImageURL = p.ImageURL
-                                                     })
-                                                     .ToListAsync();
+
+
 
         var suggestions = productsFromDb.Select(p => new ProductSuggestionDto
         {
@@ -54,7 +47,7 @@ public class SearchController : ControllerBase
             Name = p.Name,
             Price = $"{p.Price:N0}₫", 
             ImageURL = p.ImageURL?.FirstOrDefault(), // Lấy ảnh đầu tiên nếu có
-            URL = Url.Action("Details", "Product", new { id = p.ProductID }) ?? $"/Product/Details/{p.ProductID}"
+            URL = Url.Action("Detail", "Product", new { id = p.ProductID }) ?? $"/Product/Detail/{p.ProductID}"
         }).ToList();
 
         return Ok(suggestions);

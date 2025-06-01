@@ -1,4 +1,5 @@
-﻿using MongoDB.Driver;
+﻿using Microsoft.AspNetCore.Mvc;
+using MongoDB.Driver;
 using Webdev_project.Models;
 
 namespace Webdev_project.Interfaces
@@ -13,6 +14,7 @@ namespace Webdev_project.Interfaces
 
 
         Task<List<string>> GetAllCategoriesAsync();
+        Task<List<Product>> GetSuggestions([FromQuery] string query);
 
         Task AddAsync(Product product);
 
