@@ -76,7 +76,8 @@ namespace Webdev_project.Controllers
             if (user != null)
             {   ViewBag.isLoggedIn=true;
                 ViewBag.userName=user.Username;
-                HttpContext.Response.Cookies.Append("SessionId", sessionRepository.CreateSession(user,ipAddress, requestTime, userAgent));
+                HttpContext.Response.Cookies.Append("SessionId", sessionRepository.CreateSession(user, ipAddress, requestTime, userAgent));
+                HttpContext.Response.Cookies.Append("Username", user.Username);
                 return View("~/Views/Home/Index.cshtml");// need to make index
 
             }

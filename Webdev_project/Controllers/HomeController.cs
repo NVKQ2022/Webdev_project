@@ -77,5 +77,60 @@ namespace Webdev_project.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
+
+
+
+
+        public IActionResult Test()
+        {
+            var notifications = new List<OrderNotification>
+        {
+            new OrderNotification {
+                ImageUrl = "/images/cage.jpg",
+                Status = "Giao kiện hàng thành công",
+                PackageCode = "SPXVN057191684675",
+                OrderCode = "2505296R62JNTS",
+                Date = new DateTime(2025, 5, 31, 9, 23, 0),
+                Message = "đã giao thành công đến bạn.",
+                ButtonText = "Xem Chi Tiết"
+            },
+            new OrderNotification {
+                ImageUrl = "/images/powerbank.jpg",
+                Status = "Giao kiện hàng thành công",
+                PackageCode = "SPXVN055448964355",
+                OrderCode = "2505296SDBF0D3",
+                Date = new DateTime(2025, 5, 31, 9, 23, 0),
+                Message = "đã giao thành công đến bạn.",
+                ButtonText = "Xem Chi Tiết"
+            },
+            new OrderNotification {
+                ImageUrl = "/images/noodles.jpg",
+                Status = "Đơn hàng đã hoàn tất",
+                OrderCode = "250511HAHE4838",
+                Date = new DateTime(2025, 5, 16, 15, 10, 0),
+                Message = "đã hoàn thành. Bạn hãy đánh giá sản phẩm trước ngày 15-06-2025 để nhận 200 xu",
+                ButtonText = "Đánh Giá Sản Phẩm"
+            }
+        };
+            ViewBag.Notifications = notifications;
+            ViewBag.Username = HttpContext.Request.Cookies["Username"];
+            return View();
+        }
+
     }
+
+
+
+    public class OrderNotification
+    {
+        public string ImageUrl { get; set; }
+        public string Message { get; set; }
+        public string PackageCode { get; set; }
+        public string OrderCode { get; set; }
+        public DateTime Date { get; set; }
+        public string Status { get; set; } // e.g. "Giao kiện hàng thành công"
+        public string ButtonText { get; set; } // e.g. "Xem Chi Tiết", "Đánh Giá Sản Phẩm"
+    }
+
 }
