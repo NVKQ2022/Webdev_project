@@ -1,132 +1,113 @@
-﻿@model Webdev_project.Models.Product
-@{
-    var message =ViewBag.Message;
-    Layout = null;
-    int quantity = 1;
-    int availableStock=0;
-    
-    Product product = ViewBag.Product;
-    if (product == null)
+﻿
+﻿@{
+    var message = ViewBag.Message;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var quantity = 1;
+
+    var product = ViewBag.Product;
+    var availableStock = 0;
+    if (product != null && product.Detail != null && product.Detail.ContainsKey("Kho") && product.Detail["Kho"] != null)
     {
-        <h2 style="color:red">Lỗi: Không tìm thấy sản phẩm.</h2>
-        return;
+        string khoString = product.Detail["Kho"].ToString();
+        int.TryParse(khoString, out availableStock);
     }
-
-    // if (product.Detail != null && product.Detail.ContainsKey("Kho"))
-    // {
-    //     int.TryParse(product.Detail["Kho"].ToString(), out availableStock);
-    // }
-
-
-    // if (product != null && product.Detail != null && product.Detail.ContainsKey("Kho") && product.Detail["Kho"] != null)
-    // {
-    //     string khoString = product.Detail["Kho"].ToString();
-    //     int.TryParse(khoString, out availableStock);
-    // }
-
-    // var review = ViewBag.Review;
+    var review = ViewBag.Review;
 }
 
+<style>
+    .product-detail {
+        background-color: #f5f5f5;
+        padding-top: 20px;
+    }
 
+    .product-container {
+        background-color: white;
+        padding: 24px;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        margin-bottom: 20px;
+    }
 
+    .carousel-item {
+        height: 400px;
+        background-color: #f8f9fa;
+    }
 
-<head>
-    <meta charset="utf-8" />
-    <title>Product Detail</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    .image-wrapper {
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 
-
-    <style>
-        body {
-            background-color: #f5f5f5;
+        .image-wrapper img {
+            max-height: 100%;
+            max-width: 100%;
+            object-fit: cover;
         }
 
-        .container {
-            background-color: white;
-            padding: 24px;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-        }
+    .btn-outline-purple {
+        color: #6f42c1;
+        border: 2px solid #6f42c1;
+        background-color: transparent;
+        font-weight: 500;
+    }
 
-        .carousel-item {
-            height: 400px;
-            background-color: #f8f9fa;
-        }
-
-        .image-wrapper {
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-            .image-wrapper img {
-                max-height: 100%;
-                max-width: 100%;
-                object-fit: cover;
-            }
-
-        .btn-outline-purple {
-            color: #6f42c1;
-            border: 2px solid #6f42c1;
-            background-color: transparent;
-            font-weight: 500;
-        }
-
-            .btn-outline-purple:hover {
-                background-color: #6f42c1;
-                color: #fff;
-            }
-
-        .btn-purple {
+        .btn-outline-purple:hover {
             background-color: #6f42c1;
+            color: #fff;
+        }
+
+    .btn-purple {
+        background-color: #6f42c1;
+        color: white;
+        border: none;
+        font-weight: 500;
+    }
+
+        .btn-purple:hover {
+            background-color: #5a32a3;
             color: white;
-            border: none;
-            font-weight: 500;
         }
 
-            .btn-purple:hover {
-                background-color: #5a32a3;
-                color: white;
-            }
+    .btn i {
+        margin-right: 6px;
+    }
 
-        .btn i {
-            margin-right: 6px;
+    .thumbnail-scroll {
+        scrollbar-width: thin;
+        scrollbar-color: #ccc transparent;
+    }
+
+        .thumbnail-scroll::-webkit-scrollbar {
+            height: 6px;
         }
 
-        .thumbnail-scroll {
-            scrollbar-width: thin;
-            scrollbar-color: #ccc transparent;
+        .thumbnail-scroll::-webkit-scrollbar-thumb {
+            background-color: #ccc;
+            border-radius: 10px;
         }
 
-            .thumbnail-scroll::-webkit-scrollbar {
-                height: 6px;
-            }
+    .btn-outline-dark.active {
+        background-color: #6f42c1;
+        color: white;
+        border-color: #6f42c1;
+    }
+    /* Remove arrows for all browsers */
+    input.quantity-input::-webkit-outer-spin-button,
+    input.quantity-input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
 
-            .thumbnail-scroll::-webkit-scrollbar-thumb {
-                background-color: #ccc;
-                border-radius: 10px;
-            }
+    input.quantity-input {
+        -moz-appearance: textfield;
+        width: 60px; /* make it broader */
+    }
+</style>
 
-        /* Remove arrows for all browsers */
-        input.quantity-input::-webkit-outer-spin-button,
-        input.quantity-input::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-
-        input.quantity-input {
-            -moz-appearance: textfield;
-            width: 60px; /* make it broader */
-        }
-
-    </style>
-</head>
-
-<body>
-    <div class="container mt-5">
+<div class="product-detail">
+    <div class="container product-container">
         <div class="row">
             <!-- Hình ảnh sản phẩm -->
             <div class="col-md-6">
@@ -154,10 +135,10 @@
                         @for (int i = 0; i < @product.ImageURL.Count; i++)
                         {
                             <img src="@product.ImageURL[i]"
-                            class="img-thumbnail"
-                            data-bs-target="#carouselImages"
-                            data-bs-slide-to="@i"
-                            style="width: 80px; height: 80px; object-fit: cover; cursor: pointer; scroll-snap-align: start;" />
+                                 class="img-thumbnail"
+                                 data-bs-target="#carouselImages"
+                                 data-bs-slide-to="@i"
+                                 style="width: 80px; height: 80px; object-fit: cover; cursor: pointer; scroll-snap-align: start;" />
                         }
                     </div>
                 </div>
@@ -173,45 +154,49 @@
                 <p><strong>Tình trạng:</strong>@product.Detail["Tình trạng"]</p>
                 @if (@product.Color != null && @product.Color.Count > 0)
                 {
-                    <p><strong>Màu sắc:</strong>
+                    <p>
+                        <strong>Màu sắc:</strong>
                         <div class="d-flex flex-wrap gap-2">
                             @foreach (var color in @product.Color)
                             {
-                                <button class="btn btn-outline-dark">@color</button>
+                                <button class="btn btn-outline-dark color-select" onclick="selectColor(this, '@color')">@color</button>
                             }
-                        </div>                   
+                        </div>
                     </p>
                 }
 
+                <!--Choosing quantity-->
                 <div class="d-flex align-items-center mt-3">
                     <label class="me-3 fw-semibold" style="color: #555;">Số Lượng</label>
 
                     <div class="input-group quantity-group" style="width: 160px;">
                         <button class="btn btn-outline-secondary btn-sm quantity-decrease" type="button">−</button>
-                        <input type="text" id="visibleQuantity" class="form-control text-center quantity-input" value="@quantity" />
+                        <input type="text" id="quantityInput" class="form-control text-center quantity-input" value="@quantity" />
                         <button class="btn btn-outline-secondary btn-sm quantity-increase" type="button">+</button>
                     </div>
-
                     <span class="ms-3 text-muted">@availableStock sản phẩm có sẵn</span>
                 </div>
 
-                <div class="d-flex mt-3 gap-2">
-                    <button class="btn btn-outline-purple">
-                        <i class="bi bi-cart-plus"></i> Thêm vào giỏ hàng
-                    </button>
-                    <button class="btn btn-purple">Mua ngay</button>
-                </div>
 
-                <div class="d-flex gap-2">
-                    <button type="button" class="btn btn-outline-purple" onclick="addToCart()">
-                        <i class="bi bi-cart-plus"></i> Thêm vào giỏ hàng
-                    </button>
+
+
+                
+                
+
+                <button type="button"
+                        class="btn btn-outline-purple"
+                        data-product-id="@product.ProductId"
+                        data-product-name="@product.Name"
+                        data-image-url="@product.ImageURL[0]"
+                        data-price="@product.Price"
+                        onclick="addToCart(this)">
+                    <i class="bi bi-cart-plus"></i> Thêm vào giỏ hàng
+                </button>
+
                     <button type="button" class="btn btn-purple" onclick="buyNow()">
                         Mua ngay
                     </button>
                 </div>
-
-
             </div>
             <!-- Chính sách sản phẩm -->
             <div class="container mt-4">
@@ -240,7 +225,7 @@
         </div>
     </div>
     <!-- Chi tiết kỹ thuật -->
-    <div class="container mt-3">
+    <div class="container product-container">
         <div class="row">
             <div class="col-12">
                 <h5 class="fw-bold mb-3">Thông số kỹ thuật</h5>
@@ -258,10 +243,124 @@
             </div>
         </div>
     </div>
-    </body>
+</div>
 
-    <!-- Đánh giá từ người dùng khác -->
-    @* <h6 class="fw-bold mt-4">Đánh giá từ người dùng khác</h6>
+<script>
+    let selectedColor = '';
+
+    function selectColor(button, color) {
+        // Remove active class from all color buttons
+        document.querySelectorAll('.color-select').forEach(btn => {
+            btn.classList.remove('active');
+        });
+
+        // Add active class to clicked button
+        button.classList.add('active');
+        selectedColor = color;
+    }
+
+       document.addEventListener('DOMContentLoaded', function () {
+           const input = document.querySelector('.quantity-input');
+           const increaseBtn = document.querySelector('.quantity-increase');
+           const decreaseBtn = document.querySelector('.quantity-decrease');
+           const max = @availableStock;
+           const min = 1;
+
+           increaseBtn.addEventListener('click', () => {
+               let current = parseInt(input.value) || min;
+               if (current < max)
+               {
+                   input.value = current + 1;
+                   document.getElementById("quantityInput").value = input.value;
+               }
+           });
+
+           decreaseBtn.addEventListener('click', () => {
+               let current = parseInt(input.value) || min;
+               if (current > min)
+               {
+                   input.value = current - 1;
+                   document.getElementById("quantityInput").value = input.value;
+               }
+
+           });
+
+           input.addEventListener('input', () => {
+               let val = parseInt(input.value);
+               if (isNaN(val) || val < min) input.value = min;
+               else if (val > max)
+               {
+                   input.value = max;
+                   document.getElementById("quantityInput").value = input.value;
+               }
+
+           });
+
+           input.addEventListener('blur', () => {
+               if (input.value === "")
+               {
+                   input.value = min;
+                   document.getElementById("quantityInput").value = input.value;
+               }
+           });
+       });
+
+
+
+
+    function getQuantity() {
+        let getQuan=parseInt(document.getElementById("quantityInput").value) || 1;
+        console.log(getQuan)
+        return getQuan
+    }
+
+    async function addToCart(button) {
+          const quantity = getQuantity();
+        const data = {
+            productId: button.dataset.productId,
+            productName: button.dataset.productName,
+            image: button.dataset.imageUrl,
+            quantity: quantity,
+            price: parseFloat(button.dataset.price)
+        };
+
+         try {
+             const response = await fetch('/ShoppingCart/AddToCart', {
+                 method: 'POST',
+                 headers: {
+                     'Content-Type': 'application/json'
+                 },
+                 body: JSON.stringify(data)
+             });
+
+             if (response.ok) {
+                 const result = await response.json();
+                 alert('Đã thêm vào giỏ hàng!');
+                 console.log(result);
+             } else {
+                 const error = await response.text();
+                 console.error(error);
+                 alert('Có lỗi xảy ra khi thêm vào giỏ hàng.');
+             }
+         } catch (err) {
+             console.error(err);
+             alert('Lỗi kết nối đến máy chủ.');
+         }
+     }
+
+     document.addEventListener('DOMContentLoaded', () => {
+         document.querySelectorAll('.add-to-cart').forEach(button => {
+             button.addEventListener('click', () => addToCart(button));
+         });
+     });
+
+
+   
+
+</script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Đánh giá từ người dùng khác -->
+@* <h6 class="fw-bold mt-4">Đánh giá từ người dùng khác</h6>
     @foreach (var r in rating)
     {
         <div class="card border p-3 mb-2">
@@ -300,93 +399,3 @@
         </div>
     }
 </body> *@
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const input = document.querySelector('.quantity-input');
-        const increaseBtn = document.querySelector('.quantity-increase');
-        const decreaseBtn = document.querySelector('.quantity-decrease');
-        const max = @availableStock;
-        const min = 1;
-
-        increaseBtn.addEventListener('click', () => {
-            let current = parseInt(input.value) || min;
-            if (current < max) 
-            {
-                input.value = current + 1;
-                document.getElementById("quantityInput").value = input.value;
-            }
-        });
-
-        decreaseBtn.addEventListener('click', () => {
-            let current = parseInt(input.value) || min;
-            if (current > min) 
-            {
-                input.value = current - 1;
-                document.getElementById("quantityInput").value = input.value;
-            }
-
-        });
-
-        input.addEventListener('input', () => {
-            let val = parseInt(input.value);
-            if (isNaN(val) || val < min) input.value = min;
-            else if (val > max) 
-            {
-                input.value = max;
-                document.getElementById("quantityInput").value = input.value;
-            }
-
-        });
-
-        input.addEventListener('blur', () => {
-            if (input.value === "") 
-            {
-                input.value = min;
-                document.getElementById("quantityInput").value = input.value;
-            }
-        });
-    });
-
-    // function getQuantity() {
-    //     return parseInt(document.getElementById("visibleQuantity").value) || 1;
-    // }
-
-    // function addToCart() {
-    //     const quantity = getQuantity();
-    //     $.ajax({
-    //         url: '/ShoppingCart/AddToCart',
-    //         method: 'POST',
-    //         data: { 
-    //             ProductId: '@product.ProductId',
-    //             ProductName: '@product.Name'
-    //             // Image: '@product.ImageURL[0]',
-    //             // Quantity: quantity, 
-    //             // Price:'@product.Price'
-    //         },
-    //         success: function (res) {
-    //             alert('Đã thêm vào giỏ hàng!');
-    //         },
-    //         error: function () {
-    //             alert('Có lỗi xảy ra khi thêm vào giỏ hàng.');
-    //         }
-            
-    //     });
-    //     console.log(data);
-    // }
-
-    // function buyNow() {
-    //     const quantity = getQuantity();
-    //     $.ajax({
-    //         url: '/Cart/BuyNow',
-    //         method: 'POST',
-    //         data: { quantity: quantity, productId: '@Model.ProductId' },
-    //         success: function (res) {
-    //             window.location.href = res.redirectUrl;
-    //         },
-    //         error: function () {
-    //             alert('Có lỗi xảy ra khi mua ngay.');
-    //         }
-    //     });
-    // }
-</script>

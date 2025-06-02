@@ -53,7 +53,7 @@ namespace Webdev_project.Controllers
                 ViewBag.Products = products;
                 ViewBag.Categories = categories;
                 ViewBag.SelectedCategory = category;
-                 productRepository.changeProductId();
+                 
 
 
             }
