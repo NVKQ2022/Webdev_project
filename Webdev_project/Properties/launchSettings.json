@@ -56,8 +56,8 @@
             "MongoDbSettings__DatabaseName": "webdev_project",
             "MongoDbSettings__ProductCollectionName": "Product",
             "MongoDbSettings__OrderCollectionName": "Order",
-            "MongoDbSettings__CategoryCollectionName": "Category"
-
+            "MongoDbSettings__CategoryCollectionName": "Category",
+            "MongoDbSettings__UserDetailCollectionName": "UserDetail"
 
 
         }

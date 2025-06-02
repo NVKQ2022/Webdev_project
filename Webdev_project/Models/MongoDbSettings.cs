@@ -10,5 +10,7 @@
         public string ReviewCollectionName { set; get; }
 
         public string CategoryCollectionName { get; set; }
+
+        public string UserDetailCollectionName { get; set; }
     }
 }
