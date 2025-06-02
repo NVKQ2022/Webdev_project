@@ -47,9 +47,9 @@ namespace Webdev_project.Helpers
                 Rating = (float)roundedAverage
 
             };
-               
 
-        
+
+
 
             return productZip;
         }
@@ -63,6 +63,18 @@ namespace Webdev_project.Helpers
 
             // Convert each Product to Product_zip using the existing method
             return products.Select(ConvertProductToProductZip).ToList();
+        }
+
+        public  CartItem ConvertProductToCartItem(Product product)
+        {
+            return new CartItem
+            {
+                ProductId = product.ProductID,
+                ProductName = product.Name,
+                ImageUrl = product.ImageURL.FirstOrDefault(),  // Picking the first image URL from the list (or handle null list)
+                Price = product.Price,  // Converting int Price to decimal
+                Quantity = 1  // Defaulting to quantity of 1 (you can customize this)
+            };
         }
 
     }

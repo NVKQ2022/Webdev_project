@@ -9,15 +9,15 @@ namespace Webdev_project.Controllers
     {
         //public IConfiguration configuration;
         
-        private readonly IUserRepository userRepository;
-        private readonly ISessionRepository sessionRepository;
+        
+        private readonly IAuthenticationRepository authenticationRepository;
         private readonly IProductRepository productRepository;
         private readonly ICategoryRepository categoryRepository;
-        public AuthenticateController(IUserRepository userRepository, ISessionRepository sessionRepository, IProductRepository productRepository,ICategoryRepository categoryRepository)
+        public AuthenticateController(IAuthenticationRepository authenticationRepository, IProductRepository productRepository,ICategoryRepository categoryRepository)
         {
-            this.userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
-            this.sessionRepository = sessionRepository ?? throw new ArgumentNullException(nameof(sessionRepository));
-            this.productRepository = productRepository; 
+            
+            this.productRepository= productRepository;
+            this.authenticationRepository = authenticationRepository;
             this.categoryRepository = categoryRepository;
         }
         [HttpGet]
@@ -42,7 +42,7 @@ namespace Webdev_project.Controllers
         [HttpGet]
         public async Task<IActionResult> Profile(string category)
         {
-            User? user=  sessionRepository.RetrieveFromSession(HttpContext.Request.Cookies["sessionId"]);
+            User? user=  authenticationRepository.RetrieveFromSession(HttpContext.Request.Cookies["sessionId"]);
             ViewBag.User = user;
             if (user!= null && user.IsAdmin)
             {
@@ -72,11 +72,11 @@ namespace Webdev_project.Controllers
             string? ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
             DateTime requestTime = DateTime.UtcNow;
             var userAgent =Request.Headers["User-Agent"].ToString();
-            User? user = userRepository.AuthenticateUser(email, password);
+            User? user = authenticationRepository.AuthenticateUser(email, password);
             if (user != null)
             {   ViewBag.isLoggedIn=true;
                 ViewBag.userName=user.Username;
-                HttpContext.Response.Cookies.Append("SessionId", sessionRepository.CreateSession(user, ipAddress, requestTime, userAgent));
+                HttpContext.Response.Cookies.Append("SessionId", authenticationRepository.CreateSession(user, ipAddress, requestTime, userAgent));
                 HttpContext.Response.Cookies.Append("Username", user.Username);
                 return View("~/Views/Home/Index.cshtml");// need to make index
 
@@ -117,7 +117,7 @@ namespace Webdev_project.Controllers
 
             try
             {
-                userRepository.AddUser(user);
+                authenticationRepository.AddUser(user);
                 ViewBag.Message = "Đăng ký thành công! Bạn có thể đăng nhập.";
                 return RedirectToAction("MyLogin");
             }

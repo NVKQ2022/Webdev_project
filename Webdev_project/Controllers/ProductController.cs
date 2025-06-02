@@ -9,10 +9,14 @@ namespace Webdev_project.Controllers
     {
        
         public readonly IProductRepository productRepository;
-
-        public ProductController(IProductRepository productRepository)
+        public readonly IUserDetailRepository userDetailRepository;
+        
+        public readonly IAuthenticationRepository authenticationRepository;
+        public ProductController(IProductRepository productRepository, IAuthenticationRepository authenticationRepository, IUserDetailRepository userDetailRepository)
         {
             this.productRepository = productRepository;
+            this.authenticationRepository = authenticationRepository;
+            this .userDetailRepository = userDetailRepository;
         }
 
         [HttpGet("Detail/{id}")]
@@ -29,7 +33,16 @@ namespace Webdev_project.Controllers
             return View();
         }
 
-      
+        [HttpPost("Detail/{id}")] //not yet
+        public async Task<IActionResult> PutInCart(string id = null)
+        {
+
+            CartItem cartitem = new CartItem();
+            await userDetailRepository.AddCartItemAsync((authenticationRepository.RetrieveFromSession(HttpContext.Request.Cookies["SessionId"])).Id,cartitem);
+            return Ok(cartitem);
+        }
+
+
 
 
     }

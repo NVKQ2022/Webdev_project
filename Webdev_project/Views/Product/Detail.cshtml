@@ -1,8 +1,14 @@
 ﻿@{
     var message =ViewBag.Message;
     Layout = null;
-
+    int quantity = 1;
+    int availableStock=0;
     var product = ViewBag.Product;
+    if (product.Detail.ContainsKey("Kho") && product.Detail["Kho"] != null)
+    {
+        string khoString = product.Detail["Kho"].ToString();
+        int.TryParse(khoString, out availableStock);
+    }
     var review = ViewBag.Review;
 }
 
@@ -89,6 +95,18 @@
                 border-radius: 10px;
             }
 
+        /* Remove arrows for all browsers */
+        input.quantity-input::-webkit-outer-spin-button,
+        input.quantity-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input.quantity-input {
+            -moz-appearance: textfield;
+            width: 60px; /* make it broader */
+        }
+
     </style>
 </head>
 
@@ -149,6 +167,19 @@
                         </div>                   
                     </p>
                 }
+
+                <div class="d-flex align-items-center mt-3">
+                    <label class="me-3 fw-semibold" style="color: #555;">Số Lượng</label>
+
+                    <div class="input-group quantity-group" style="width: 160px;">
+                        <button class="btn btn-outline-secondary btn-sm quantity-decrease" type="button">−</button>
+                        <input type="text" class="form-control text-center quantity-input" value="@quantity" />
+                        <button class="btn btn-outline-secondary btn-sm quantity-increase" type="button">+</button>
+                    </div>
+
+                    <span class="ms-3 text-muted">@availableStock sản phẩm có sẵn</span>
+                </div>
+
                 <div class="d-flex mt-3 gap-2">
                     <button class="btn btn-outline-purple">
                         <i class="bi bi-cart-plus"></i> Thêm vào giỏ hàng
@@ -243,3 +274,33 @@
         </div>
     }
 </body> *@
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const input = document.querySelector('.quantity-input');
+        const increaseBtn = document.querySelector('.quantity-increase');
+        const decreaseBtn = document.querySelector('.quantity-decrease');
+        const max = @availableStock;
+        const min = 1;
+
+        increaseBtn.addEventListener('click', () => {
+            let current = parseInt(input.value) || min;
+            if (current < max) input.value = current + 1;
+        });
+
+        decreaseBtn.addEventListener('click', () => {
+            let current = parseInt(input.value) || min;
+            if (current > min) input.value = current - 1;
+        });
+
+        input.addEventListener('input', () => {
+            let val = parseInt(input.value);
+            if (isNaN(val) || val < min) input.value = min;
+            else if (val > max) input.value = max;
+        });
+
+        input.addEventListener('blur', () => {
+            if (input.value === "") input.value = min;
+        });
+    });
+</script>
