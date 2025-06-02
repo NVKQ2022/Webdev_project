@@ -32,10 +32,35 @@ namespace Webdev_project.Data
 
 
 
+        //public async Task AddReceiveInfoAsync(int userId, ReceiveInfo newInfo)
+        //{
+        //    var filter = Builders<UserDetail>.Filter.Eq(u => u.UserId, userId);
+        //    var update = Builders<UserDetail>.Update.Push(u => u.ReceiveInfo, newInfo);
+
+        //    await _userDetail.UpdateOneAsync(filter, update);
+        //}
+
+        //public async Task<bool> DeleteReceiveInfoAsync(int userId, ReceiveInfo targetInfo)
+        //{
+        //    var filter = Builders<UserDetail>.Filter.Eq(u => u.UserId, userId);
+
+
+        //    var update = Builders<UserDetail>.Update.PullFilter(u => u.ReceiveInfo,
+        //        Builders<ReceiveInfo>.Filter.And(
+        //            Builders<ReceiveInfo>.Filter.Eq(r => r.Name, targetInfo.Name),
+        //            Builders<ReceiveInfo>.Filter.Eq(r => r.Phone, targetInfo.Phone),
+        //            Builders<ReceiveInfo>.Filter.Eq(r => r.Address, targetInfo.Address)
+        //        )
+        //    );
+
+        //    var result = await _userDetail.UpdateOneAsync(filter, update);
+        //    return result.ModifiedCount > 0;
+        //}
+
         public async Task AddReceiveInfoAsync(int userId, ReceiveInfo newInfo)
         {
             var filter = Builders<UserDetail>.Filter.Eq(u => u.UserId, userId);
-            var update = Builders<UserDetail>.Update.Push(u => u.ReceiveInfo, newInfo);
+            var update = Builders<UserDetail>.Update.Push("ReceiveInfo", newInfo); // string path works too
 
             await _userDetail.UpdateOneAsync(filter, update);
         }
@@ -44,17 +69,19 @@ namespace Webdev_project.Data
         {
             var filter = Builders<UserDetail>.Filter.Eq(u => u.UserId, userId);
 
-            var update = Builders<UserDetail>.Update.PullFilter(u => u.ReceiveInfo,
-                Builders<ReceiveInfo>.Filter.And(
-                    Builders<ReceiveInfo>.Filter.Eq(r => r.Name, targetInfo.Name),
-                    Builders<ReceiveInfo>.Filter.Eq(r => r.Phone, targetInfo.Phone),
-                    Builders<ReceiveInfo>.Filter.Eq(r => r.Address, targetInfo.Address)
-                )
+            var nestedFilter = Builders<ReceiveInfo>.Filter.And(
+                Builders<ReceiveInfo>.Filter.Eq(r => r.Name, targetInfo.Name),
+                Builders<ReceiveInfo>.Filter.Eq(r => r.Phone, targetInfo.Phone),
+                Builders<ReceiveInfo>.Filter.Eq(r => r.Address, targetInfo.Address)
             );
+
+            // Use "ReceiveInfo" as a string field path
+            var update = Builders<UserDetail>.Update.PullFilter("ReceiveInfo", nestedFilter);
 
             var result = await _userDetail.UpdateOneAsync(filter, update);
             return result.ModifiedCount > 0;
         }
+
         public async Task UpdateBankingInfoAsync(int userId, string newAccount, string newCard)
         {
             var filter = Builders<UserDetail>.Filter.Eq(u => u.UserId, userId);

@@ -31,10 +31,16 @@ namespace Webdev_project.Data
             return await _orders.Find(o => o.UserID == userId).ToListAsync();
         }
 
-        public async Task UpdateOrderStatusAsync(string id, string newStatus)
+        public async Task AddOrderAsync(Order order)
         {
+            await _orders.InsertOneAsync(order);
+        }
+        public async Task<bool> UpdateOrderStatusAsync(string orderId, string newStatus)
+        {
+            var filter = Builders<Order>.Filter.Eq(o => o.OrderID, orderId);
             var update = Builders<Order>.Update.Set(o => o.Status, newStatus);
-            await _orders.UpdateOneAsync(o => o.OrderID == id, update);
+            var result = await _orders.UpdateOneAsync(filter, update);
+            return result.ModifiedCount > 0;
         }
 
         public async Task DeleteOrderAsync(string id)

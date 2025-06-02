@@ -7,7 +7,7 @@ namespace Webdev_project.Models
     {
         [BsonId] // Marks this property as MongoDB's _id
         [BsonRepresentation(BsonType.ObjectId)] // Allows mapping ObjectId to string
-        public string ProductID { get; set; }
+        public string ProductId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
 

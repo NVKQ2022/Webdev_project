@@ -25,6 +25,7 @@ namespace Webdev_project.Interfaces
         Task ConvertKhoToStringAsync();
 
         Task EnsureColorIsArrayAsync();
+        Task changeProductId();
         Task AddSoldFieldWithRandomValueAsync();
     }
 }

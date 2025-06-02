@@ -45,7 +45,7 @@ namespace Webdev_project.Models
     //public class CartItem
     //{
     //    [BsonRepresentation(BsonType.ObjectId)]
-    //    public string ProductID { get; set; }
+    //    public string ProductId { get; set; }
 
     //    public string ProductName { get; set; }
     //    public string Image { get; set; }

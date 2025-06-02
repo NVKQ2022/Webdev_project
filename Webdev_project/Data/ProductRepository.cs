@@ -48,7 +48,7 @@ public class ProductRepository:IProductRepository
 
     public async Task<Product> GetByIdAsync(string id)
     {
-        return await _products.Find(p => p.ProductID == id).FirstOrDefaultAsync();
+        return await _products.Find(p => p.ProductId == id).FirstOrDefaultAsync();
     }
 
     public async Task<Product> GetByNameAsync(string name)
@@ -74,12 +74,12 @@ public class ProductRepository:IProductRepository
 
     public async Task UpdateAsync(string id, Product updatedProduct)
     {
-        await _products.ReplaceOneAsync(p => p.ProductID == id, updatedProduct);
+        await _products.ReplaceOneAsync(p => p.ProductId == id, updatedProduct);
     }
 
     public async Task DeleteAsync(string id)
     {
-        await _products.DeleteOneAsync(p => p.ProductID == id);
+        await _products.DeleteOneAsync(p => p.ProductId == id);
     }
 
 
@@ -136,12 +136,19 @@ public class ProductRepository:IProductRepository
 
         await Task.WhenAll(tasks);
     }
+    public async Task changeProductId()
+    {
+        var filter = Builders<Product>.Filter.Exists("ProductId");
+        var update = Builders<Product>.Update.Rename("ProductId", "ProductId");
+        await _products.UpdateManyAsync(filter, update);
 
-    // Search sản phẩm - Phong
+        await _products.UpdateManyAsync(filter, update);
+    }
+}
+// Search sản phẩm - Phong
     public async Task<List<Product>> SearchByNameAsync(string query)
     {
         var filter = Builders<Product>.Filter.Regex(p => p.Name, new BsonRegularExpression(query, "i"));
         return await _products.Find(filter).ToListAsync();
     }
-
 }

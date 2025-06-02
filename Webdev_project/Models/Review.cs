@@ -4,7 +4,7 @@
     {
         public string ReviewId { get; set; }
 
-        public string ProductID { get; set; }
+        public string ProductId { get; set; }
         public int UserID { get; set; }
 
         public int Stars { get; set; }

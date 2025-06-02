@@ -5,20 +5,18 @@ namespace Webdev_project.Controllers
 {
     public class OrderController : Controller
     {
-        private readonly IUserRepository userRepository;
-        private readonly ISessionRepository sessionRepository;
+        private readonly IAuthenticationRepository authenticationRepository;
         private readonly IProductRepository productRepository;
         private readonly IOrderRepository orderRepository;
-        public OrderController(IUserRepository userRepository, ISessionRepository sessionRepository, IProductRepository productRepository, IOrderRepository orderRepository)
+        public OrderController(IAuthenticationRepository authenticationRepository, IProductRepository productRepository, IOrderRepository orderRepository)
         {
-            this.userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
-            this.sessionRepository = sessionRepository ?? throw new ArgumentNullException(nameof(sessionRepository));
+            this.authenticationRepository = authenticationRepository;
             this.productRepository = productRepository;
             this.orderRepository = orderRepository;
         }
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> MyOrders()
         {
-            var user = sessionRepository.RetrieveFromSession(HttpContext.Request.Cookies["sessionId"]);
+            var user = authenticationRepository.RetrieveFromSession(HttpContext.Request.Cookies["sessionId"]);
             List<Order> orders = await orderRepository.GetOrdersByUserAsync(user.Id.ToString());
              
 

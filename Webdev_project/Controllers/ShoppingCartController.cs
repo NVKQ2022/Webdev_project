@@ -22,7 +22,7 @@ namespace Webdev_project.Controllers
             {
                 ProductId = "1",
                 ProductName = "Tai nghe Bluetooth",
-                ImageUrl = "https://phukiengiare.com/images/detailed/63/tai-nghe-bluetooth-baseus-w04-pro-1.jpg",
+                Image = "https://phukiengiare.com/images/detailed/63/tai-nghe-bluetooth-baseus-w04-pro-1.jpg",
                 Price = 19000,
                 Quantity = 1
             },
@@ -30,7 +30,7 @@ namespace Webdev_project.Controllers
             {
                 ProductId = "2",
                 ProductName = "Áo thun Shopee",
-                ImageUrl = "https://th.bing.com/th/id/R.d5650f1b99876ba4f12cc3e246dd6c30?rik=aUA6PMpxrEryxQ&pid=ImgRaw&r=0",
+                Image = "https://th.bing.com/th/id/R.d5650f1b99876ba4f12cc3e246dd6c30?rik=aUA6PMpxrEryxQ&pid=ImgRaw&r=0",
                 Price = 99000,
                 Quantity = 2
             }
@@ -66,6 +66,24 @@ namespace Webdev_project.Controllers
             cart.RemoveAll(x => x.ProductId == productId);
             HttpContext.Session.SetObjectAsJson("Cart", cart);
             return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public IActionResult AddToCart(int quantity, bool buyNow = false)
+        {
+            // Handle add to cart
+            // If buyNow == true, redirect to checkout
+
+            if (buyNow)
+            {
+                // Logic for immediate purchase
+                return RedirectToAction("Checkout", new { quantity });
+            }
+
+            // Logic for adding to cart
+            // Example:
+            // cartService.Add(productId, quantity);
+            return RedirectToAction("Cart");
         }
 
     }

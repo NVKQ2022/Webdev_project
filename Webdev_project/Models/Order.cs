@@ -2,6 +2,7 @@
 using MongoDB.Bson.Serialization.Attributes;
 using System;
 using System.Collections.Generic;
+using Webdev_project.Models;
 
 
 public class Order
@@ -23,10 +24,7 @@ public class Order
 
     [BsonDateTimeOptions(Kind = DateTimeKind.Utc)]
     public DateTime CreatedAt { get; set; }
-
-    public string ShippingAddress { get; set; }
-
-    public string PhoneNumber { get; set; }
+    public ReceiveInfo ReceiveInfo { get; set; }
 
 }
 
@@ -42,4 +40,11 @@ public class OrderItem
     public int Quantity { get; set; }
 
     public int UnitPrice { get; set; }
+}
+
+public class ReceiveInfo
+{
+    public string Name { get; set; }
+    public string Phone { get; set; }
+    public string Address { get; set; }
 }

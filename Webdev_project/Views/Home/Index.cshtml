@@ -131,8 +131,60 @@
         <a href="#" class="text-decoration-none text-danger fw-semibold">Xem tất cả &gt;</a>
     </div>
 
-    <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 g-3">
-        @if(product_Zips != null){
+    <<div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 g-3">
+        @if (product_Zips != null)
+        {
+            foreach (var item in product_Zips)
+            {
+                <div class="col">
+                    <!-- Wrap the entire card inside an anchor tag -->
+                    <a href="/Product/Detail/@item.Product_zipId" class="text-decoration-none">
+                        <div class="card h-100 position-relative border">
+                            <img src="@item.Image" class="card-img-top" style="height: 180px; object-fit: cover;" />
+                            <div class="card-body p-2">
+                                <span class="badge bg-danger mb-1 text-white">Yêu thích</span>
+                                <h6 class="card-title text-truncate" title="@item.Name">@item.Name</h6>
+                                <p class="text-muted small mb-1">Đã bán @item.QuantitySold</p>
+
+                                <!-- Rating Section -->
+                                <div class="d-flex align-items-center mb-1">
+                                    <div class="star-rating">
+                                        @for (var i = 0; i < 5; i++)
+                                        {
+                                            if (i < Math.Floor(item.Rating))
+                                            {
+                                                <i class="bi bi-star-fill text-warning"></i> <!-- Filled Star -->
+                                            }
+                                            else if (i < Math.Floor(item.Rating) + 0.5 && item.Rating % 1 != 0)
+                                            {
+                                                <i class="bi bi-star-half text-warning"></i> <!-- Half Star -->
+                                            }
+                                            else
+                                            {
+                                                <i class="bi bi-star text-muted"></i> <!-- Empty Star -->
+                                            }
+                                        }
+                                    </div>
+
+                                    <span class="ms-2 text-muted small">(@item.Rating)</span>
+                                </div>
+
+                                <div class="text-danger fw-bold">₫@item.Price.ToString("N0")</div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+        }
+    </div>
+
+
+
+
+
+    @* <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 g-3">
+        @if (product_Zips != null)
+        {
             foreach (var item in product_Zips)
             {
                 <div class="col">
@@ -141,10 +193,25 @@
                         <div class="card-body p-2">
                             <span class="badge bg-danger mb-1 text-white">Yêu thích</span>
                             <h6 class="card-title text-truncate" title="@item.Name">@item.Name</h6>
-                            <p class="text-muted small mb-1">Đã bán @item.QuantitySold      @item.Rating</p>
+                            <p class="text-muted small mb-1">Đã bán @item.QuantitySold</p>
+                            <div class="text-muted small mb-1">
+                                <!-- Rating Section with Stars -->
+                                @for (var i = 0; i < 5; i++)
+                                {
+                                    if (i < item.Rating)
+                                    {
+                                        <i class="bi bi-star-fill text-warning"></i> <!-- Filled Star -->
+                                    }
+                                    else
+                                    {
+                                        <i class="bi bi-star text-muted"></i> <!-- Empty Star -->
+                                    }
+                                }
+                            </div>
                             <div class="text-danger fw-bold">₫@item.Price.ToString("N0")</div>
 
-                            <button class="btn btn-outline-danger btn-sm rounded-circle position-absolute bottom-0 end-0 m-2">
+                            <button class="btn btn-outline-danger btn-sm rounded-circle position-absolute bottom-0 end-0 m-2"
+                                    onclick="redirectToProductDetail(@item.Product_zipId)">
                                 <i class="bi bi-cart"></i>
                             </button>
                         </div>
@@ -152,8 +219,7 @@
                 </div>
             }
         }
-        
-    </div>
+    </div> *@
 </div>
 
 
@@ -186,6 +252,13 @@
             behavior: 'smooth'
         });
     }
+
+    function redirectToProductDetail(productZipId) {
+        window.location.href = '/Product/Detail/' + productZipId;
+    }
+
+
+
 </script>
 
 

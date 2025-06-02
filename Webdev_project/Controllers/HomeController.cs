@@ -11,15 +11,13 @@ namespace Webdev_project.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly IUserRepository userRepository;
-        private readonly ISessionRepository sessionRepository;
+        private readonly IAuthenticationRepository authenticationRepository;
         private readonly IProductRepository productRepository;
 
-        public HomeController(ILogger<HomeController> logger, IUserRepository userRepository, ISessionRepository sessionRepository, IProductRepository productRepository)
+        public HomeController(ILogger<HomeController> logger, IAuthenticationRepository authenticationRepository, IProductRepository productRepository)
         {
             _logger = logger;
-            this.userRepository = userRepository;
-            this.sessionRepository = sessionRepository;
+            this.authenticationRepository = authenticationRepository;
             this.productRepository = productRepository;
         }
 
