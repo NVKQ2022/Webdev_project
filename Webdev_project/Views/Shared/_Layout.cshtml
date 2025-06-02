@@ -128,26 +128,15 @@
                 *@
 
 
-                @if (isLoggedIn!=null )
+                @if (ViewBag.User != null)
                 {
-                    <div class="dropdown">
-                        <a class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
-                           href="#" role="button" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
-                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTM9eDR87r3p64w_TkB2yGvWzwxYWfx9QvWuA&s"
-                                 alt="avatar" width="30" height="30" class="rounded-circle me-2" />
-                            <span>@userName</span>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end text-dark shadow" aria-labelledby="userMenu">
-                            <li><a class="dropdown-item" href="/Authenticate/Profile">Tài Khoản Của Tôi</a></li>
-                            <li><a class="dropdown-item" href="/Orders/MyOrders">Đơn Mua</a></li>
-                            <li><a class="dropdown-item" href="/Account/Logout">Đăng Xuất</a></li>
-                        </ul>
-                    </div>
+                    <span>Xin chào, @ViewBag.User.Username!</span>
                 }
                 else
                 {
-                    <a href="/Authenticate/MyLogin" class="text-white me-2 text-decoration-none">Login</a>
+                    <a href="/Authenticate/MyLogin">Login</a>
                 }
+
             </div>
         </div>
         <!-- Main Navbar: All elements in one row -->

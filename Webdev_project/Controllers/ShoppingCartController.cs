@@ -11,61 +11,71 @@ namespace Webdev_project.Controllers
 {
     public class ShoppingCartController : Controller
     {
-        public IActionResult Index()
-        {
-            var cart = HttpContext.Session.GetObjectFromJson<List<CartItem>>("Cart");
-            if (cart == null || cart.Count == 0)
-            {
-                // Thêm dữ liệu test nếu giỏ hàng rỗng
-                cart = new List<CartItem>
-        {
+        private readonly IUserRepository _userRepository;
+        private readonly ICartRepository _cartRepository;
+        private readonly IProductRepository _productRepository;
 
-        };
-                HttpContext.Session.SetObjectAsJson("Cart", cart);
+        public async Task<IActionResult> Index()
+        {
+            var userIdStr = HttpContext.Session.GetString("UserId");
+            if (string.IsNullOrEmpty(userIdStr))
+            {
+                // Chưa đăng nhập, chuyển hướng về trang đăng nhập
+                return RedirectToAction("MyLogin", "Authenticate");
             }
-            return View(cart);
+            int userId = int.Parse(userIdStr);
+
+            var user = _userRepository.GetUserById(userId);
+            ViewBag.User = user;
+
+            var cart = await _cartRepository.GetCartByUserIdAsync(userId) ?? new Cart { UserId = userId };
+            // KHÔNG gán cart.Id = null; hoặc cart.Id = "";
+
+            return View(cart?.Items ?? new List<CartItem>());
         }
 
+
         [HttpPost]
-        public IActionResult Increase(string productId)
+        public async Task<IActionResult> Increase(string productId)
         {
-            var cart = HttpContext.Session.GetObjectFromJson<List<CartItem>>("Cart") ?? new List<CartItem>();
-            var item = cart.FirstOrDefault(x => x.ProductId == productId);
+            int userId = int.Parse(HttpContext.Session.GetString("UserId"));
+            var cart = await _cartRepository.GetCartByUserIdAsync(userId);
+            var item = cart?.Items.FirstOrDefault(x => x.ProductId == productId);
             if (item != null)
             {
                 item.Quantity++;
-                HttpContext.Session.SetObjectAsJson("Cart", cart);
+                await _cartRepository.AddOrUpdateCartAsync(cart);
             }
             return RedirectToAction("Index");
         }
 
         [HttpPost]
-        public IActionResult Decrease(string productId)
+        public async Task<IActionResult> Decrease(string productId)
         {
-            var cart = HttpContext.Session.GetObjectFromJson<List<CartItem>>("Cart") ?? new List<CartItem>();
-            var item = cart.FirstOrDefault(x => x.ProductId == productId);
+            int userId = int.Parse(HttpContext.Session.GetString("UserId"));
+            var cart = await _cartRepository.GetCartByUserIdAsync(userId);
+            var item = cart?.Items.FirstOrDefault(x => x.ProductId == productId);
             if (item != null)
             {
                 if (item.Quantity > 1)
-                {
                     item.Quantity--;
-                }
                 else
-                {
-                    cart.Remove(item);
-                }
-                HttpContext.Session.SetObjectAsJson("Cart", cart);
+                    cart.Items.Remove(item);
+
+                await _cartRepository.AddOrUpdateCartAsync(cart);
             }
             return RedirectToAction("Index");
         }
 
 
         [HttpPost]
-        public IActionResult Remove(string productId)
+        public async Task<IActionResult> Remove(string productId)
         {
-            var cart = HttpContext.Session.GetObjectFromJson<List<CartItem>>("Cart") ?? new List<CartItem>();
-            cart.RemoveAll(x => x.ProductId == productId);
-            HttpContext.Session.SetObjectAsJson("Cart", cart);
+            int userId = int.Parse(HttpContext.Session.GetString("UserId"));
+            var cart = await _cartRepository.GetCartByUserIdAsync(userId);
+            cart?.Items.RemoveAll(x => x.ProductId == productId);
+            if (cart != null)
+                await _cartRepository.AddOrUpdateCartAsync(cart);
             return RedirectToAction("Index");
         }
 
@@ -73,25 +83,17 @@ namespace Webdev_project.Controllers
         [HttpPost]
         public async Task<IActionResult> AddToCart(string productId)
         {
-            // Lấy sản phẩm từ MongoDB
+            int userId = int.Parse(HttpContext.Session.GetString("UserId"));
+            var cart = await _cartRepository.GetCartByUserIdAsync(userId) ?? new Cart { UserId = userId };
+
             var product = await _productRepository.GetByIdAsync(productId);
-            if (product == null)
-            {
-                return NotFound();
-            }
+            if (product == null) return NotFound();
 
-            // Lấy giỏ hàng hiện tại
-            var cart = HttpContext.Session.GetObjectFromJson<List<CartItem>>("Cart") ?? new List<CartItem>();
-
-            // Kiểm tra sản phẩm đã có trong giỏ chưa
-            var existingItem = cart.FirstOrDefault(x => x.ProductId == product.ProductID);
+            var existingItem = cart.Items.FirstOrDefault(x => x.ProductId == product.ProductID);
             if (existingItem != null)
-            {
                 existingItem.Quantity++;
-            }
             else
-            {
-                cart.Add(new CartItem
+                cart.Items.Add(new CartItem
                 {
                     ProductId = product.ProductID,
                     ProductName = product.Name,
@@ -99,20 +101,21 @@ namespace Webdev_project.Controllers
                     Price = product.Price,
                     Quantity = 1
                 });
-            }
 
-            HttpContext.Session.SetObjectAsJson("Cart", cart);
-
-            // Chuyển hướng về trang giỏ hàng
-            return RedirectToAction("Index", "ShoppingCart");
+            await _cartRepository.AddOrUpdateCartAsync(cart);
+            return RedirectToAction("Index");
         }
 
-        private readonly IProductRepository _productRepository;
-
-        public ShoppingCartController(IProductRepository productRepository)
+        public ShoppingCartController(
+        IUserRepository userRepository,
+        ICartRepository cartRepository,
+        IProductRepository productRepository)
         {
+            _userRepository = userRepository;
+            _cartRepository = cartRepository;
             _productRepository = productRepository;
         }
+
     }
 }
 

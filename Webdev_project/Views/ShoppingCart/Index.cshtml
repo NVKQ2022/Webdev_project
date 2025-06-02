@@ -166,9 +166,19 @@
             </div>
         </div>
     </main> *@
+        <div class="user-info">
+            @if (ViewBag.User != null)
+            {
+                <span>Xin chào, @ViewBag.User.Username!</span>
+            }
+            else
+            {
+                <a href="/Authenticate/MyLogin">Login</a>
+            }
+        </div>
     </div> <!--removed -->
     <!--sản phẩm trong  giỏ hàng-->
-
+   
     <div class="container" style="max-width: 1100px;">
         <table class="table">
             <thead>

@@ -1,6 +1,8 @@
-using Webdev_project.Data;
+﻿using Webdev_project.Data;
 using Webdev_project.Interfaces;
 using Webdev_project.Models;
+using MongoDB.Driver;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,7 +34,17 @@ builder.Services.AddScoped<ISessionRepository, SessionRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 
+builder.Services.AddScoped<ICartRepository, CartRepository>(); // Đăng ký repository
+
+
 builder.Services.AddSession();
+
+builder.Services.AddSingleton<IMongoDatabase>(sp =>
+{
+    var settings = sp.GetRequiredService<IOptions<MongoDbSettings>>().Value;
+    var client = new MongoClient(settings.ConnectionString);
+    return client.GetDatabase(settings.DatabaseName);
+});
 
 var app = builder.Build();
 
