@@ -144,7 +144,6 @@ public class ProductRepository:IProductRepository
 
         await _products.UpdateManyAsync(filter, update);
     }
-}
 // Search sản phẩm - Phong
     public async Task<List<Product>> SearchByNameAsync(string query)
     {
