@@ -25,8 +25,8 @@ namespace Webdev_project.Helpers
             // Create a new Product_zip object
             var productZip = new Product_zip
             {
-                // Mapping ProductID to Product_zipId
-                Product_zipId = product.ProductID,
+                // Mapping ProductId to Product_zipId
+                Product_zipId = product.ProductId,
 
                 // Mapping Name directly
                 Name = product.Name,
@@ -69,9 +69,9 @@ namespace Webdev_project.Helpers
         {
             return new CartItem
             {
-                ProductId = product.ProductID,
+                ProductId = product.ProductId,
                 ProductName = product.Name,
-                ImageUrl = product.ImageURL.FirstOrDefault(),  // Picking the first image URL from the list (or handle null list)
+                Image = product.ImageURL.FirstOrDefault(),  // Picking the first image URL from the list (or handle null list)
                 Price = product.Price,  // Converting int Price to decimal
                 Quantity = 1  // Defaulting to quantity of 1 (you can customize this)
             };

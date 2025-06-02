@@ -20,7 +20,7 @@ namespace Webdev_project.Controllers
         }
 
         [HttpGet("Detail/{id}")]
-        public async Task<IActionResult> Detail(string id = null)
+        public async Task<IActionResult> Detail(string id)
         {
             var product = await productRepository.GetByIdAsync(id);
 
@@ -28,8 +28,9 @@ namespace Webdev_project.Controllers
             {
                 return NotFound("Product not found");
             }
-
+            
             ViewBag.Product = product;
+            //return NotFound(ViewBag.Product);
             return View();
         }
 

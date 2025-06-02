@@ -1,15 +1,30 @@
-﻿@{
+﻿@model Webdev_project.Models.Product
+@{
     var message =ViewBag.Message;
     Layout = null;
     int quantity = 1;
     int availableStock=0;
-    var product = ViewBag.Product;
-    if (product.Detail.ContainsKey("Kho") && product.Detail["Kho"] != null)
+    
+    Product product = ViewBag.Product;
+    if (product == null)
     {
-        string khoString = product.Detail["Kho"].ToString();
-        int.TryParse(khoString, out availableStock);
+        <h2 style="color:red">Lỗi: Không tìm thấy sản phẩm.</h2>
+        return;
     }
-    var review = ViewBag.Review;
+
+    // if (product.Detail != null && product.Detail.ContainsKey("Kho"))
+    // {
+    //     int.TryParse(product.Detail["Kho"].ToString(), out availableStock);
+    // }
+
+
+    // if (product != null && product.Detail != null && product.Detail.ContainsKey("Kho") && product.Detail["Kho"] != null)
+    // {
+    //     string khoString = product.Detail["Kho"].ToString();
+    //     int.TryParse(khoString, out availableStock);
+    // }
+
+    // var review = ViewBag.Review;
 }
 
 
@@ -173,7 +188,7 @@
 
                     <div class="input-group quantity-group" style="width: 160px;">
                         <button class="btn btn-outline-secondary btn-sm quantity-decrease" type="button">−</button>
-                        <input type="text" class="form-control text-center quantity-input" value="@quantity" />
+                        <input type="text" id="visibleQuantity" class="form-control text-center quantity-input" value="@quantity" />
                         <button class="btn btn-outline-secondary btn-sm quantity-increase" type="button">+</button>
                     </div>
 
@@ -186,6 +201,17 @@
                     </button>
                     <button class="btn btn-purple">Mua ngay</button>
                 </div>
+
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-outline-purple" onclick="addToCart()">
+                        <i class="bi bi-cart-plus"></i> Thêm vào giỏ hàng
+                    </button>
+                    <button type="button" class="btn btn-purple" onclick="buyNow()">
+                        Mua ngay
+                    </button>
+                </div>
+
+
             </div>
             <!-- Chính sách sản phẩm -->
             <div class="container mt-4">
@@ -285,22 +311,82 @@
 
         increaseBtn.addEventListener('click', () => {
             let current = parseInt(input.value) || min;
-            if (current < max) input.value = current + 1;
+            if (current < max) 
+            {
+                input.value = current + 1;
+                document.getElementById("quantityInput").value = input.value;
+            }
         });
 
         decreaseBtn.addEventListener('click', () => {
             let current = parseInt(input.value) || min;
-            if (current > min) input.value = current - 1;
+            if (current > min) 
+            {
+                input.value = current - 1;
+                document.getElementById("quantityInput").value = input.value;
+            }
+
         });
 
         input.addEventListener('input', () => {
             let val = parseInt(input.value);
             if (isNaN(val) || val < min) input.value = min;
-            else if (val > max) input.value = max;
+            else if (val > max) 
+            {
+                input.value = max;
+                document.getElementById("quantityInput").value = input.value;
+            }
+
         });
 
         input.addEventListener('blur', () => {
-            if (input.value === "") input.value = min;
+            if (input.value === "") 
+            {
+                input.value = min;
+                document.getElementById("quantityInput").value = input.value;
+            }
         });
     });
+
+    // function getQuantity() {
+    //     return parseInt(document.getElementById("visibleQuantity").value) || 1;
+    // }
+
+    // function addToCart() {
+    //     const quantity = getQuantity();
+    //     $.ajax({
+    //         url: '/ShoppingCart/AddToCart',
+    //         method: 'POST',
+    //         data: { 
+    //             ProductId: '@product.ProductId',
+    //             ProductName: '@product.Name'
+    //             // Image: '@product.ImageURL[0]',
+    //             // Quantity: quantity, 
+    //             // Price:'@product.Price'
+    //         },
+    //         success: function (res) {
+    //             alert('Đã thêm vào giỏ hàng!');
+    //         },
+    //         error: function () {
+    //             alert('Có lỗi xảy ra khi thêm vào giỏ hàng.');
+    //         }
+            
+    //     });
+    //     console.log(data);
+    // }
+
+    // function buyNow() {
+    //     const quantity = getQuantity();
+    //     $.ajax({
+    //         url: '/Cart/BuyNow',
+    //         method: 'POST',
+    //         data: { quantity: quantity, productId: '@Model.ProductId' },
+    //         success: function (res) {
+    //             window.location.href = res.redirectUrl;
+    //         },
+    //         error: function () {
+    //             alert('Có lỗi xảy ra khi mua ngay.');
+    //         }
+    //     });
+    // }
 </script>

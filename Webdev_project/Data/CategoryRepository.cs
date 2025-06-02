@@ -43,7 +43,7 @@ public class CategoryRepository : ICategoryRepository
         // Calculate BuyTime and ProductQuantity
         int buyTime = productsInCategory.Sum(p => p.Sold);
         int quantity = productsInCategory.Count;
-        var productIds = productsInCategory.Select(p => p.ProductID).ToList();
+        var productIds = productsInCategory.Select(p => p.ProductId).ToList();
 
         // Create and insert the new Category
         var newCategory = new Category
