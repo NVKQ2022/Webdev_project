@@ -72,7 +72,7 @@ namespace Webdev_project.Helpers
                 ProductId = product.ProductId,
                 ProductName = product.Name,
                 Image = product.ImageURL.FirstOrDefault(),  // Picking the first image URL from the list (or handle null list)
-                Price = product.Price,  // Converting int Price to decimal
+                UnitPrice = product.Price,  // Converting int Price to decimal
                 Quantity = 1  // Defaulting to quantity of 1 (you can customize this)
             };
         }

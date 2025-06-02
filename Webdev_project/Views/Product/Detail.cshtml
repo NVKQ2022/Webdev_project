@@ -317,11 +317,11 @@
     async function addToCart(button) {
           const quantity = getQuantity();
         const data = {
-            productId: button.dataset.productId,
-            productName: button.dataset.productName,
-            image: button.dataset.imageUrl,
-            quantity: quantity,
-            price: parseFloat(button.dataset.price)
+            ProductId: button.dataset.productId,
+            ProductName: button.dataset.productName,
+            Image: button.dataset.imageUrl,
+            Quantity: quantity,
+            UnitPrice: parseFloat(button.dataset.price)
         };
 
          try {

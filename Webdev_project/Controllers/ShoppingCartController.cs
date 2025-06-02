@@ -5,11 +5,19 @@ using Webdev_project.Models;
 using Webdev_project.Helpers;
 using System.Collections.Generic;
 using System.Linq;
+using Webdev_project.Interfaces;
 
 namespace Webdev_project.Controllers
 {
     public class ShoppingCartController : Controller
     {
+        private readonly IUserDetailRepository userDetailRepository;
+        private readonly IAuthenticationRepository authenticationRepository;
+        public ShoppingCartController(IUserDetailRepository userDetailRepository, IAuthenticationRepository authenticationRepository)
+        {
+            this.userDetailRepository = userDetailRepository;
+            this.authenticationRepository = authenticationRepository;
+        }
         public IActionResult Index()
         {
             var cart = HttpContext.Session.GetObjectFromJson<List<CartItem>>("Cart");
@@ -23,7 +31,7 @@ namespace Webdev_project.Controllers
                 ProductId = "1",
                 ProductName = "Tai nghe Bluetooth",
                 Image = "https://phukiengiare.com/images/detailed/63/tai-nghe-bluetooth-baseus-w04-pro-1.jpg",
-                Price = 19000,
+                UnitPrice = 19000,
                 Quantity = 1
             },
             new CartItem
@@ -31,7 +39,7 @@ namespace Webdev_project.Controllers
                 ProductId = "2",
                 ProductName = "Áo thun Shopee",
                 Image = "https://th.bing.com/th/id/R.d5650f1b99876ba4f12cc3e246dd6c30?rik=aUA6PMpxrEryxQ&pid=ImgRaw&r=0",
-                Price = 99000,
+                UnitPrice = 99000,
                 Quantity = 2
             }
         };
@@ -69,21 +77,18 @@ namespace Webdev_project.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddToCart(int quantity, bool buyNow = false)
+        public IActionResult AddToCart([FromBody] CartItem item)
         {
-            // Handle add to cart
-            // If buyNow == true, redirect to checkout
+            if (item == null)
+                return BadRequest("Invalid cart item");
 
-            if (buyNow)
-            {
-                // Logic for immediate purchase
-                return RedirectToAction("Checkout", new { quantity });
-            }
 
-            // Logic for adding to cart
-            // Example:
-            // cartService.Add(productId, quantity);
-            return RedirectToAction("Cart");
+            userDetailRepository.AddCartItemAsync(authenticationRepository.RetrieveFromSession(HttpContext.Request.Cookies["SessionId"]).Id, item);
+
+
+
+            // Add item to cart (session, DB, etc.)
+            return Ok(new { success = true, message = "Item added to cart." });
         }
 
     }

@@ -190,7 +190,7 @@
                                 <img src="@item.Image" alt="Product" style="width:60px; height:60px; object-fit:cover;" class="me-2 rounded">
                                 <span>@item.ProductName</span>
                             </td>
-                            <td class="text-danger">@item.Price.ToString("C0", System.Globalization.CultureInfo.GetCultureInfo("vi-VN"))</td>
+                            <td class="text-danger">@item.UnitPrice.ToString("C0", System.Globalization.CultureInfo.GetCultureInfo("vi-VN"))</td>
                             <td>
                                 <div class="input-group input-group-sm" style="width:120px;">
                                     <form asp-action="Decrease" method="post" class="d-inline">
@@ -204,7 +204,7 @@
                                     </form>
                                 </div>
                             </td>
-                            <td class="text-danger">@((item.Price * item.Quantity).ToString("C0", System.Globalization.CultureInfo.GetCultureInfo("vi-VN")))</td>
+                            <td class="text-danger">@((item.UnitPrice * item.Quantity).ToString("C0", System.Globalization.CultureInfo.GetCultureInfo("vi-VN")))</td>
                             <td>
                                 <!-- Xử lý nút xóa nếu muốn -->                     
                                 <form asp-action="Remove" method="post" style="display:inline;">

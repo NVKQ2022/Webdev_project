@@ -1,4 +1,5 @@
-﻿using MongoDB.Driver;
+﻿using Microsoft.Extensions.Options;
+using MongoDB.Driver;
 using Webdev_project.Interfaces;
 using Webdev_project.Models;
 namespace Webdev_project.Data
@@ -7,6 +8,14 @@ namespace Webdev_project.Data
     public class UserDetailRepository : IUserDetailRepository
     {
         private readonly IMongoCollection<UserDetail> _userDetail;
+
+        public UserDetailRepository(IOptions<MongoDbSettings> settings)
+        {
+            
+            var client = new MongoClient(settings.Value.ConnectionString);
+            var database = client.GetDatabase(settings.Value.DatabaseName);
+            _userDetail = database.GetCollection<UserDetail>(settings.Value.UserDetailCollectionName);
+        }
 
         public async Task AddUserDetailAsync(UserDetail user)
         {

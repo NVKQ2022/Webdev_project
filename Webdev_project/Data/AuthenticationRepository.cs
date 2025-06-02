@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Webdev_project.Interfaces;
 using Webdev_project.Helpers;
+using MongoDB.Driver.Core.Configuration;
 
 //using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
@@ -91,6 +92,29 @@ namespace Webdev_project.Data
         }
 
 
+        public User? GetUserById(int id)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                string query = "SELECT Id, Email, Username, IsAdmin FROM users WHERE Id = @Id";
+        SqlCommand command = new SqlCommand(query, connection);
+        command.Parameters.AddWithValue("@Id", id);
+
+                connection.Open();
+                SqlDataReader reader = command.ExecuteReader();
+                if (reader.Read())
+                {
+                    return new User
+                    {
+                        Id = reader.GetInt32(0),
+                        Email = reader.GetString(1),
+                        Username = reader.GetString(2),
+                        IsAdmin = reader.GetBoolean(3)
+                    };
+}
+            }
+            return null;
+        }
         public void DeleteSession(string sessionId)
         {
             using var connection = new SqlConnection(_connectionString);
