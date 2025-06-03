@@ -172,14 +172,17 @@
             <div id="categoryItems" class="d-flex">
                 @foreach (var category in Categories)
                 {
-                    <div class="card shadow-sm border-0" role="button" tabindex="0" aria-label="@category.CateName" onclick="loadProducts('@category.CateName')">
-                        <img src="@category.Image" class="card-img-top" alt="@category.CateName" />
-                        <div class="card-body p-2">
-                            <h6 class="card-title text-truncate">@category.CateName</h6>
-                            <p class="mb-1 small text-muted">Đã mua: <span class="text-dark">@category.BuyTime</span></p>
-                            <p class="mb-0 small text-muted">Sản phẩm: <span class="text-dark">@category.ProductQuantity</span></p>
+                    <a href="@Url.Action("ProductsByCategory", "Category", new { category = category.CateName })"
+                       class="text-decoration-none" style="width: 180px; min-width: 180px; margin-right: 16px;">
+                        <div class="card shadow-sm border-0 h-100" role="button" tabindex="0" aria-label="@category.CateName">
+                            <img src="@category.Image" class="card-img-top" alt="@category.CateName" />
+                            <div class="card-body p-2">
+                                <h6 class="card-title text-truncate">@category.CateName</h6>
+                                <p class="mb-1 small text-muted">Đã mua: <span class="text-dark">@category.BuyTime</span></p>
+                                <p class="mb-0 small text-muted">Sản phẩm: <span class="text-dark">@category.ProductQuantity</span></p>
+                            </div>
                         </div>
-                    </div>
+                    </a>
                 }
             </div>
         </div>
