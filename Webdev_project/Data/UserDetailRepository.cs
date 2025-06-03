@@ -167,7 +167,7 @@ namespace Webdev_project.Data
                 _ => 0
             };
 
-            var user = await _userDetail.Find(u => u.Id == userId).FirstOrDefaultAsync();
+            var user = await _userDetail.Find(u => u.UserId == userId).FirstOrDefaultAsync();
             if (user == null) throw new Exception("User not found");
 
             // Initialize Category if null
@@ -218,7 +218,7 @@ namespace Webdev_project.Data
 
             // Save back to DB
             var update = Builders<UserDetail>.Update.Set(u => u.Category, user.Category);
-            await _userDetail.UpdateOneAsync(u => u.Id == userId, update);
+            await _userDetail.UpdateOneAsync(u => u.UserId == userId, update);
         }
     }
 }
