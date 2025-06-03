@@ -22,6 +22,12 @@ namespace Webdev_project.Data
             await _userDetail.InsertOneAsync(user);
         }
 
+        public async Task<UserDetail> GetUserDetailAsync(int userId)
+        {
+            var filter = Builders<UserDetail>.Filter.Eq(u => u.UserId, userId);
+            return await _userDetail.Find(filter).FirstOrDefaultAsync();
+        }
+
         public async Task<List<CartItem>> GetCartItemsAsync(int userId)
         {
             var filter = Builders<UserDetail>.Filter.Eq(u => u.UserId, userId);

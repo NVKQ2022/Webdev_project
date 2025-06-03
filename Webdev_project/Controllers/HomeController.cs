@@ -14,13 +14,15 @@ namespace Webdev_project.Controllers
         private readonly IAuthenticationRepository authenticationRepository;
         private readonly IProductRepository productRepository;
         private readonly ICategoryRepository categoryRepository;
+        private readonly IUserDetailRepository _userDetailRepository;
 
-        public HomeController(ILogger<HomeController> logger, IAuthenticationRepository authenticationRepository, IProductRepository productRepository, ICategoryRepository categoryRepository) : base(authenticationRepository)
+        public HomeController(ILogger<HomeController> logger, IAuthenticationRepository authenticationRepository, IProductRepository productRepository, ICategoryRepository categoryRepository, IUserDetailRepository userDetailRepository) : base(authenticationRepository)
         {
             _logger = logger;
             this.authenticationRepository = authenticationRepository;
             this.productRepository = productRepository;
             this.categoryRepository = categoryRepository;
+            this._userDetailRepository = userDetailRepository;
         }
 
         //[HttpGet("Index/{category}")]
@@ -112,50 +114,83 @@ namespace Webdev_project.Controllers
 
 
 
-        public IActionResult Test()
+        public async Task<IActionResult> Test()
         {
             var notifications = new List<OrderNotification>
-        {
-            new OrderNotification {
-                ImageUrl = "/images/cage.jpg",
-                Status = "Giao kiện hàng thành công",
-                PackageCode = "SPXVN057191684675",
-                OrderCode = "2505296R62JNTS",
-                Date = new DateTime(2025, 5, 31, 9, 23, 0),
-                Message = "đã giao thành công đến bạn.",
-                ButtonText = "Xem Chi Tiết"
-            },
-            new OrderNotification {
-                ImageUrl = "/images/powerbank.jpg",
-                Status = "Giao kiện hàng thành công",
-                PackageCode = "SPXVN055448964355",
-                OrderCode = "2505296SDBF0D3",
-                Date = new DateTime(2025, 5, 31, 9, 23, 0),
-                Message = "đã giao thành công đến bạn.",
-                ButtonText = "Xem Chi Tiết"
-            },
-            new OrderNotification {
-                ImageUrl = "/images/noodles.jpg",
-                Status = "Đơn hàng đã hoàn tất",
-                OrderCode = "250511HAHE4838",
-                Date = new DateTime(2025, 5, 16, 15, 10, 0),
-                Message = "đã hoàn thành. Bạn hãy đánh giá sản phẩm trước ngày 15-06-2025 để nhận 200 xu",
-                ButtonText = "Đánh Giá Sản Phẩm"
-            }
-        };
-
-            // Test, Delete later
-            var user = new User 
-            { 
-                Username = HttpContext.Request.Cookies["Username"],
-                Email = "test@example.com",
-                IsAdmin = false
+            {
+                new OrderNotification {
+                    ImageUrl = "/images/cage.jpg",
+                    Status = "Giao kiện hàng thành công",
+                    PackageCode = "SPXVN057191684675",
+                    OrderCode = "2505296R62JNTS",
+                    Date = new DateTime(2025, 5, 31, 9, 23, 0),
+                    Message = "đã giao thành công đến bạn.",
+                    ButtonText = "Xem Chi Tiết"
+                },
+                new OrderNotification {
+                    ImageUrl = "/images/powerbank.jpg",
+                    Status = "Giao kiện hàng thành công",
+                    PackageCode = "SPXVN055448964355",
+                    OrderCode = "2505296SDBF0D3",
+                    Date = new DateTime(2025, 5, 31, 9, 23, 0),
+                    Message = "đã giao thành công đến bạn.",
+                    ButtonText = "Xem Chi Tiết"
+                },
+                new OrderNotification {
+                    ImageUrl = "/images/noodles.jpg",
+                    Status = "Đơn hàng đã hoàn tất",
+                    OrderCode = "250511HAHE4838",
+                    Date = new DateTime(2025, 5, 16, 15, 10, 0),
+                    Message = "đã hoàn thành. Bạn hãy đánh giá sản phẩm trước ngày 15-06-2025 để nhận 200 xu",
+                    ButtonText = "Đánh Giá Sản Phẩm"
+                }
             };
+
+            // Get user from session
+            var user = authenticationRepository.RetrieveFromSession(HttpContext.Request.Cookies["SessionId"]);
+            if (user == null)
+            {
+                return RedirectToAction("MyLogin", "Authenticate");
+            }
+
+            // Get user details
+            var userDetail = await _userDetailRepository.GetUserDetailAsync(user.Id);
             
             ViewBag.User = user;
+            ViewBag.UserDetail = userDetail;
             ViewBag.Notifications = notifications;
-            ViewBag.Username = HttpContext.Request.Cookies["Username"];
             return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddAddress(string name, string phone, string address)
+        {
+            try
+            {
+                // Get user from session
+                var user = authenticationRepository.RetrieveFromSession(HttpContext.Request.Cookies["SessionId"]);
+                if (user == null)
+                {
+                    return RedirectToAction("MyLogin", "Authenticate");
+                }
+
+                // Create new ReceiveInfo
+                var newReceiveInfo = new ReceiveInfo
+                {
+                    Name = name,
+                    Phone = phone,
+                    Address = address
+                };
+
+                // Add to database
+                await _userDetailRepository.AddReceiveInfoAsync(user.Id, newReceiveInfo);
+
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
         }
 
     }
