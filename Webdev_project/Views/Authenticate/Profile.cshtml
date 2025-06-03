@@ -1,5 +1,4 @@
-﻿
-@* 
+﻿@* 
 @using Webdev_project.Models
 @{
 	User user = ViewBag.User;
@@ -74,18 +73,86 @@
 
 @using Webdev_project.Models
 @{
+    ViewData["Title"] = "Thông tin tài khoản";
+    Layout = "~/Views/Shared/_Layout.cshtml";
     User user = ViewBag.User;
     List<Product> products = ViewBag.Products;
     List<string> categories = ViewBag.Categories;
     string selectedCategory = ViewBag.SelectedCategory;
-    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container mt-4">
-    <h2 class="mb-4">Welcome, @user.Username</h2>
+<style>
+    .profile-container {
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 20px;
+    }
 
+    .profile-sidebar {
+        background-color: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .profile-main {
+        background-color: white;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .profile-avatar {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        margin-bottom: 15px;
+    }
+
+    .sidebar-link {
+        display: block;
+        padding: 10px 0;
+        color: #333;
+        text-decoration: none;
+        transition: color 0.3s;
+    }
+
+    .sidebar-link:hover {
+        color: #6f42c1;
+    }
+
+    .sidebar-link.active {
+        color: #6f42c1;
+        font-weight: 600;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        font-weight: 500;
+        margin-bottom: 8px;
+    }
+
+    .btn-purple {
+        background-color: #6f42c1;
+        border-color: #6f42c1;
+        color: white;
+        padding: 8px 24px;
+    }
+
+    .btn-purple:hover {
+        background-color: #5a32a3;
+        border-color: #5a32a3;
+        color: white;
+    }
+</style>
+
+<div class="container mt-4">
     @if (user.IsAdmin)
     {
+        <h2 class="mb-4">Welcome, @user.Username</h2>
         <h3>Admin Dashboard - Products by Category</h3>
 
         <form method="get" asp-action="Profile" class="mb-3">
@@ -95,10 +162,8 @@
                 @foreach (var cat in categories)
                 {
                     var isSelected = (cat == selectedCategory) ? "selected" : "";
-
-                    <option value="@cat" isSelected >@cat</option>
+                    <option value="@cat" selected="@(cat == selectedCategory)">@cat</option>
                 }
-
             </select>
         </form>
 
@@ -139,10 +204,110 @@
         else if (!string.IsNullOrEmpty(selectedCategory))
         {
             <p>No products found in this category.</p>
-}
+        }
         else
         {
             <p>Please select a category.</p>
         }
-}
+    }
+    @*
+    else
+    {
+        <div class="container profile-container">
+            <div class="row">
+                <!-- Sidebar -->
+                <div class="col-md-3">
+                    <div class="profile-sidebar">
+                        <div class="text-center mb-4">
+                            <img src="https://cdn-icons-png.flaticon.com/512/1946/1946429.png" alt="Profile" class="profile-avatar">
+                            <h5>@user.Username</h5>
+                        </div>
+                        <div>
+                            <a href="#" class="sidebar-link active">
+                                <i class="fas fa-user me-2"></i>
+                                Thông tin tài khoản
+                            </a>
+                            <a href="#" class="sidebar-link">
+                                <i class="fas fa-map-marker-alt me-2"></i>
+                                Sổ địa chỉ
+                            </a>
+                            <a href="#" class="sidebar-link">
+                                <i class="fas fa-shopping-bag me-2"></i>
+                                Quản lý đơn hàng
+                            </a>
+                            <a href="#" class="sidebar-link">
+                                <i class="fas fa-eye me-2"></i>
+                                Sản phẩm đã xem
+                            </a>
+                            <a href="#" class="sidebar-link">
+                                <i class="fas fa-sign-out-alt me-2"></i>
+                                Đăng xuất
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+                <div class="col-md-9">
+                    <div class="profile-main">
+                        <h4 class="mb-4">Thông tin tài khoản</h4>
+                        <form>
+                            <div class="form-group">
+                                <label class="form-label">Họ Tên</label>
+                                <input type="text" class="form-control" value="@user.Username">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Giới tính</label>
+                                <div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="gender" id="male" checked>
+                                        <label class="form-check-label" for="male">Nam</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="gender" id="female">
+                                        <label class="form-check-label" for="female">Nữ</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Số điện thoại</label>
+                                <input type="tel" class="form-control">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" value="@user.Email">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Ngày sinh</label>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <select class="form-select">
+                                            <option>06</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <select class="form-select">
+                                            <option>09</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <select class="form-select">
+                                            <option>2005</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-purple">LƯU THAY ĐỔI</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    *@
 </div>

@@ -1,167 +1,285 @@
-﻿
+﻿@using Webdev_project.Models
 @{
+    ViewData["Title"] = "Thông tin tài khoản";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    User user = ViewBag.User;
     var notifi = ViewBag.Notifications;
-    var userName = ViewBag.Username;
 }
 
 <style>
-    .accordion-button {
-        font-size: 0.95rem;
-        padding: 0.75rem 1rem;
-        color: #333;
-        background-color: transparent;
-        box-shadow: none;
+    body {
+        background-color: #f5f5f5;
     }
 
-    .accordion-body a {
+    .profile-container {
+        max-width: 1200px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+
+    .profile-sidebar {
+        background-color: white;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+    }
+
+    .profile-main {
+        background-color: white;
+        padding: 40px;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .profile-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        margin-bottom: 20px;
+    }
+
+    .sidebar-link {
         display: block;
-        padding: 0.35rem 0;
+        padding: 12px 0;
         color: #333;
         text-decoration: none;
-        font-size: 0.9rem;
-    }
-
-        .accordion-body a:hover {
-            text-decoration: underline;
-        }
-
-    .sidebar-heading {
-        font-weight: 600;
+        transition: color 0.3s;
         font-size: 1rem;
-        margin-top: 1rem;
-        margin-bottom: 0.5rem;
-        padding-left: 1rem;
-        color: #555;
     }
 
-    .accordion-item {
-        border: none;
+    .sidebar-link:hover {
+        color: #6f42c1;
     }
 
+    .sidebar-link.active {
+        color: #6f42c1;
+        font-weight: 600;
+    }
+
+    .form-group {
+        margin-bottom: 25px;
+    }
+
+    .form-label {
+        font-weight: 500;
+        margin-bottom: 10px;
+        font-size: 0.95rem;
+    }
+
+    .form-control {
+        padding: 10px 15px;
+    }
+
+    .btn-purple {
+        background-color: #6f42c1;
+        border-color: #6f42c1;
+        color: white;
+        padding: 12px 30px;
+        font-size: 1rem;
+    }
+
+    .btn-purple:hover {
+        background-color: #5a32a3;
+        border-color: #5a32a3;
+        color: white;
+    }
+
+    .row > [class*='col-'] {
+        padding: 0 15px;
+    }
+
+    /* Order Management Styles */
     .notification-item {
-        background-color: #fff8f6;
+        background-color: white;
         border-bottom: 1px solid #f0eaea;
+        padding: 20px;
+        transition: background-color 0.3s;
     }
 
-        .notification-item:hover {
-            background-color: #fff3f0;
-        }
+    .notification-item:hover {
+        background-color: #fff8f6;
+    }
+
+    .order-header {
+        background-color: white;
+        padding: 20px;
+        border-radius: 8px 8px 0 0;
+        border-bottom: 1px solid #f0eaea;
+        margin-bottom: 0;
+    }
+
+    .content-section {
+        display: none;
+    }
+
+    .content-section.active {
+        display: block;
+    }
+
+    #orderManagement img {
+        object-fit: cover;
+    }
+
+    /* Override any white backgrounds */
+    .container-fluid, .bg-white {
+        background-color: #f5f5f5 !important;
+    }
 </style>
 
-<div class="container-fluid">
+<div class="container profile-container">
     <div class="row">
         <!-- Sidebar -->
-        <div class="col-md-3 bg-white border-end">
-            <div class="py-3 px-2">
-                <div class="d-flex align-items-center mb-3">
-                    <img src="https://cdn-icons-png.flaticon.com/512/1946/1946429.png" width="40" class="me-2 rounded-circle" />
-                    <div>
-                        <strong>@userName</strong><br />
-                        <a href="#" style="font-size: 0.85rem;">Sửa Hồ Sơ</a>
-                    </div>
+        <div class="col-md-3">
+            <div class="profile-sidebar">
+                <div class="text-center mb-4">
+                    <img src="https://cdn-icons-png.flaticon.com/512/1946/1946429.png" alt="Profile" class="profile-avatar">
+                    <h5>@user.Username</h5>
                 </div>
-
-                <div class="accordion" id="sidebarAccordion">
-                    <!-- Thông Báo -->
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="headingNotify">
-                            <button class="accordion-button fw-semibold text-danger" type="button" data-bs-toggle="collapse" data-bs-target="#collapseNotify" aria-expanded="true" aria-controls="collapseNotify">
-                                Thông Báo
-                            </button>
-                        </h2>
-                        <div id="collapseNotify" class="accordion-collapse collapse show" aria-labelledby="headingNotify">
-                            <div class="accordion-body ps-4">
-                                <ul class="list-unstyled mb-0">
-                                    <li><a href="#">Cập Nhật Đơn Hàng</a></li>
-                                    <li><a href="#">Khuyến Mãi</a></li>
-                                    <li><a href="#">Cập Nhật Ví</a></li>
-                                    <li><a href="#">Cập Nhật Shopee</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Tài Khoản Của Tôi -->
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="headingAccount">
-                            <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAccount" aria-expanded="false" aria-controls="collapseAccount">
-                                Tài Khoản Của Tôi
-                            </button>
-                        </h2>
-                        <div id="collapseAccount" class="accordion-collapse collapse" aria-labelledby="headingAccount">
-                            <div class="accordion-body ps-4">
-                                <ul class="list-unstyled mb-0">
-                                    <li><a href="#">Hồ sơ</a></li>
-                                    <li><a href="#">Đổi mật khẩu</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Đơn Mua -->
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="headingPurchase">
-                            <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePurchase" aria-expanded="false" aria-controls="collapsePurchase">
-                                Đơn Mua
-                            </button>
-                        </h2>
-                        <div id="collapsePurchase" class="accordion-collapse collapse" aria-labelledby="headingPurchase">
-                            <div class="accordion-body ps-4">
-                                <ul class="list-unstyled mb-0">
-                                    <li><a href="#">Chờ xác nhận</a></li>
-                                    <li><a href="#">Đang giao</a></li>
-                                    <li><a href="#">Hoàn tất</a></li>
-                                    <li><a href="#">Đã hủy</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                   @*  <!-- Others (Voucher, Xu, etc.) -->
-                    <div class="accordion-item border-0">
-                        <div class="accordion-body ps-3">
-                            <ul class="list-unstyled mb-0">
-                                <li><a href="#">Kho Voucher</a></li>
-                                <li><a href="#">Shopee Xu</a></li>
-                                <li><a href="#" class="text-danger fw-semibold">6.6 Siêu Sale Giữa Năm <span class="badge bg-warning text-dark ms-1">New</span></a></li>
-                            </ul>
-                        </div>
-                    </div *@>
+                <div>
+                    <a href="#" class="sidebar-link" onclick="showSection('profile')">
+                        <i class="fas fa-user me-2"></i>
+                        Thông tin tài khoản
+                    </a>
+                    <a href="#" class="sidebar-link">
+                        <i class="fas fa-map-marker-alt me-2"></i>
+                        Sổ địa chỉ
+                    </a>
+                    <a href="#" class="sidebar-link" onclick="showSection('orderManagement')">
+                        <i class="fas fa-shopping-bag me-2"></i>
+                        Quản lý đơn hàng
+                    </a>
+                    <a href="#" class="sidebar-link">
+                        <i class="fas fa-eye me-2"></i>
+                        Sản phẩm đã xem
+                    </a>
+                    <a href="#" class="sidebar-link">
+                        <i class="fas fa-sign-out-alt me-2"></i>
+                        Đăng xuất
+                    </a>
                 </div>
             </div>
         </div>
 
-        <!-- Notifications -->
+        <!-- Main Content -->
         <div class="col-md-9">
-            <div class="d-flex justify-content-between align-items-center p-3 border-bottom bg-white">
-                <h5 class="mb-0">Cập Nhật Đơn Hàng</h5>
-                <a href="#" class="btn btn-outline-secondary btn-sm">Đánh dấu Đã đọc tất cả</a>
+            <!-- Profile -->
+            <div id="profile" class="content-section active">
+                <div class="profile-main">
+                    <h4 class="mb-4">Thông tin tài khoản</h4>
+                    <form>
+                        <div class="form-group">
+                            <label class="form-label">Họ Tên</label>
+                            <input type="text" class="form-control" value="@user.Username">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Giới tính</label>
+                            <div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="gender" id="male" checked>
+                                    <label class="form-check-label" for="male">Nam</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="gender" id="female">
+                                    <label class="form-check-label" for="female">Nữ</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Số điện thoại</label>
+                            <input type="tel" class="form-control">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" value="@user.Email">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Ngày sinh</label>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <select class="form-select">
+                                        <option>01</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <select class="form-select">
+                                        <option>01</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <select class="form-select">
+                                        <option>2005</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-purple">LƯU THAY ĐỔI</button>
+                    </form>
+                </div>
             </div>
 
-            @foreach (var n in notifi)
-            {
-                <div class="d-flex notification-item py-3 px-3 align-items-start">
-                    <img src="@n.ImageUrl" width="100" height="100" class="me-3 rounded border" style="object-fit: cover;" />
-                    <div class="flex-grow-1">
-                        <div class="fw-bold">@n.Status</div>
-                        <div>
-                            @if (!string.IsNullOrEmpty(n.PackageCode))
-                            {
-                                <span>Kiện hàng <strong>@n.PackageCode</strong></span>
-                            }
-                            @if (!string.IsNullOrEmpty(n.OrderCode))
-                            {
-                                <span> của đơn hàng <strong>@n.OrderCode</strong></span>
-                            }
-                            <span> @n.Message</span>
+            <!-- Notification -->
+            <div id="orderManagement" class="content-section">
+                <div class="profile-main p-0">
+                    <div class="d-flex justify-content-between align-items-center order-header">
+                        <h4 class="mb-0">Cập Nhật Đơn Hàng</h4>
+                        <a href="#" class="btn btn-outline-secondary btn-sm">Đánh dấu Đã đọc tất cả</a>
+                    </div>
+
+                    @foreach (var n in notifi)
+                    {
+                        <div class="d-flex notification-item align-items-start">
+                            <img src="@n.ImageUrl" width="100" height="100" class="me-3 rounded border" />
+                            <div class="flex-grow-1">
+                                <div class="fw-bold">@n.Status</div>
+                                <div>
+                                    @if (!string.IsNullOrEmpty(n.PackageCode))
+                                    {
+                                        <span>Kiện hàng <strong>@n.PackageCode</strong></span>
+                                    }
+                                    @if (!string.IsNullOrEmpty(n.OrderCode))
+                                    {
+                                        <span> của đơn hàng <strong>@n.OrderCode</strong></span>
+                                    }
+                                    <span> @n.Message</span>
+                                </div>
+                                <div class="text-muted small">@n.Date.ToString("HH:mm dd-MM-yyyy")</div>
+                            </div>
+                            <div>
+                                <button class="btn btn-outline-secondary btn-sm">@n.ButtonText</button>
+                            </div>
                         </div>
-                        <div class="text-muted small">@n.Date.ToString("HH:mm dd-MM-yyyy")</div>
-                    </div>
-                    <div>
-                        <button class="btn btn-outline-secondary btn-sm">@n.ButtonText</button>
-                    </div>
+                    }
                 </div>
-            }
+            </div>
         </div>
     </div>
 </div>
+
+<script>
+    function showSection(sectionId) {
+        // Hide all sections
+        document.querySelectorAll('.content-section').forEach(section => {
+            section.classList.remove('active');
+        });
+        
+        // Show selected section
+        document.getElementById(sectionId).classList.add('active');
+        
+        // Update active state of sidebar links
+        document.querySelectorAll('.sidebar-link').forEach(link => {
+            link.classList.remove('active');
+        });
+        event.currentTarget.classList.add('active');
+    }
+
+    // Override any white backgrounds when the page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        document.body.style.backgroundColor = '#f5f5f5';
+    });
+</script>
