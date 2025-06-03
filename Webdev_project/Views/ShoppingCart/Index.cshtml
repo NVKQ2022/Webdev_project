@@ -20,7 +20,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Giỏ Hàng Shopee</title>
     <style>
-        body {
+        /* body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
@@ -124,50 +124,46 @@
                 background-color: #ff5722;
                 color: white;
                 cursor: pointer;
-            }
+            } */
+
+        .cart-table img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 0.375rem;
+        }
+
+        .cart-table td, .cart-table th {
+            vertical-align: middle;
+        }
+
+        .btn-outline-secondary {
+            min-width: 32px;
+        }
+
+        .quantity-input {
+            max-width: 50px;
+        }
+
+        .btn-remove {
+            font-size: 0.9rem;
+        }
+
+        .cart-summary {
+            background-color: #f9f9f9;
+            border-radius: 0.5rem;
+            padding: 1rem 1.5rem;
+            box-shadow: 0 0 10px rgba(0,0,0,0.05);
+        }
     </style>
 </head>
 <body>
     <div>
-        @*
-        <header>
-            <div class="header-container">
-                <img src="https://www.pngmart.com/files/12/Shopee-Logo-Transparent-Background.png" alt="Shopee Logo" class="logo">
-                <nav class="nav-menu">
-                    <ul class="left-menu">
-                        <li><a href="#">Kênh Người Bán</a></li>
-                        <li><a href="#">Tải ứng dụng</a></li>
-                        <li><a href="#">Kết nối</a></li>
-                    </ul>
-                    <ul class="right-menu">
-                        <li><a href="#">Hỗ Trợ</a></li>
-                        <li><a href="#">Tiếng Việt</a></li>
-                    </ul>
-                </nav>
-
-                </span>  <!-- Sử dụng Model để lấy thông tin người dùng -->
-            </div>
-    </div>
-    </header>
-    <main>
-        <div class="cart-header">
-            <div class="title-logo">
-                <div class="logo-text">
-                    <img src="https://www.pngmart.com/files/12/Shopee-Logo-Transparent-Background.png" alt="Shopee Logo" class="small-logo">
-                    <span class="shopee-text">Shopee</span>
-                </div>
-                <div class="divider">|</div>
-                <h1>Giỏ Hàng</h1>
-            </div>
-            <div class="search-bar">
-                <input type="text" placeholder="SẮC TƯƠI ĐÓN HÈ - 40%">
-                <button>Tìm kiếm</button>
-            </div>
-        </div>
-    </main> *@
+        
+        
     </div> <!--removed -->
     <!--sản phẩm trong  giỏ hàng-->
-
+@* 
     <div class="container" style="max-width: 1100px;">
         <form>
             <table class="table align-middle mt-4">
@@ -225,9 +221,210 @@
                 <button class="btn btn-danger btn-lg px-5">Mua hàng</button>
             </div>
         </form>
+    </div> *@
+
+   @*  @foreach (var item in Model)
+    {
+        <tr id="row-@item.ProductId">
+            <td><input type="checkbox" /></td>
+            <td class="d-flex align-items-center">
+                <img src="@item.Image" alt="Product" style="width:60px; height:60px; object-fit:cover;" class="me-2 rounded">
+                <span>@item.ProductName</span>
+            </td>
+            <td class="text-danger unit-price" data-price="@item.UnitPrice">
+                @item.UnitPrice.ToString("C0", System.Globalization.CultureInfo.GetCultureInfo("vi-VN"))
+            </td>
+            <td>
+                <div class="input-group input-group-sm" style="width:120px;">
+                    <button class="btn btn-outline-secondary btn-decrease" type="button" data-product-id="@item.ProductId">-</button>
+                    <input type="text" class="form-control text-center quantity-input" id="qty-@item.ProductId" value="@item.Quantity" readonly />
+                    <button class="btn btn-outline-secondary btn-increase" type="button" data-product-id="@item.ProductId">+</button>
+                </div>
+            </td>
+            <td class="text-danger total-price" id="total-@item.ProductId" data-value="@(item.UnitPrice * item.Quantity)">
+                @((item.UnitPrice * item.Quantity).ToString("C0", System.Globalization.CultureInfo.GetCultureInfo("vi-VN")))
+            </td>
+            <td>
+                <button class="btn btn-link text-danger btn-remove" type="button" data-product-id="@item.ProductId">Xóa</button>
+            </td>
+        </tr>
+    } *@
+
+
+
+
+
+    <table class="table table-bordered table-hover align-middle cart-table">
+        <thead class="table-light">
+            <tr>
+                <th><input type="checkbox" /></th>
+                <th>Sản phẩm</th>
+                <th>Đơn giá</th>
+                <th>Số lượng</th>
+                <th>Thành tiền</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr id="row-@item.ProductId">
+                    <td><input type="checkbox" /></td>
+                    <td class="d-flex align-items-center">
+                        <img src="@item.Image" alt="Product" class="me-2">
+                        <span>@item.ProductName</span>
+                    </td>
+                    <td class="text-danger unit-price" data-price="@item.UnitPrice">
+                        @item.UnitPrice.ToString("C0", System.Globalization.CultureInfo.GetCultureInfo("vi-VN"))
+                    </td>
+                    <td>
+                        <div class="input-group input-group-sm" style="width:120px;">
+                            <button class="btn btn-outline-secondary btn-decrease" type="button" data-product-id="@item.ProductId">-</button>
+                            <input type="text" class="form-control text-center quantity-input" id="qty-@item.ProductId" value="@item.Quantity" readonly />
+                            <button class="btn btn-outline-secondary btn-increase" type="button" data-product-id="@item.ProductId">+</button>
+                        </div>
+                    </td>
+                    <td class="text-danger total-price" id="total-@item.ProductId" data-value="@(item.UnitPrice * item.Quantity)">
+                        @((item.UnitPrice * item.Quantity).ToString("C0", System.Globalization.CultureInfo.GetCultureInfo("vi-VN")))
+                    </td>
+                    <td>
+                        <button class="btn btn-link text-danger btn-remove" type="button" data-product-id="@item.ProductId">Xóa</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="d-flex justify-content-end mt-4">
+        <div class="cart-summary d-flex align-items-center gap-4">
+            <span class="fw-bold">Tổng thanh toán:</span>
+            <span id="cart-total" class="fs-4 text-danger fw-bold">
+                @* @Model.Sum(i => i.UnitPrice * i.Quantity).ToString("C0", System.Globalization.CultureInfo.GetCultureInfo("vi-VN")) *@
+                <span id="cart-total" class="fs-4 text-danger fw-bold d-none">₫0</span>
+
+            </span>
+            <button class="btn btn-danger btn-lg px-5">Mua hàng</button>
+        </div>
     </div>
+
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     
 
 
 </body>
 </html>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        
+
+                function formatCurrency(number) {
+            return number.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+        }
+
+        function updateCartTotal() {
+            // let total = 0;
+            // $('input[type="checkbox"]:checked').each(function () {
+            //     const $row = $(this).closest('tr');
+            //     const value = parseFloat($row.find('.total-price').data('value'));
+            //     if (!isNaN(value)) {
+            //         total += value;
+            //     }
+            // });
+            // $('#cart-total').text(formatCurrency(total));
+                let total = 0;
+                let checkedCount = 0;
+
+                $('input[type="checkbox"]:checked').each(function () {
+                    const $row = $(this).closest('tr');
+                    const value = parseFloat($row.find('.total-price').data('value'));
+                    if (!isNaN(value)) {
+                        total += value;
+                        checkedCount++;
+                    }
+                });
+
+                const $cartTotal = $('#cart-total');
+
+                if (checkedCount > 0) {
+                    $cartTotal.text(formatCurrency(total)).removeClass('d-none');
+                } else {
+                    $cartTotal.text('₫0').addClass('d-none');
+                }
+        }
+
+        $(document).ready(function () {
+            // Checkbox change event
+            $('input[type="checkbox"]').change(function () {
+                updateCartTotal();
+            });
+
+            // Increase quantity
+            $('.btn-increase').click(function () {
+                const productId = $(this).data('product-id');
+                $.post('/ShoppingCart/UpdateQuantity', { productId, delta: 1 }, function (newQuantity) {
+                    if (newQuantity <= 0) return;
+                    const $qtyInput = $('#qty-' + productId);
+                    const unitPrice = parseFloat($('#row-' + productId + ' .unit-price').data('price'));
+
+                    $qtyInput.val(newQuantity);
+
+                    const total = unitPrice * newQuantity;
+                    const $totalCell = $('#total-' + productId);
+                    $totalCell.text(formatCurrency(total));
+                    $totalCell.data('value', total);
+
+                    updateCartTotal();
+                });
+            });
+
+            // Decrease quantity
+            $('.btn-decrease').click(function () {
+                const productId = $(this).data('product-id');
+                $.post('/ShoppingCart/UpdateQuantity', { productId, delta: -1 }, function (newQuantity) {
+                    if (newQuantity <= 0) return;
+                    const $qtyInput = $('#qty-' + productId);
+                    const unitPrice = parseFloat($('#row-' + productId + ' .unit-price').data('price'));
+
+                    $qtyInput.val(newQuantity);
+
+                    const total = unitPrice * newQuantity;
+                    const $totalCell = $('#total-' + productId);
+                    $totalCell.text(formatCurrency(total));
+                    $totalCell.data('value', total);
+
+                    updateCartTotal();
+                });
+            });
+
+            // Remove item
+            $('.btn-remove').click(function () {
+                const productId = $(this).data('product-id');
+                $.post('/ShoppingCart/RemoveItem', { productId }, function () {
+                    $('#row-' + productId).remove();
+                    updateCartTotal();
+                });
+            });
+        });
+
+    </script>
+}

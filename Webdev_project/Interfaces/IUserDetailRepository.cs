@@ -8,6 +8,11 @@ namespace Webdev_project.Interfaces
         Task AddUserDetailAsync(UserDetail user);
         Task UpdatePhoneNumberAsync(string userId, string newPhoneNumber);
 
+        Task<List<CartItem>> GetCartItemsAsync(int userId);
+
+        Task<int?> UpdateCartItemQuantityAsync(int userId, string productId, int changeAmount);
+        
+
         Task AddCartItemAsync(int userId, CartItem item);
 
         Task RemoveCartItemAsync(int userId, string productId);

@@ -22,12 +22,86 @@ namespace Webdev_project.Data
             await _userDetail.InsertOneAsync(user);
         }
 
+        public async Task<List<CartItem>> GetCartItemsAsync(int userId)
+        {
+            var filter = Builders<UserDetail>.Filter.Eq(u => u.UserId, userId);
+
+            var projection = Builders<UserDetail>.Projection.Include(u => u.Cart);
+
+            var result = await _userDetail.Find(filter).Project<UserDetail>(projection).FirstOrDefaultAsync();
+
+            return result?.Cart ?? new List<CartItem>();
+        }
+
+
         public async Task AddCartItemAsync(int userId, CartItem item)
         {
             var filter = Builders<UserDetail>.Filter.Eq(u => u.UserId, userId);
             var update = Builders<UserDetail>.Update.Push(u => u.Cart, item);
             await _userDetail.UpdateOneAsync(filter, update);
         }
+
+        //public async Task<int?> UpdateCartItemQuantityAsync(int userId, string productId, int changeAmount)
+        //{
+        //    var filter = Builders<UserDetail>.Filter.And(
+        //        Builders<UserDetail>.Filter.Eq(u => u.UserId, userId),
+        //        Builders<UserDetail>.Filter.ElemMatch(u => u.Cart, c => c.ProductId == productId)
+        //    );
+
+        //    var update = Builders<UserDetail>.Update.Inc("Cart.$.Quantity", changeAmount);
+
+        //    var result = await _userDetail.UpdateOneAsync(filter, update);
+
+        //    if (result.ModifiedCount > 0)
+        //    {
+        //        // Fetch the updated quantity
+        //        var updatedUser = await _userDetail.Find(
+        //            Builders<UserDetail>.Filter.Eq(u => u.UserId, userId)
+        //        ).FirstOrDefaultAsync();
+
+        //        var item = updatedUser?.Cart?.FirstOrDefault(c => c.ProductId == productId);
+        //        return item?.Quantity;
+        //    }
+
+        //    return null; // not updated
+        //}
+        public async Task<int?> UpdateCartItemQuantityAsync(int userId, string productId, int changeAmount)
+        {
+            // Step 1: Get current quantity
+            var user = await _userDetail.Find(
+                Builders<UserDetail>.Filter.Eq(u => u.UserId, userId)
+            ).FirstOrDefaultAsync();
+
+            var item = user?.Cart?.FirstOrDefault(c => c.ProductId == productId);
+            if (item == null) return null;
+
+            int newQuantity = item.Quantity + changeAmount;
+
+            // Step 2: Check if the new quantity would be <= 1
+            if (newQuantity <= 0)
+            {
+                return item.Quantity; // Don't allow reducing to 1 or below
+            }
+
+            // Step 3: Proceed with update
+            var filter = Builders<UserDetail>.Filter.And(
+                Builders<UserDetail>.Filter.Eq(u => u.UserId, userId),
+                Builders<UserDetail>.Filter.ElemMatch(u => u.Cart, c => c.ProductId == productId)
+            );
+
+            var update = Builders<UserDetail>.Update.Inc("Cart.$.Quantity", changeAmount);
+
+            var result = await _userDetail.UpdateOneAsync(filter, update);
+
+            if (result.ModifiedCount > 0)
+            {
+                return newQuantity;
+            }
+
+            return null;
+        }
+
+
 
         public async Task RemoveCartItemAsync(int userId, string productId)
         {

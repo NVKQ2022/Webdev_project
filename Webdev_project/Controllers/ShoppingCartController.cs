@@ -6,6 +6,7 @@ using Webdev_project.Helpers;
 using System.Collections.Generic;
 using System.Linq;
 using Webdev_project.Interfaces;
+using Webdev_project.Data;
 
 namespace Webdev_project.Controllers
 {
@@ -18,52 +19,63 @@ namespace Webdev_project.Controllers
             this.userDetailRepository = userDetailRepository;
             this.authenticationRepository = authenticationRepository;
         }
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var cart = HttpContext.Session.GetObjectFromJson<List<CartItem>>("Cart");
-            if (cart == null || cart.Count == 0)
+           
+            string sessionId = HttpContext.Request.Cookies["SessionId"];
+
+            if (sessionId == null)
             {
-                // Thêm dữ liệu test nếu giỏ hàng rỗng
-                cart = new List<CartItem>
-        {
-            new CartItem
-            {
-                ProductId = "1",
-                ProductName = "Tai nghe Bluetooth",
-                Image = "https://phukiengiare.com/images/detailed/63/tai-nghe-bluetooth-baseus-w04-pro-1.jpg",
-                UnitPrice = 19000,
-                Quantity = 1
-            },
-            new CartItem
-            {
-                ProductId = "2",
-                ProductName = "Áo thun Shopee",
-                Image = "https://th.bing.com/th/id/R.d5650f1b99876ba4f12cc3e246dd6c30?rik=aUA6PMpxrEryxQ&pid=ImgRaw&r=0",
-                UnitPrice = 99000,
-                Quantity = 2
+                return View("~/Views/Authenticate/MyLogin.cshtml");
             }
-        };
-                HttpContext.Session.SetObjectAsJson("Cart", cart);
-            }
+
+            var cart =await userDetailRepository.GetCartItemsAsync(authenticationRepository.RetrieveFromSession(sessionId).Id);
+
             return View(cart);
+          
         }
+
+      
+
 
         [HttpPost]
-        public IActionResult Increase(string productId)
+        public async Task<IActionResult> UpdateQuantity(string productId, int delta)
         {
-            var cart = HttpContext.Session.GetObjectFromJson<List<CartItem>>("Cart") ?? new List<CartItem>();
-            var item = cart.FirstOrDefault(x => x.ProductId == productId);
-            if (item != null) item.Quantity++;
-            HttpContext.Session.SetObjectAsJson("Cart", cart);
-            return RedirectToAction("Index");
+            string sessionId = Request.Cookies["SessionId"];
+            var userId = authenticationRepository.RetrieveFromSession(sessionId).Id;
+            var updateQuantity = await userDetailRepository.UpdateCartItemQuantityAsync(userId, productId, delta);
+
+
+
+            return Ok(updateQuantity);
         }
 
+
+        [HttpPost]
+        public async Task<IActionResult> RemoveItem(string productId)
+        {
+            string sessionId = Request.Cookies["SessionId"];
+            var userId = authenticationRepository.RetrieveFromSession(sessionId).Id;
+
+            await userDetailRepository.RemoveCartItemAsync(userId, productId);
+            return Ok();
+        }
         [HttpPost]
         public IActionResult Decrease(string productId)
         {
             var cart = HttpContext.Session.GetObjectFromJson<List<CartItem>>("Cart") ?? new List<CartItem>();
             var item = cart.FirstOrDefault(x => x.ProductId == productId);
             if (item != null && item.Quantity > 1) item.Quantity--;
+            HttpContext.Session.SetObjectAsJson("Cart", cart);
+            return RedirectToAction("Index");
+
+        }
+        [HttpPost]
+        public IActionResult Increase(string productId)
+        {
+            var cart = HttpContext.Session.GetObjectFromJson<List<CartItem>>("Cart") ?? new List<CartItem>();
+            var item = cart.FirstOrDefault(x => x.ProductId == productId);
+            if (item != null) item.Quantity++;
             HttpContext.Session.SetObjectAsJson("Cart", cart);
             return RedirectToAction("Index");
         }
