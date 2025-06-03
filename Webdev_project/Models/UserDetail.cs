@@ -26,7 +26,7 @@ namespace Webdev_project.Models
         public DateTime Birthday { get; set; }
 
         public Banking Banking { get; set; }
-
+       
         
     }
 

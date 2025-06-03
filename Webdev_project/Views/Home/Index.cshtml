@@ -10,6 +10,7 @@
 }
 
 <style>
+
     #categoryItems .card {
         width: 180px;
         min-width: 180px;
@@ -45,42 +46,6 @@
 
 
     
-    @* <h3> THE BEST SO FAR</h3>
-    <h5 class="fw-bold mb-3">DANH MỤC</h5>
-
-    <div class="position-relative"
-         style="max-width: calc(6 * (180px + 16px)); margin: auto; overflow: hidden;">
-
-        <button class="btn btn-light position-absolute start-0"
-                style="top: 30%; transform: translateY(-50%) translateX(-80%); z-index: 2;"
-                onclick="scrollCategory(-1)">
-            <i class="bi bi-chevron-left fs-4"></i>
-        </button>
-
-        <div id="categoryCarousel" class="d-flex overflow-hidden" style="scroll-behavior: smooth; width: 100%;">
-            <div id="categoryItems" class="d-flex">
-                @foreach (var category in Categories)
-                {
-                    <div class="card shadow-sm border-0" role="button" tabindex="0" aria-label="@category.CateName">
-                        <img src="@category.Image" class="card-img-top" alt="@category.CateName" />
-                        <div class="card-body p-2">
-                            <h6 class="card-title text-truncate">@category.CateName</h6>
-                            <p class="mb-1 small text-muted">Đã mua: <span class="text-dark">@category.BuyTime</span></p>
-                            <p class="mb-0 small text-muted">Sản phẩm: <span class="text-dark">@category.ProductQuantity</span></p>
-                        </div>
-                    </div>
-                }
-            </div>
-        </div>
-
-        <button class="btn btn-light position-absolute end-0"
-                style="top: 30%; transform: translateY(-50%) translateX(80%); z-index: 2;"
-                onclick="scrollCategory(1)">
-            <i class="bi bi-chevron-right fs-4"></i>
-        </button>
-    </div>
- *@
-
 
     <h5 class="fw-bold mb-3">DANH MỤC</h5>
 

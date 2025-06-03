@@ -26,5 +26,6 @@ namespace Webdev_project.Interfaces
         Task EnsureColorIsArrayAsync();
         //Task changeProductId();
         Task AddSoldFieldWithRandomValueAsync();
+        Task<List<Product>> SearchAsync(string keyword);
     }
 }

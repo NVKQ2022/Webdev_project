@@ -1,6 +1,71 @@
-﻿@{
-    ViewData["Title"] = "Privacy Policy";
+﻿﻿@{
+    ViewData["Title"] = "Privacy";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<style>
+    .box-container {
+        background-color: white;
+        padding: 0;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        margin-top: 50px;
+        margin-bottom: 50px;
+        overflow: hidden;
+    }
+
+    .section-header {
+        color: white;
+        font-weight: bold;
+        font-size: 1.4rem;
+        padding: 12px 20px;
+        background: linear-gradient(90deg, #3a7bd5, #6a11cb);
+        margin-bottom: 15px;
+    }
+
+    .content-padding {
+        padding: 20px;
+        line-height: 1.6;
+    }
+
+    h4 {
+        margin-top: 20px;
+        color: #6a11cb;
+    }
+
+    ul {
+        margin-top: 10px;
+        margin-bottom: 10px;
+        padding-left: 20px;
+    }
+</style>
+
+<div class="container box-container">
+    <div class="section-header">
+        <i class="bi bi-question-circle"></i> @ViewData["Title"] của WDShop
+    </div>
+    <div class="content-padding">
+        <h4>🛒 Hướng dẫn mua hàng</h4>
+        <p>Để đặt hàng trên WDShop, bạn chỉ cần thực hiện các bước sau:</p>
+        <ul>
+            <li>Chọn sản phẩm yêu thích và thêm vào giỏ hàng.</li>
+            <li>Điền thông tin giao hàng và xác nhận đơn hàng.</li>
+            <li>Theo dõi trạng thái đơn hàng qua mục "Đơn hàng của tôi".</li>
+        </ul>
+
+        <h4>🤝 Hỗ trợ khách hàng</h4>
+        <p>Đội ngũ chăm sóc khách hàng WDShop luôn sẵn sàng hỗ trợ:</p>
+        <ul>
+            <li>Hotline: 1900 xxx xxx</li>
+            <li>Email: 23521691@gm.uit.edu.vn</li>
+            <li>Facebook: WDShop.</li>
+        </ul>
+
+        <h4>📜 Điều khoản sử dụng</h4>
+        <p>Bằng việc sử dụng dịch vụ của WDShop, bạn đồng ý tuân thủ các điều khoản:</p>
+        <ul>
+            <li>Không sử dụng dịch vụ cho mục đích vi phạm pháp luật.</li>
+            <li>Tôn trọng bản quyền nội dung, sản phẩm trên website.</li>
+            <li>WDShop có quyền điều chỉnh điều khoản bất kỳ lúc nào.</li>
+        </ul>
+    </div>
+</div>

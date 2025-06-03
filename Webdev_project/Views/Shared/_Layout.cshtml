@@ -1,21 +1,8 @@
-﻿@{
-    // ViewData["Title"] = "Home Page";
-    // var isLoggedIn= false;
-    // if( Context.Request.Cookies["Username"]!=null){
-    //     isLoggedIn = true;
-    // }
-    // else{
-    //     isLoggedIn = false;
-    // }
-    // var userName = Context.Request.Cookies["Username"];
-    // var mostSearch = ViewBag.mostSearch;
-
-
-
-    
+﻿﻿@{
     bool isLoggedIn = ViewBag.isLoggedIn ?? false;
     string userName = ViewBag.userName ?? "";
 }
+
 
 
 <!DOCTYPE html>
@@ -23,12 +10,12 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - ShopeeClone</title>
+    <title>@ViewData["Title"] - WDShop</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="/css/site.css" />
 </head>
 <body>
-    
+
     <style>
         form.input-group {
             width: 100%;
@@ -42,8 +29,6 @@
 
         .dropdown-menu {
             transition: all 0.2s ease;
-
-        
         }
 
         .search-bar {
@@ -63,10 +48,19 @@
             }
 
             .search-bar button {
-                background-color: #ff5722;
+                background-color: #6a11cb;
                 color: white;
                 cursor: pointer;
             }
+
+        .suggestions-container {
+            background: white;
+            border: 1px solid #ddd;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 999;
+        }
 
         .suggestion-item {
             display: flex;
@@ -76,7 +70,6 @@
             align-items: center;
             text-decoration: none;
             color: inherit;
-            background: white;
         }
 
         .suggestion-img {
@@ -86,59 +79,63 @@
         }
 
         .suggestion-details {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
             flex: 1;
         }
 
         .suggestion-name {
             font-size: 13px;
+            font-weight: 500;
             color: #333;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: -webkit-box;
-            -webkit-line-clamp: 1;
-            -webkit-box-orient: vertical;
         }
 
         .suggestion-price {
-            color: #6f42c1;
-            font-size: 14px;
-            font-weight: 500;
+            color: #6a11cb;
+            font-size: 13px;
         }
 
-        .suggestions-container {
-            background: white;
-            border: 1px solid #ddd;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
-        }
     </style>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
 
     <!-- Shopee-style Navbar (Unified with background) -->
-    <div class="shopee-navbar" style="background: linear-gradient(to right, #f53d2d, #f63); color: white;">
+    <div class="shopee-navbar" style="background: linear-gradient(to right, #3a7bd5, #6a11cb); color: white;">
         <div class="container py-2 d-flex justify-content-between align-items-center small">
-            <!-- Left side -->
-            <div>
-                <a href="#" class="text-white text-decoration-none">
-                    Kết nối <i class="fab fa-facebook-f mx-1"></i><i class="fab fa-instagram"></i>
+
+            <!-- Left side: Kết nối -->
+            <div class="d-flex align-items-center">
+                <span class="me-2">Kết nối</span>
+
+                <!-- Facebook icon -->
+                <a href="https://www.facebook.com/truong.le.183087/?locale=vi_VN" target="_blank" class="text-white me-2 d-flex align-items-center" style="line-height: 1;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-facebook" viewBox="0 0 16 16">
+                        <path d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951" />
+                    </svg>
+                </a>
+
+                <!-- Gmail icon -->
+                <a href="mailto:23521691@gm.uit.edu.vn" target="_blank" class="text-white d-flex align-items-center" style="line-height: 1;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-envelope" viewBox="0 0 16 16">
+                        <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1zm13 2.383-4.708 2.825L15 11.105zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741M1 11.105l4.708-2.897L1 5.383z" />
+                    </svg>
                 </a>
             </div>
 
-            <!-- Right side -->
+
+
+            <!-- Right side: Ngôn ngữ + Đăng ký/Đăng nhập -->
             <div class="d-flex align-items-center">
+                <div class="dropdown me-3">
+                    <a class="text-white dropdown-toggle text-decoration-none" href="#" role="button" id="langDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        Tiếng Việt
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end text-dark" aria-labelledby="langDropdown">
+                        <li><a class="dropdown-item" href="#">Tiếng Việt</a></li>
+                        <li><a class="dropdown-item" href="#">English</a></li>
+                    </ul>
+                </div>
 
-
-                @* <a href="#" class="text-white me-3 text-decoration-none"><i class="fas fa-bell"></i> Thông Báo</a>
-                <a href="#" class="text-white me-3 text-decoration-none"><i class="fas fa-question-circle"></i> Hỗ Trợ</a>
-                <a href="#" class="text-white me-3 text-decoration-none"><i class="fas fa-globe"></i> Tiếng Việt</a>
-                *@
-
-
-                @if (isLoggedIn )
+                @if (isLoggedIn)
                 {
                     <div class="dropdown">
                         <a class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
@@ -156,92 +153,59 @@
                 }
                 else
                 {
-                    <a href="/Authenticate/MyLogin" class="text-white me-2 text-decoration-none">Login</a>
+                    <a href="/Authenticate/MyRegister" class="text-white me-2 text-decoration-none">Đăng Ký</a>
+                    <a href="/Authenticate/MyLogin" class="text-white text-decoration-none">Đăng Nhập</a>
                 }
             </div>
+
         </div>
         <!-- Main Navbar: All elements in one row -->
-        <div class="container py-3 d-flex justify-content-between align-items-center">
+        <div class="container py-3 d-flex justify-content-between align-items-top">
 
             <!-- Logo -->
-            <div class="d-flex align-items-center">
-                <img src="/images/shopee-logo.png" width="40" class="me-2" />
-                <h4 class="text-white m-0 fw-bold">Shopee</h4>
-            </div>
-
-            <!-- Search Bar (centered, full width in the middle) with icon -->
-
-
-
-
-            @* <form class="input-group flex-grow-1 mx-4" style="max-width: 750px;">
-                <input class="form-control border-0 rounded-start-pill" type="search"
-                       placeholder="LANEIGE DEAL HỜI QUÀ KHỦNG B1G1" />
-
-                
-                <button class="btn rounded-end-pill"
-                        style="background-color: #ee4d2d; border: 2px solid white;">
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M11.7422 10.3439C12.5329 9.2673 13 7.9382 13 6.5C13 2.91015 10.0899 0 6.5 0C2.91015 0 0 2.91015 0 6.5C0 10.0899 2.91015 13 6.5 13C7.93858 13 9.26801 12.5327 10.3448 11.7415L10.3439 11.7422C10.3734 11.7822 10.4062 11.8204 10.4424 11.8566L14.2929 15.7071C14.6834 16.0976 15.3166 16.0976 15.7071 15.7071C16.0976 15.3166 16.0976 14.6834 15.7071 14.2929L11.8566 10.4424C11.8204 10.4062 11.7822 10.3734 11.7422 10.3439ZM12 6.5C12 9.53757 9.53757 12 6.5 12C3.46243 12 1 9.53757 1 6.5C1 3.46243 3.46243 1 6.5 1C9.53757 1 12 3.46243 12 6.5Z" fill="white" />
-                    </svg>
-
-                </button>
-            </form> *@
+            <a href="/Home/Index" class="d-flex align-items-baseline text-decoration-none">
+                <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="white" class="bi bi-shop me-2" viewBox="0 0 16 16">
+                    <path d="M2.97 1.35A1 1 0 0 1 3.73 1h8.54a1 1 0 0 1 .76.35l2.609 3.044A1.5 1.5 0 0 1 16 5.37v.255a2.375 2.375 0 0 1-4.25 1.458A2.37 2.37 0 0 1 9.875 8 2.37 2.37 0 0 1 8 7.083 2.37 2.37 0 0 1 6.125 8a2.37 2.37 0 0 1-1.875-.917A2.375 2.375 0 0 1 0 5.625V5.37a1.5 1.5 0 0 1 .361-.976zm1.78 4.275a1.375 1.375 0 0 0 2.75 0 .5.5 0 0 1 1 0 1.375 1.375 0 0 0 2.75 0 .5.5 0 0 1 1 0 1.375 1.375 0 1 0 2.75 0V5.37a.5.5 0 0 0-.12-.325L12.27 2H3.73L1.12 5.045A.5.5 0 0 0 1 5.37v.255a1.375 1.375 0 0 0 2.75 0 .5.5 0 0 1 1 0M1.5 8.5A.5.5 0 0 1 2 9v6h1v-5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v5h6V9a.5.5 0 0 1 1 0v6h.5a.5.5 0 0 1 0 1H.5a.5.5 0 0 1 0-1H1V9a.5.5 0 0 1 .5-.5M4 15h3v-5H4zm5-5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1zm3 0h-2v3h2z" />
+                </svg>
+                <h4 class="text-white m-0 fw-bold" style="font-size: 2rem;">WDShop</h4>
+            </a>
 
 
 
 
-            <form class="search-container d-flex position-relative" id="searchForm"
-                  action="/SearchResult/SearchResults" method="get"
-                  style="max-width: 750px; flex-grow: 1; margin: 0 1.5rem;">
-                <input type="text" id="searchInput" name="query" class="form-control"
-                       placeholder="Tìm kiếm sản phẩm..." autocomplete="off"
-                       style="border-radius: 0; border: 2px solid white;">
-                <button class="btn" type="submit" style="background-color: #6f42c1; border: 2px solid white; border-radius: 0;">
+            <form method="get" action="/Product/Search" class="input-group flex-grow-1 mx-4" style="max-width: 900px;" id="searchForm">
+                <input id="searchInput" class="form-control" type="search" name="keyword" placeholder="Nhập từ khóa tìm kiếm" autocomplete="off" required
+                       style="border-top-left-radius: 12px; border-bottom-left-radius: 12px; border-top-right-radius: 0; border-bottom-right-radius: 0; border: 2px solid #6a11cb;" />
+                <button class="btn" type="submit" style="background-color: #6a11cb; color: white; border-top-right-radius: 12px; border-bottom-right-radius: 12px; border: 2px solid #6a11cb;">
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M11.7422 10.3439C12.5329 9.2673 13 7.9382 13 6.5C13 2.91015 10.0899 0 6.5 0C2.91015 0 0 2.91015 0 6.5C0 10.0899 2.91015 13 6.5 13C7.93858 13 9.26801 12.5327 10.3448 11.7415L10.3439 11.7422C10.3734 11.7822 10.4062 11.8204 10.4424 11.8566L14.2929 15.7071C14.6834 16.0976 15.3166 16.0976 15.7071 15.7071C16.0976 15.3166 16.0976 14.6834 15.7071 14.2929L11.8566 10.4424C11.8204 10.4062 11.7822 10.3734 11.7422 10.3439ZM12 6.5C12 9.53757 9.53757 12 6.5 12C3.46243 12 1 9.53757 1 6.5C1 3.46243 3.46243 1 6.5 1C9.53757 1 12 3.46243 12 6.5Z" fill="white" />
                     </svg>
                 </button>
-                <div id="suggestionsContainer" class="suggestions-container position-absolute" style="top: 100%; left: 0; right: 0; z-index: 1000;"></div>
+                <div id="suggestionsContainer" class="suggestions-container position-absolute" style="top: 100%; left: 0; right: 0; display:none;"></div>
             </form>
 
 
 
 
-
-
-
-
-           
             @*<a asp-controller="ShoppingCart" asp-action="Index" class="btn btn-primary">Giỏ hàng</a>*@
 
 
-            <!-- Cart (icon) -->
-            <div class="position-relative">
-                
-                <a asp-controller="ShoppingCart" asp-action="Index" class="btn btn-purle">
+            <!-- Cart and Notification icons -->
+            <div class="d-flex align-items-center position-relative">
+                <!-- Notification icon -->
+                <a href="Notifications" class="btn btn-purple me-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="white" class="bi bi-bell" viewBox="0 0 16 16">
+                        <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2M8 1.918l-.797.161A4 4 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4 4 0 0 0-3.203-3.92zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5 5 0 0 1 13 6c0 .88.32 4.2 1.22 6" />
+                    </svg>
+                </a>
+
+                <!-- Cart icon -->
+                <a asp-controller="ShoppingCart" asp-action="Index" class="btn btn-purple position-relative">
                     <svg width="30" height="30" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M0 2.5C0 2.22386 0.223858 2 0.5 2H2C2.22943 2 2.42943 2.15615 2.48507 2.37873L2.89039 4H14.5C14.654 4 14.7993 4.07094 14.8941 4.19229C14.9889 4.31365 15.0224 4.4719 14.9851 4.62127L13.4851 10.6213C13.4294 10.8439 13.2294 11 13 11H4C3.77057 11 3.57057 10.8439 3.51493 10.6213L1.60961 3H0.5C0.223858 3 0 2.77614 0 2.5ZM3.14039 5L3.64039 7H5V5H3.14039ZM6 5V7H8V5H6ZM9 5V7H11V5H9ZM12 5V7H13.3596L13.8596 5H12ZM13.1096 8H12V10H12.6096L13.1096 8ZM11 8H9V10H11V8ZM8 8H6V10H8V8ZM5 8H3.89039L4.39039 10H5V8ZM5 13C4.44772 13 4 13.4477 4 14C4 14.5523 4.44772 15 5 15C5.55228 15 6 14.5523 6 14C6 13.4477 5.55228 13 5 13ZM3 14C3 12.8954 3.89543 12 5 12C6.10457 12 7 12.8954 7 14C7 15.1046 6.10457 16 5 16C3.89543 16 3 15.1046 3 14ZM12 13C11.4477 13 11 13.4477 11 14C11 14.5523 11.4477 15 12 15C12.5523 15 13 14.5523 13 14C13 13.4477 12.5523 13 12 13ZM10 14C10 12.8954 10.8954 12 12 12C13.1046 12 14 12.8954 14 14C14 15.1046 13.1046 16 12 16C10.8954 16 10 15.1046 10 14Z" fill="white" />
                     </svg>
-
-
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-light text-danger">5</span>
                 </a>
-                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-light text-danger">5</span>
-            </div>
-        </div>
-
-
-        <!-- Centered Trending Search -->
-        <div class="container mt-2 text-center">
-            <div class="d-flex justify-content-center flex-wrap gap-3 small">
-                <a href="/Products/Product" class="text-white text-decoration-none">dong ho</a>
-                <a href="#" class="text-white text-decoration-none">Bàn Phím Cơ Thanh Lý</a>
-                <a href="#" class="text-white text-decoration-none">Áo khoac</a>
-                <a href="#" class="text-white text-decoration-none">Cây Lười Hổ</a>
-                <a href="#" class="text-white text-decoration-none">caosu Mềm</a>
-                <a href="#" class="text-white text-decoration-none">Gấu Bông </a>
-                <a href="#" class="text-white text-decoration-none">Mèo Thật 100%</a>
-                <a href="#" class="text-white text-decoration-none">trai cay kho</a>
             </div>
         </div>
     </div>
@@ -255,119 +219,178 @@
         @RenderBody()
     </main>
 
-    
-    <footer class="footer-fixed">
-        &copy; 2025 ShopeeClone
+
+    <footer class="footer">
+        <div class="container py-4">
+            <div class="row">
+                <div class="col-md-3">
+                    <h5>Liên hệ</h5>
+                    <p>Trường Đại học Công nghệ Thông tin - ĐHQG TP.HCM</p>
+                    <p>Hotline: 1900 xxx xxx</p>
+                    <p>Email: cskh@wdshop.com</p>
+                </div>
+                <div class="col-md-3">
+                    <h5>Dịch Vụ</h5>
+                    <ul class="list-unstyled">
+                        <li><a asp-controller="Home" asp-action="Policy">Chính sách bảo mật</a></li>
+                        <li><a asp-controller="Home" asp-action="Policy">Chính sách đổi trả</a></li>
+                        <li><a asp-controller="Home" asp-action="Policy">Chính sách vận chuyển</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>Hỗ Trợ</h5>
+                    <ul class="list-unstyled">
+                        <li><a asp-controller="Home" asp-action="Privacy">Hướng dẫn mua hàng</a></li>
+                        <li><a asp-controller="Home" asp-action="Privacy">Hỗ trợ khách hàng</a></li>
+                        <li><a asp-controller="Home" asp-action="Privacy">Điều khoản sử dụng</a></li>
+
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>Kết nối</h5>
+                    <div class="d-flex flex-column">
+                        <a href="https://www.facebook.com/truong.le.183087/?locale=vi_VN" class="text-dark mb-2 d-flex align-items-center">
+                            <i class="bi bi-facebook fs-4 me-2"></i> Facebook
+                        </a>
+                        <a href="mailto:23521691@gm.uit.edu.vn" class="text-dark d-flex align-items-center">
+                            <i class="bi bi-envelope fs-4 me-2"></i> Gmail
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center mt-3">
+                &copy; 2025 WDShop. All rights reserved.
+            </div>
+        </div>
     </footer>
+
     <style>
-        .footer-fixed {
-            position: fixed;
-            left: 0;
-            bottom: 0;
-            width: 100%;
+        .footer {
             background: #f5f5f5;
             color: #333;
-            text-align: center;
-            padding: 10px 0;
+            padding: 30px 0;
             border-top: 1px solid #ddd;
-            z-index: 999;
         }
+
+            .footer a {
+                text-decoration: none;
+                color: #333;
+            }
+
+                .footer a:hover {
+                    text-decoration: underline;
+                }
+
+            .footer h5 {
+                font-weight: bold;
+                margin-bottom: 15px;
+            }
+
+            .footer p, .footer ul {
+                margin: 0;
+                padding: 0;
+            }
+
+            .footer ul {
+                list-style: none;
+            }
+
+                .footer ul li {
+                    margin-bottom: 8px;
+                }
+
+            .footer img {
+                margin-right: 10px;
+                margin-top: 5px;
+            }
+
     </style>
-
     @RenderSection("Scripts", required: false)
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/site.js"></script>
+    <script>
+         document.addEventListener('DOMContentLoaded', function () {
+            const searchInput = document.getElementById('searchInput');
+            const suggestionsContainer = document.getElementById('suggestionsContainer');
+            let debounceTimer;
 
-</body>
-</html>
-<!-- Bootstrap CSS -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+            searchInput.addEventListener('input', function () {
+                const query = this.value;
 
-<!-- Bootstrap Icons -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+                // Xóa bộ đếm thời gian cũ mỗi khi người dùng gõ phím mới
+                clearTimeout(debounceTimer);
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="/js/site.js"></script>
-<script>
-     document.addEventListener('DOMContentLoaded', function () {
-        const searchInput = document.getElementById('searchInput');
-        const suggestionsContainer = document.getElementById('suggestionsContainer');
-        let debounceTimer;
+                // Nếu ô tìm kiếm trống, hãy ẩn khung đề xuất và dừng lại
+                if (query.length < 2) {
+                    suggestionsContainer.innerHTML = '';
+                    suggestionsContainer.style.display = 'none';
+                    return;
+                }
 
-        searchInput.addEventListener('input', function () {
-            const query = this.value;
-
-            // Xóa bộ đếm thời gian cũ mỗi khi người dùng gõ phím mới
-            clearTimeout(debounceTimer);
-
-            // Nếu ô tìm kiếm trống, hãy ẩn khung đề xuất và dừng lại
-            if (query.length < 2) {
-                suggestionsContainer.innerHTML = '';
-                suggestionsContainer.style.display = 'none';
-                return;
-            }
-
-            // Đặt một bộ đếm thời gian mới (Debouncing).
-            // Yêu cầu API sẽ chỉ được gửi sau khi người dùng ngừng gõ trong 300ms.
-            debounceTimer = setTimeout(() => {
-                // Gọi API để lấy đề xuất
-                fetch(`/api/Search/suggestions?query=${encodeURIComponent(query)}`)
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok');
-                        }
-                        return response.json();
-                    })
-                    .then(suggestions => {
-                        // Hiển thị các đề xuất nhận được
-                        displaySuggestions(suggestions);
-                    })
-                    .catch(error => {
-                        console.error('There has been a problem with your fetch operation:', error);
-                        suggestionsContainer.innerHTML = '';
-                        suggestionsContainer.style.display = 'none';
-                    });
-            }, 300); // 300ms delay
-        });
-
-        // Hàm để hiển thị các đề xuất trong container
-        function displaySuggestions(suggestions) {
-            // Xóa các đề xuất cũ
-            suggestionsContainer.innerHTML = '';
-
-            if (suggestions.length === 0) {
-                suggestionsContainer.style.display = 'none';
-                return;
-            }
-
-            // Tạo và thêm từng mục đề xuất vào container
-            suggestions.forEach(suggestion => {
-                // Mỗi đề xuất là một thẻ 'a' để có thể click vào
-                const suggestionItem = document.createElement('a');
-                suggestionItem.href = suggestion.url; // URL đã được tạo từ Controller
-                suggestionItem.classList.add('suggestion-item');
-
-                // Cấu trúc HTML cho một mục đề xuất
-                suggestionItem.innerHTML = `
-                <div class="suggestion-details">
-                    <div class="suggestion-name">${suggestion.name}</div>
-                    <div class="suggestion-price">${suggestion.price}</div>
-                </div>
-                <img src="${suggestion.imageURL}" alt="${suggestion.name}" class="suggestion-img">
-            `;
-
-                suggestionsContainer.appendChild(suggestionItem);
+                // Đặt một bộ đếm thời gian mới (Debouncing).
+                // Yêu cầu API sẽ chỉ được gửi sau khi người dùng ngừng gõ trong 300ms.
+                debounceTimer = setTimeout(() => {
+                    // Gọi API để lấy đề xuất
+                    fetch(`/api/Search/suggestions?query=${encodeURIComponent(query)}`)
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
+                        .then(suggestions => {
+                            // Hiển thị các đề xuất nhận được
+                            displaySuggestions(suggestions);
+                        })
+                        .catch(error => {
+                            console.error('There has been a problem with your fetch operation:', error);
+                            suggestionsContainer.innerHTML = '';
+                            suggestionsContainer.style.display = 'none';
+                        });
+                }, 300); // 300ms delay
             });
 
-            // Hiển thị container
-            suggestionsContainer.style.display = 'block';
-            suggestionsContainer.style.backgroundColor = 'white';
-        }
+            // Hàm để hiển thị các đề xuất trong container
+            function displaySuggestions(suggestions) {
+                // Xóa các đề xuất cũ
+                suggestionsContainer.innerHTML = '';
 
-        // Ẩn khung đề xuất khi người dùng click ra ngoài
-        document.addEventListener('click', function (event) {
-            if (!searchInput.contains(event.target)) {
-                suggestionsContainer.style.display = 'none';
+                if (suggestions.length === 0) {
+                    suggestionsContainer.style.display = 'none';
+                    return;
+                }
+
+                // Tạo và thêm từng mục đề xuất vào container
+                suggestions.forEach(suggestion => {
+                    // Mỗi đề xuất là một thẻ 'a' để có thể click vào
+                    const suggestionItem = document.createElement('a');
+                    suggestionItem.href = suggestion.url; // URL đã được tạo từ Controller
+                    suggestionItem.classList.add('suggestion-item');
+
+                    // Cấu trúc HTML cho một mục đề xuất
+                    suggestionItem.innerHTML = `
+                    <div class="suggestion-details">
+                        <div class="suggestion-name">${suggestion.name}</div>
+                        <div class="suggestion-price">${suggestion.price}</div>
+                    </div>
+                    <img src="${suggestion.imageURL}" alt="${suggestion.name}" class="suggestion-img">
+                `;
+
+                    suggestionsContainer.appendChild(suggestionItem);
+                });
+
+                // Hiển thị container
+                suggestionsContainer.style.display = 'block';
+                suggestionsContainer.style.backgroundColor = 'white';
             }
+
+            // Ẩn khung đề xuất khi người dùng click ra ngoài
+            document.addEventListener('click', function (event) {
+                if (!searchInput.contains(event.target)) {
+                    suggestionsContainer.style.display = 'none';
+                }
+            });
         });
-    });
-</script>
+    </script>
+</body>
+</html>

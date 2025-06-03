@@ -38,6 +38,33 @@ namespace Webdev_project.Controllers
         }
 
 
+
+        public async Task<IActionResult> Index2(int page = 1)
+        {
+            int pageSize = 42; // Hiển thị 7 dòng x 6 cột
+            ConverterHelper converterHelper = new ConverterHelper();
+            var categories = await categoryRepository.GetCategoriesSortedByBuyTimeAsync();
+            
+            List<Product_zip> product_Zips = converterHelper.ConvertProductListToProductZipList(await productRepository.GetAllAsync());
+
+            int totalProducts = product_Zips.Count;
+            int totalPages = (int)Math.Ceiling((double)totalProducts / pageSize);
+
+            var pagedProducts = product_Zips
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            ViewBag.product = pagedProducts;
+            ViewBag.Categories = categories;
+            ViewBag.TotalPages = totalPages;
+            ViewBag.CurrentPage = page;
+
+            return View();
+        }
+
+
+
         [HttpGet("Index/{category}")]
         public async  Task<IActionResult> Index(string category)
         {
@@ -59,8 +86,10 @@ namespace Webdev_project.Controllers
 
 
 
-
-
+        public IActionResult Policy()
+        {
+            return View();
+        }
 
         public IActionResult Privacy()
         {

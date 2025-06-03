@@ -3,10 +3,17 @@ using Webdev_project.Models;
 
 namespace Webdev_project.Interfaces
 {
+    public enum UserAction
+    {
+        Click,
+        AddToCart,
+        Purchase,
+        ClickCategory
+    }
     public interface IUserDetailRepository
     {
         Task AddUserDetailAsync(UserDetail user);
-        Task UpdatePhoneNumberAsync(string userId, string newPhoneNumber);
+        Task UpdatePhoneNumberAsync(int userId, string newPhoneNumber);
 
         Task<List<CartItem>> GetCartItemsAsync(int userId);
 
@@ -20,8 +27,8 @@ namespace Webdev_project.Interfaces
        
         Task AddReceiveInfoAsync(int userId, ReceiveInfo newInfo);
         Task<bool> DeleteReceiveInfoAsync(int userId, ReceiveInfo targetInfo);
-        
-
         Task UpdateBankingInfoAsync(int userId, string newAccount, string newCard);
+        Task UpdateCategoryScoreAsync(int userId, string categoryName, UserAction action);
+        
     }
 }

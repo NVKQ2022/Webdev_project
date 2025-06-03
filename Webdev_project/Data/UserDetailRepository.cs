@@ -113,33 +113,6 @@ namespace Webdev_project.Data
             await _userDetail.UpdateOneAsync(filter, update);
         }
 
-
-
-        //public async Task AddReceiveInfoAsync(int userId, ReceiveInfo newInfo)
-        //{
-        //    var filter = Builders<UserDetail>.Filter.Eq(u => u.UserId, userId);
-        //    var update = Builders<UserDetail>.Update.Push(u => u.ReceiveInfo, newInfo);
-
-        //    await _userDetail.UpdateOneAsync(filter, update);
-        //}
-
-        //public async Task<bool> DeleteReceiveInfoAsync(int userId, ReceiveInfo targetInfo)
-        //{
-        //    var filter = Builders<UserDetail>.Filter.Eq(u => u.UserId, userId);
-
-
-        //    var update = Builders<UserDetail>.Update.PullFilter(u => u.ReceiveInfo,
-        //        Builders<ReceiveInfo>.Filter.And(
-        //            Builders<ReceiveInfo>.Filter.Eq(r => r.Name, targetInfo.Name),
-        //            Builders<ReceiveInfo>.Filter.Eq(r => r.Phone, targetInfo.Phone),
-        //            Builders<ReceiveInfo>.Filter.Eq(r => r.Address, targetInfo.Address)
-        //        )
-        //    );
-
-        //    var result = await _userDetail.UpdateOneAsync(filter, update);
-        //    return result.ModifiedCount > 0;
-        //}
-
         public async Task AddReceiveInfoAsync(int userId, ReceiveInfo newInfo)
         {
             var filter = Builders<UserDetail>.Filter.Eq(u => u.UserId, userId);
@@ -176,11 +149,76 @@ namespace Webdev_project.Data
             await _userDetail.UpdateOneAsync(filter, update);
         }
 
-        public async Task UpdatePhoneNumberAsync(string userId, string newPhoneNumber)
+        public async Task UpdatePhoneNumberAsync(int userId, string newPhoneNumber)
         {
-            var filter = Builders<UserDetail>.Filter.Eq(u => u.UserId, int.Parse(userId));
+            var filter = Builders<UserDetail>.Filter.Eq(u => u.UserId, userId);
             var update = Builders<UserDetail>.Update.Set(u => u.PhoneNumber, newPhoneNumber);
             await _userDetail.UpdateOneAsync(filter, update);
+        }
+
+        public async Task UpdateCategoryScoreAsync(int userId, string categoryName, UserAction action)
+        {
+            int points = action switch
+            {
+                UserAction.Click => 5,
+                UserAction.AddToCart => 10,
+                UserAction.Purchase => 200,
+                UserAction.ClickCategory => 100,
+                _ => 0
+            };
+
+            var user = await _userDetail.Find(u => u.Id == userId).FirstOrDefaultAsync();
+            if (user == null) throw new Exception("User not found");
+
+            // Initialize Category if null
+            if (user.Category == null)
+                user.Category = new Dictionary<string, int>();
+
+            // Ensure Reset key exists
+            if (!user.Category.ContainsKey("Reset"))
+                user.Category["Reset"] = 0;
+
+            // Ensure category key exists
+            if (!user.Category.ContainsKey(categoryName))
+                user.Category[categoryName] = 0;
+
+            // Update selected category
+            user.Category[categoryName] += points;
+
+            // Update Reset
+            user.Category["Reset"] += points;
+
+            // --- Check if Reset threshold reached ---
+            if (user.Category["Reset"] >= 200)
+            {
+                foreach (var key in user.Category.Keys.ToList())
+                {
+                    if (key == "Reset") continue;
+                    user.Category[key] = (int)Math.Floor(user.Category[key] * 0.8); // decrease by 20%
+                }
+
+                user.Category["Reset"] = 0;
+            }
+
+            // --- Bonus rule ---
+            // Get max score excluding Reset
+            var maxValue = user.Category
+                .Where(kv => kv.Key != "Reset")
+                .Select(kv => kv.Value)
+                .DefaultIfEmpty(0)
+                .Max();
+
+            int current = user.Category[categoryName];
+
+            if (categoryName != "Reset" && current < maxValue / 2)
+            {
+                int bonus = (int)Math.Floor(maxValue * 0.2); // 20% of highest
+                user.Category[categoryName] += bonus;
+            }
+
+            // Save back to DB
+            var update = Builders<UserDetail>.Update.Set(u => u.Category, user.Category);
+            await _userDetail.UpdateOneAsync(u => u.Id == userId, update);
         }
     }
 }

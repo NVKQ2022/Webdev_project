@@ -1,0 +1,398 @@
+﻿﻿@{
+    // ViewData["Title"] = "Home Page";
+    // var isLoggedIn = ViewBag.isLoggedIn;
+    // List<string> categories = ViewBag.Categories;
+    // var categoryNumber = 30;
+    // List<Product_zip> product_Zips = ViewBag.product;
+
+
+
+
+
+    ViewData["Title"] = "Home Page";
+    // Layout = null;
+    var isLoggedIn = ViewBag.isLoggedIn;
+    List<Category> Categories = ViewBag.Categories;
+    // List<string> categories = ViewBag.Categories;
+    // var categoryNumber= Categories.Count;
+
+    List<Product_zip> product_Zips = ViewBag.product;
+
+}
+
+<style>
+    form.input-group {
+        width: 100%;
+        max-width: 1000px;
+    }
+
+    #categoryCarousel::-webkit-scrollbar {
+        display: none;
+    }
+
+    .card {
+        transition: border 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .card:hover {
+            border: 2px solid #a020f0;
+            box-shadow: 0 4px 8px rgba(160, 32, 240, 0.3);
+        }
+
+    /* Màu nền xanh dương cho nút active */
+    .page-item.active .page-link {
+        background-color: #a020f0; /* Bootstrap blue */
+        color: white;
+        border-color: #a020f0;
+    }
+
+    /* Màu hover và màu nút thường */
+    .page-link {
+        color: #a020f0; /* Màu chữ  */
+        border: 1px solid #dee2e6;
+    }
+
+        .page-link:hover {
+            background-color: #e9ecef;
+            color: #a020f0; /* Màu khi hover */
+            border-color: #dee2e6;
+        }
+
+
+    .box-container {
+        background-color: white;
+        padding: 0;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        margin-top: 50px; /* Khoảng cách với header */
+        margin-bottom: 50px; /* Khoảng cách với khối dưới */
+        overflow: hidden;
+    }
+
+
+    .section-header {
+        color: white;
+        font-weight: bold;
+        font-size: 1.2rem;
+        padding: 12px 20px;
+        background: linear-gradient(90deg, #3a7bd5, #6a11cb);
+        margin-bottom: 15px; /* Space below the header */
+    }
+
+    /* DANH MỤC */
+
+    #categoryItems .card {
+        width: 180px;
+        min-width: 180px;
+        margin-right: 16px;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        cursor: pointer;
+        background-color: #fff;
+        border: 1px solid #e2e8f0;
+        height: 260px; /* 🔼 Increased height */
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    #categoryItems .card-img-top {
+        height: 160px; /* 🔼 Increased image height */
+        object-fit: cover;
+        border-top-left-radius: 0.5rem;
+        border-top-right-radius: 0.5rem;
+        width: 100%;
+    }
+</style>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+<!-- KHỐI DANH MỤC -->
+<div class="container mt-3 box-container">
+    <div class="section-header">
+        <i class="bi bi-grid"></i> DANH MỤC
+    </div>
+@* 
+    <div class="position-relative" style="max-width: 1200px; margin: auto;">
+        <button class="btn btn-light position-absolute start-0"
+                style="top: 30%; transform: translateY(-50%) translateX(-120%); z-index: 2;" onclick="scrollCategory(-1)">
+            <i class="bi bi-chevron-left fs-4"></i>
+        </button>
+
+        <div id="categoryCarousel" class="d-flex overflow-hidden" style="scroll-behavior: smooth;">
+            <div id="categoryItems" class="d-flex">
+                @for (int i = 0; i < categoryNumber; i++)
+                {
+                    <div class="text-center flex-shrink-0" style="width: 110px; margin-right: 10px;">
+                        <img src="/images/category1.png" class="img-fluid mb-2 rounded-circle border border-secondary"
+                             style="width: 100px; height: 100px; object-fit: cover;" />
+                        <p class="small">Danh mục @(i + 1)</p>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <button class="btn btn-light position-absolute end-0"
+                style="top: 30%; transform: translateY(-50%) translateX(120%); z-index: 2;" onclick="scrollCategory(1)">
+            <i class="bi bi-chevron-right fs-4"></i>
+        </button>
+    </div> *@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <!-- 📦 Enlarged container: made wider and added padding -->
+    <div class="position-relative"
+         style="max-width: calc(6 * (180px + 16px) + 58px); margin: auto; overflow: hidden; padding: 0 40px;">
+
+        <!-- ⬅ Left Arrow -->
+        <button class="btn btn-light position-absolute start-0"
+                style="top: 30%; transform: translateY(-50%); z-index: 3;"
+                onclick="scrollCategory(-1)">
+            <i class="bi bi-chevron-left fs-4"></i>
+        </button>
+
+        <!-- 🎠 Scrollable category list -->
+        <div id="categoryCarousel" class="d-flex overflow-hidden" style="scroll-behavior: smooth; width: 100%;">
+            <div id="categoryItems" class="d-flex">
+                @foreach (var category in Categories)
+                {
+                    <div class="card shadow-sm border-0" role="button" tabindex="0" aria-label="@category.CateName" onclick="loadProducts('@category.CateName')">
+                        <img src="@category.Image" class="card-img-top" alt="@category.CateName" />
+                        <div class="card-body p-2">
+                            <h6 class="card-title text-truncate">@category.CateName</h6>
+                            <p class="mb-1 small text-muted">Đã mua: <span class="text-dark">@category.BuyTime</span></p>
+                            <p class="mb-0 small text-muted">Sản phẩm: <span class="text-dark">@category.ProductQuantity</span></p>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- ➡ Right Arrow -->
+        <button class="btn btn-light position-absolute end-0"
+                style="top: 30%; transform: translateY(-50%); z-index: 3;"
+                onclick="scrollCategory(1)">
+            <i class="bi bi-chevron-right fs-4"></i>
+        </button>
+    </div>
+</div>
+
+
+<!-- KHỐI GỢI Ý HÔM NAY -->
+@model List<Product_zip>
+
+@{
+    var totalPages = ViewBag.TotalPages;
+    var currentPage = ViewBag.CurrentPage;
+}
+
+<div class="container box-container">
+    <div class="section-header">
+        <i class="bi bi-lightbulb"></i> GỢI Ý HÔM NAY
+    </div>
+    <div class="px-3 pb-3">
+        <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 g-3">
+            @if (product_Zips != null)
+            {
+                foreach (var item in product_Zips)
+                {
+                    <div class="col">
+                        <!-- ✅ TÍCH HỢP: Bao bọc card bằng link chi tiết sản phẩm -->
+                        <a href="/Product/Detail/@item.Product_zipId" class="text-decoration-none">
+                            <div class="card h-100 position-relative border">
+                                <img src="@item.Image" class="card-img-top" style="height: 180px; object-fit: cover;" />
+                                <div class="card-body p-2">
+                                    <span class="badge bg-danger mb-1 text-white">Yêu thích</span>
+                                    <h6 class="card-title text-truncate" title="@item.Name">@item.Name</h6>
+                                    <p class="text-muted small mb-1">Đã bán @item.QuantitySold</p>
+
+                                    <!-- ✅ TÍCH HỢP: Hiển thị rating bằng icon star -->
+                                    <div class="d-flex align-items-center mb-1">
+                                        <div class="star-rating">
+                                            @for (var i = 0; i < 5; i++)
+                                            {
+                                                if (i < Math.Floor(item.Rating))
+                                                {
+                                                    <i class="bi bi-star-fill text-warning"></i> <!-- Filled Star -->
+                                                }
+                                                else if (i < Math.Floor(item.Rating) + 0.5 && item.Rating % 1 != 0)
+                                                {
+                                                    <i class="bi bi-star-half text-warning"></i> <!-- Half Star -->
+                                                }
+                                                else
+                                                {
+                                                    <i class="bi bi-star text-muted"></i> <!-- Empty Star -->
+                                                }
+                                            }
+                                        </div>
+                                        <span class="ms-2 text-muted small">(@item.Rating)</span>
+                                    </div>
+
+                                    <div class="text-danger fw-bold">₫@item.Price.ToString("N0")</div>
+                                    <button class="btn btn-outline-danger btn-sm rounded-circle position-absolute bottom-0 end-0 m-2">
+                                        <i class="bi bi-cart"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                }
+            }
+        </div>
+
+        <!-- Phân trang -->
+        <div class="text-center mt-4">
+            @if (totalPages > 1)
+            {
+                <nav>
+                    <ul class="pagination justify-content-center">
+                        @if (currentPage > 1)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" href="@Url.Action("Index2", new { page = currentPage - 1 })">&laquo;</a>
+                            </li>
+                        }
+
+                        @{
+                            int maxPageLinks = 5;
+                            int startPage = Math.Max(1, currentPage - maxPageLinks / 2);
+                            int endPage = Math.Min(totalPages, startPage + maxPageLinks - 1);
+                            if (endPage - startPage + 1 < maxPageLinks)
+                            {
+                                startPage = Math.Max(1, endPage - maxPageLinks + 1);
+                            }
+                        }
+
+                        @if (startPage > 1)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" href="@Url.Action("Index2", new { page = 1 })">1</a>
+                            </li>
+                            <li class="page-item disabled"><span class="page-link">...</span></li>
+                        }
+
+                        @for (int i = startPage; i <= endPage; i++)
+                        {
+                            <li class="page-item @(i == currentPage ? "active" : "")">
+                                <a class="page-link" href="@Url.Action("Index2", new { page = i })">@i</a>
+                            </li>
+                        }
+
+                        @if (endPage < totalPages)
+                        {
+                            <li class="page-item disabled"><span class="page-link">...</span></li>
+                            <li class="page-item">
+                                <a class="page-link" href="@Url.Action("Index2", new { page = totalPages })">@totalPages</a>
+                            </li>
+                        }
+
+                        @if (currentPage < totalPages)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" href="@Url.Action("Index2", new { page = currentPage + 1 })">&raquo;</a>
+                            </li>
+                        }
+                    </ul>
+                </nav>
+            }
+        </div>
+    </div>
+</div>
+
+
+
+
+
+</div>
+
+
+
+
+<!-- Bootstrap Icons CDN -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+<script>
+                       const container = document.getElementById('categoryCarousel');
+               const itemsContainer = document.getElementById('categoryItems');
+
+               // Calculate the width of one card + margin-right
+               const card = itemsContainer.querySelector('.card');
+               const style = window.getComputedStyle(card);
+               const cardWidth = card.offsetWidth + parseInt(style.marginRight);
+
+               let currentScrollPosition = 0;
+
+               function scrollCategory(direction) {
+                   const visibleWidth = container.clientWidth;
+                   const maxScrollLeft = itemsContainer.scrollWidth - visibleWidth;
+
+                   // Scroll exactly 6 cards width at a time
+                   const scrollStep = cardWidth * 6;
+
+                   currentScrollPosition += direction * scrollStep;
+
+                   if (currentScrollPosition < 0) currentScrollPosition = 0;
+                   if (currentScrollPosition > maxScrollLeft) currentScrollPosition = maxScrollLeft;
+
+                   container.scrollTo({
+                       left: currentScrollPosition,
+                       behavior: 'smooth'
+                   });
+               }
+
+               window.addEventListener('resize', () => {
+                   currentScrollPosition = 0;
+                   container.scrollTo({ left: 0, behavior: 'smooth' });
+               });
+
+
+
+
+
+
+
+    function redirectToProductDetail(productZipId) {
+        window.location.href = '/Product/Detail/' + productZipId;
+    }
+
+      function loadProducts(cateName) {
+            fetch(`/Category/ProductsByCategory?categoryId=${cateName}`)
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById('productContainer').innerHTML = html;
+                })
+                .catch(err => {
+                    console.error(err);
+                    document.getElementById('productContainer').innerHTML = `<p class="text-danger">Không thể tải sản phẩm.</p>`;
+                });
+        }
+
+
+
+</script>
+
+
+
+
+
+
+
+
+
+
