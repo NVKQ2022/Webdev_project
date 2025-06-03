@@ -47,9 +47,9 @@ namespace Webdev_project.Helpers
                 Rating = (float)roundedAverage
 
             };
+               
 
-
-
+        
 
             return productZip;
         }

@@ -17,6 +17,19 @@ public class ProductRepository:IProductRepository
         _products = database.GetCollection<Product>(settings.Value.ProductCollectionName);
     }
 
+        //Lấy tối đa 7 kết quả gợi ý
+        var productsFromDb = await _products.Find(filter)
+                                                     .Limit(7)
+                                                     .Project(p => new Product
+                                                     {
+                                                         ProductId = p.ProductId,
+                                                         Name = p.Name,
+                                                         Price = p.Price,
+                                                         ImageURL = p.ImageURL
+                                                     })
+                                                     .ToListAsync();
+        return productsFromDb;
+    }
     public async Task<List<Product>> GetAllAsync()
     {
         return await _products.Find(p => true).ToListAsync();
@@ -112,11 +125,12 @@ public class ProductRepository:IProductRepository
 
         await Task.WhenAll(tasks);
     }
-    public async Task changeProductId()
-    {
-        var filter = Builders<Product>.Filter.Exists("ProductId");
-        var update = Builders<Product>.Update.Rename("ProductId", "ProductId");
 
-        await _products.UpdateManyAsync(filter, update);
+    // Search sản phẩm - Phong
+    public async Task<List<Product>> SearchByNameAsync(string query)
+    {
+        var filter = Builders<Product>.Filter.Regex(p => p.Name, new BsonRegularExpression(query, "i"));
+        return await _products.Find(filter).ToListAsync();
     }
+
 }
