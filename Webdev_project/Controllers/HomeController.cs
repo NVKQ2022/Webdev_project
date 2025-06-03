@@ -192,7 +192,7 @@ namespace Webdev_project.Controllers
             var notifications = new List<OrderNotification>
             {
                 new OrderNotification {
-                    ImageUrl = "/images/cage.jpg",
+                    ImageUrl = "https://phucanhcdn.com/media/product/55711_laptop_asus_vivobook_15_oled_a1505va_ma469w_6.jpg",
                     Status = "Giao kiện hàng thành công",
                     PackageCode = "SPXVN057191684675",
                     OrderCode = "2505296R62JNTS",
@@ -201,7 +201,7 @@ namespace Webdev_project.Controllers
                     ButtonText = "Xem Chi Tiết"
                 },
                 new OrderNotification {
-                    ImageUrl = "/images/powerbank.jpg",
+                    ImageUrl = "https://www.techspot.com/images/products/2023/keyboards/org/2023-02-16-product-3.jpg",
                     Status = "Giao kiện hàng thành công",
                     PackageCode = "SPXVN055448964355",
                     OrderCode = "2505296SDBF0D3",
@@ -210,7 +210,7 @@ namespace Webdev_project.Controllers
                     ButtonText = "Xem Chi Tiết"
                 },
                 new OrderNotification {
-                    ImageUrl = "/images/noodles.jpg",
+                    ImageUrl = "https://product.hstatic.net/200000637319/product/gearvn-webcam-razer-kiyo-x-1_f806112c1b8e4209a2b4f4f332b4471b_eaff436e2bd94171844c5cfce593ad5b.jpg",
                     Status = "Đơn hàng đã hoàn tất",
                     OrderCode = "250511HAHE4838",
                     Date = new DateTime(2025, 5, 16, 15, 10, 0),
