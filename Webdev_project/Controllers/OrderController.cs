@@ -3,12 +3,12 @@ using Webdev_project.Interfaces;
 
 namespace Webdev_project.Controllers
 {
-    public class OrderController : Controller
+    public class OrderController : BaseController
     {
         private readonly IAuthenticationRepository authenticationRepository;
         private readonly IProductRepository productRepository;
         private readonly IOrderRepository orderRepository;
-        public OrderController(IAuthenticationRepository authenticationRepository, IProductRepository productRepository, IOrderRepository orderRepository)
+        public OrderController(IAuthenticationRepository authenticationRepository, IProductRepository productRepository, IOrderRepository orderRepository) : base(authenticationRepository)
         {
             this.authenticationRepository = authenticationRepository;
             this.productRepository = productRepository;

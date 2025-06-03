@@ -5,14 +5,14 @@ using Webdev_project.Interfaces;
 namespace Webdev_project.Controllers
 {
     [Route("Product")]
-    public class ProductController : Controller
+    public class ProductController : BaseController
     {
        
         public readonly IProductRepository productRepository;
         public readonly IUserDetailRepository userDetailRepository;
         
         public readonly IAuthenticationRepository authenticationRepository;
-        public ProductController(IProductRepository productRepository, IAuthenticationRepository authenticationRepository, IUserDetailRepository userDetailRepository)
+        public ProductController(IProductRepository productRepository, IAuthenticationRepository authenticationRepository, IUserDetailRepository userDetailRepository) : base(authenticationRepository)
         {
             this.productRepository = productRepository;
             this.authenticationRepository = authenticationRepository;

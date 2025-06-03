@@ -1,16 +1,19 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Webdev_project.Data;
 using Webdev_project.Helpers;
 using Webdev_project.Interfaces;
 
 namespace Webdev_project.Controllers
 {
-    public class CategoryController : Controller
+    public class CategoryController : BaseController
     {
         private readonly IProductRepository productRepository;
+        private readonly IAuthenticationRepository authenticationRepository;
 
-        public CategoryController(IProductRepository productRepository)
+        public CategoryController(IProductRepository productRepository, IAuthenticationRepository authenticationRepository) : base(authenticationRepository)
         {
             this.productRepository = productRepository;
+            this.authenticationRepository = authenticationRepository;
         }
         public async Task<IActionResult> Products(string CateName, string sort = "default", string search = "")
         {

@@ -10,11 +10,11 @@ using Webdev_project.Data;
 
 namespace Webdev_project.Controllers
 {
-    public class ShoppingCartController : Controller
+    public class ShoppingCartController : BaseController
     {
         private readonly IUserDetailRepository userDetailRepository;
         private readonly IAuthenticationRepository authenticationRepository;
-        public ShoppingCartController(IUserDetailRepository userDetailRepository, IAuthenticationRepository authenticationRepository)
+        public ShoppingCartController(IUserDetailRepository userDetailRepository, IAuthenticationRepository authenticationRepository) : base(authenticationRepository)
         {
             this.userDetailRepository = userDetailRepository;
             this.authenticationRepository = authenticationRepository;

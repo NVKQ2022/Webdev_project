@@ -81,7 +81,7 @@ namespace Webdev_project.Controllers
                 ViewBag.userName=user.Username;
                 HttpContext.Response.Cookies.Append("SessionId", authenticationRepository.CreateSession(user, ipAddress, requestTime, userAgent));
                 HttpContext.Response.Cookies.Append("Username", user.Username);
-                return View("~/Views/Home/Index.cshtml");// need to make index
+                return RedirectToAction("Index", "Home");
 
             }
             ViewBag.Message = "Sai thông tin!";

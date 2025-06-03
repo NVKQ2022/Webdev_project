@@ -8,14 +8,14 @@ using Webdev_project.Models;
 namespace Webdev_project.Controllers
 {
 
-    public class HomeController : Controller
+    public class HomeController : BaseController
     {
         private readonly ILogger<HomeController> _logger;
         private readonly IAuthenticationRepository authenticationRepository;
         private readonly IProductRepository productRepository;
         private readonly ICategoryRepository categoryRepository;
 
-        public HomeController(ILogger<HomeController> logger, IAuthenticationRepository authenticationRepository, IProductRepository productRepository, ICategoryRepository categoryRepository)
+        public HomeController(ILogger<HomeController> logger, IAuthenticationRepository authenticationRepository, IProductRepository productRepository, ICategoryRepository categoryRepository) : base(authenticationRepository)
         {
             _logger = logger;
             this.authenticationRepository = authenticationRepository;
