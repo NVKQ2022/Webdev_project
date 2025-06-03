@@ -58,35 +58,49 @@ namespace Webdev_project.Controllers
             var userId = authenticationRepository.RetrieveFromSession(sessionId).Id;
 
             await userDetailRepository.RemoveCartItemAsync(userId, productId);
+            string? cartItemNumberStr = HttpContext.Request.Cookies["CartItemNumber"];
+            int cartItemNumber = 0;
+
+            if (!string.IsNullOrEmpty(cartItemNumberStr) && int.TryParse(cartItemNumberStr, out int currentCount))
+            {
+                cartItemNumber = currentCount - 1;
+            }
+            else
+            {
+                cartItemNumber = 1;
+            }
+
+            // Update the cookie
+            HttpContext.Response.Cookies.Append("CartItemNumber", cartItemNumber.ToString());
             return Ok();
         }
-        [HttpPost]
-        public IActionResult Decrease(string productId)
-        {
-            var cart = HttpContext.Session.GetObjectFromJson<List<CartItem>>("Cart") ?? new List<CartItem>();
-            var item = cart.FirstOrDefault(x => x.ProductId == productId);
-            if (item != null && item.Quantity > 1) item.Quantity--;
-            HttpContext.Session.SetObjectAsJson("Cart", cart);
-            return RedirectToAction("Index");
+        //[HttpPost]
+        //public IActionResult Decrease(string productId)
+        //{
+        //    var cart = HttpContext.Session.GetObjectFromJson<List<CartItem>>("Cart") ?? new List<CartItem>();
+        //    var item = cart.FirstOrDefault(x => x.ProductId == productId);
+        //    if (item != null && item.Quantity > 1) item.Quantity--;
+        //    HttpContext.Session.SetObjectAsJson("Cart", cart);
+        //    return RedirectToAction("Index");
 
-        }
-        [HttpPost]
-        public IActionResult Increase(string productId)
-        {
-            var cart = HttpContext.Session.GetObjectFromJson<List<CartItem>>("Cart") ?? new List<CartItem>();
-            var item = cart.FirstOrDefault(x => x.ProductId == productId);
-            if (item != null) item.Quantity++;
-            HttpContext.Session.SetObjectAsJson("Cart", cart);
-            return RedirectToAction("Index");
-        }
-        [HttpPost]
-        public IActionResult Remove(string productId)
-        {
-            var cart = HttpContext.Session.GetObjectFromJson<List<CartItem>>("Cart") ?? new List<CartItem>();
-            cart.RemoveAll(x => x.ProductId == productId);
-            HttpContext.Session.SetObjectAsJson("Cart", cart);
-            return RedirectToAction("Index");
-        }
+        //}
+        //[HttpPost]
+        //public IActionResult Increase(string productId)
+        //{
+        //    var cart = HttpContext.Session.GetObjectFromJson<List<CartItem>>("Cart") ?? new List<CartItem>();
+        //    var item = cart.FirstOrDefault(x => x.ProductId == productId);
+        //    if (item != null) item.Quantity++;
+        //    HttpContext.Session.SetObjectAsJson("Cart", cart);
+        //    return RedirectToAction("Index");
+        //}
+        //[HttpPost]
+        //public IActionResult Remove(string productId)
+        //{
+        //    var cart = HttpContext.Session.GetObjectFromJson<List<CartItem>>("Cart") ?? new List<CartItem>();
+        //    cart.RemoveAll(x => x.ProductId == productId);
+        //    HttpContext.Session.SetObjectAsJson("Cart", cart);
+        //    return RedirectToAction("Index");
+        //}
 
         [HttpPost]
         public IActionResult AddToCart([FromBody] CartItem item)
@@ -94,14 +108,43 @@ namespace Webdev_project.Controllers
             if (item == null)
                 return BadRequest("Invalid cart item");
 
+            // Get user ID from session
+            var sessionId = HttpContext.Request.Cookies["SessionId"];
+            var user = authenticationRepository.RetrieveFromSession(sessionId);
+            if (user == null)
+                return Unauthorized("Session invalid");
 
-            userDetailRepository.AddCartItemAsync(authenticationRepository.RetrieveFromSession(HttpContext.Request.Cookies["SessionId"]).Id, item);
+            // Add item to the cart
+            userDetailRepository.AddCartItemAsync(user.Id, item);
 
+            // Read current cookie value and increment
+            string? cartItemNumberStr = HttpContext.Request.Cookies["CartItemNumber"];
+            int cartItemNumber = 0;
 
+            if (!string.IsNullOrEmpty(cartItemNumberStr) && int.TryParse(cartItemNumberStr, out int currentCount))
+            {
+                cartItemNumber = currentCount + 1;
+            }
+            else
+            {
+                cartItemNumber = 1;
+            }
 
-            // Add item to cart (session, DB, etc.)
+            // Update the cookie
+            HttpContext.Response.Cookies.Append("CartItemNumber", cartItemNumber.ToString()
+            //    ,
+            //    new CookieOptions
+            //{
+            //    HttpOnly = false,
+            //    SameSite = SameSiteMode.Lax,
+            //    Secure = false, // true if you're using HTTPS
+            //    Expires = DateTimeOffset.UtcNow.AddDays(7)
+            //}
+            );
+
             return Ok(new { success = true, message = "Item added to cart." });
         }
+
 
     }
 }

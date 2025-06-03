@@ -336,6 +336,10 @@
              if (response.ok) {
                  const result = await response.json();
                  alert('Đã thêm vào giỏ hàng!');
+                //  let currentCount = parseInt(getCookieValue("CartItemNumber") || "0");
+                // document.cookie = "CartItemNumber=" + currentCount + "; path=/";
+
+                updateCartCountDisplay(); // <- this is defined in _Layout
                  console.log(result);
              } else {
                  const error = await response.text();

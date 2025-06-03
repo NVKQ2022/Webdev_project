@@ -16,12 +16,26 @@ namespace Webdev_project.Data
             var database = client.GetDatabase(settings.Value.DatabaseName);
             _userDetail = database.GetCollection<UserDetail>(settings.Value.UserDetailCollectionName);
         }
-
+        public async Task<UserDetail> GetUserByUserId(int userId)
+        {
+            var filter = Builders<UserDetail>.Filter.Eq(u => u.UserId, userId);
+            return await _userDetail.Find(filter).FirstOrDefaultAsync();
+        }
         public async Task AddUserDetailAsync(UserDetail user)
         {
             await _userDetail.InsertOneAsync(user);
         }
 
+        public async Task<int>CountCartItems(int userId)
+        {
+
+            var user = await GetUserByUserId(userId); // Assuming synchronous call
+
+            if (user == null || user.Cart == null)
+                return 0;
+
+            return user.Cart.Count; // Count of different CartItem entries
+        }
         public async Task<List<CartItem>> GetCartItemsAsync(int userId)
         {
             var filter = Builders<UserDetail>.Filter.Eq(u => u.UserId, userId);
@@ -33,7 +47,17 @@ namespace Webdev_project.Data
             return result?.Cart ?? new List<CartItem>();
         }
 
+        public async Task<List<string>> GetCategoriesByPointDescending(int userId)
+        {
+            var user = await GetUserByUserId(userId);
+            if (user?.Category == null)
+                return new List<string>();
 
+            return user.Category
+                       .OrderByDescending(pair => pair.Value)
+                       .Select(pair => pair.Key)
+                       .ToList();
+        }
         public async Task AddCartItemAsync(int userId, CartItem item)
         {
             var filter = Builders<UserDetail>.Filter.Eq(u => u.UserId, userId);
@@ -189,7 +213,7 @@ namespace Webdev_project.Data
             user.Category["Reset"] += points;
 
             // --- Check if Reset threshold reached ---
-            if (user.Category["Reset"] >= 200)
+            if (user.Category["Reset"] > 200)
             {
                 foreach (var key in user.Category.Keys.ToList())
                 {
@@ -201,7 +225,7 @@ namespace Webdev_project.Data
             }
 
             // --- Bonus rule ---
-            // Get max score excluding Reset
+            // Get max score excluding Reset (giúp những tìm kiếm mới được hiện nhiều hơn)
             var maxValue = user.Category
                 .Where(kv => kv.Key != "Reset")
                 .Select(kv => kv.Value)

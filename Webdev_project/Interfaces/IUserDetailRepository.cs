@@ -14,7 +14,9 @@ namespace Webdev_project.Interfaces
     {
         Task AddUserDetailAsync(UserDetail user);
         Task UpdatePhoneNumberAsync(int userId, string newPhoneNumber);
-
+        Task<UserDetail> GetUserByUserId(int userId);
+        Task<List<string>> GetCategoriesByPointDescending(int userId);
+        Task<int> CountCartItems(int userId);
         Task<List<CartItem>> GetCartItemsAsync(int userId);
 
         Task<int?> UpdateCartItemQuantityAsync(int userId, string productId, int changeAmount);

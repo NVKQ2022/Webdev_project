@@ -1,7 +1,9 @@
 ﻿﻿@{
     bool isLoggedIn = ViewBag.isLoggedIn ?? false;
     string userName = ViewBag.userName ?? "";
+    var cartItemNumber = ViewBag.cartItemNumber;
 }
+
 
 
 
@@ -97,7 +99,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
-
+    
     <!-- Shopee-style Navbar (Unified with background) -->
     <div class="shopee-navbar" style="background: linear-gradient(to right, #3a7bd5, #6a11cb); color: white;">
         <div class="container py-2 d-flex justify-content-between align-items-center small">
@@ -122,7 +124,7 @@
             </div>
 
 
-
+            
             <!-- Right side: Ngôn ngữ + Đăng ký/Đăng nhập -->
             <div class="d-flex align-items-center">
                 <div class="dropdown me-3">
@@ -146,7 +148,7 @@
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end text-dark shadow" aria-labelledby="userMenu">
                             <li><a class="dropdown-item" href="/Authenticate/Profile">Tài Khoản Của Tôi</a></li>
-                            <li><a class="dropdown-item" href="/Orders/MyOrders">Đơn Mua</a></li>
+                            <li><a class="dropdown-item" href="/Order/MyOrders">Đơn Mua</a></li>
                             <li><a class="dropdown-item" href="/Account/Logout">Đăng Xuất</a></li>
                         </ul>
                     </div>
@@ -204,7 +206,11 @@
                     <svg width="30" height="30" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M0 2.5C0 2.22386 0.223858 2 0.5 2H2C2.22943 2 2.42943 2.15615 2.48507 2.37873L2.89039 4H14.5C14.654 4 14.7993 4.07094 14.8941 4.19229C14.9889 4.31365 15.0224 4.4719 14.9851 4.62127L13.4851 10.6213C13.4294 10.8439 13.2294 11 13 11H4C3.77057 11 3.57057 10.8439 3.51493 10.6213L1.60961 3H0.5C0.223858 3 0 2.77614 0 2.5ZM3.14039 5L3.64039 7H5V5H3.14039ZM6 5V7H8V5H6ZM9 5V7H11V5H9ZM12 5V7H13.3596L13.8596 5H12ZM13.1096 8H12V10H12.6096L13.1096 8ZM11 8H9V10H11V8ZM8 8H6V10H8V8ZM5 8H3.89039L4.39039 10H5V8ZM5 13C4.44772 13 4 13.4477 4 14C4 14.5523 4.44772 15 5 15C5.55228 15 6 14.5523 6 14C6 13.4477 5.55228 13 5 13ZM3 14C3 12.8954 3.89543 12 5 12C6.10457 12 7 12.8954 7 14C7 15.1046 6.10457 16 5 16C3.89543 16 3 15.1046 3 14ZM12 13C11.4477 13 11 13.4477 11 14C11 14.5523 11.4477 15 12 15C12.5523 15 13 14.5523 13 14C13 13.4477 12.5523 13 12 13ZM10 14C10 12.8954 10.8954 12 12 12C13.1046 12 14 12.8954 14 14C14 15.1046 13.1046 16 12 16C10.8954 16 10 15.1046 10 14Z" fill="white" />
                     </svg>
-                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-light text-danger">5</span>
+                   @*  <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-light text-danger">@cartItemNumber</span>
+                *@
+                    <span id="cartItemBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-light text-danger">
+                        <!-- JS will update this -->
+                    </span>
                 </a>
             </div>
         </div>
@@ -390,6 +396,31 @@
                     suggestionsContainer.style.display = 'none';
                 }
             });
+        });
+
+
+
+        // dynamicly update addToCart
+                 function getCookieValue(name) {
+            const cookies = document.cookie.split(';');
+            for (let cookie of cookies) {
+                const [key, value] = cookie.trim().split('=');
+                if (key === name) return decodeURIComponent(value);
+            }
+            return null;
+        }
+
+        function updateCartCountDisplay() {
+            const cartCount = getCookieValue("CartItemNumber");
+            const badge = document.getElementById("cartItemBadge");
+            if (badge) {
+                badge.innerText = cartCount && parseInt(cartCount) > 0 ? cartCount : "";
+            }
+        }
+
+        // Run on every page load
+        document.addEventListener("DOMContentLoaded", function () {
+            updateCartCountDisplay();
         });
     </script>
 </body>

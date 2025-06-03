@@ -14,38 +14,113 @@ namespace Webdev_project.Controllers
         private readonly IAuthenticationRepository authenticationRepository;
         private readonly IProductRepository productRepository;
         private readonly ICategoryRepository categoryRepository;
+        private readonly IUserDetailRepository userDetailRepository;
 
-        public HomeController(ILogger<HomeController> logger, IAuthenticationRepository authenticationRepository, IProductRepository productRepository, ICategoryRepository categoryRepository) : base(authenticationRepository)
+        public HomeController(ILogger<HomeController> logger, IAuthenticationRepository authenticationRepository, IProductRepository productRepository, ICategoryRepository categoryRepository,IUserDetailRepository userDetailRepository) : base(authenticationRepository)
         {
             _logger = logger;
             this.authenticationRepository = authenticationRepository;
             this.productRepository = productRepository;
             this.categoryRepository = categoryRepository;
+            this.userDetailRepository = userDetailRepository;
         }
 
         //[HttpGet("Index/{category}")]
 
 
-        public async Task<IActionResult> Index()
+        //public async Task<IActionResult> Index()
+        //{
+        //    ConverterHelper converterHelper = new ConverterHelper();
+        //    //var categories = await productRepository.GetAllCategoriesAsync();
+        //    List<Product_zip> product_Zips;
+        //    List<Category> categories;
+        //    var sessionId = HttpContext.Request.Cookies["SessionId"];
+        //    if (sessionId != null)
+        //    {
+        //        var user = authenticationRepository.RetrieveFromSession(sessionId);
+
+        //        if (user != null)
+        //        {
+        //            List<Product> allProducts = new List<Product>();
+        //            List<string> categoriesFromUser = await userDetailRepository.GetCategoriesByPointDescending(user.Id);
+        //            foreach (var category in categoriesFromUser)
+        //            {
+        //                List<Product> productsInCategory = await productRepository.GetByCategoryAsync(category);
+        //                allProducts.AddRange(productsInCategory);
+        //            }
+
+        //            categories = await categoryRepository.GetCategoriesSortedByBuyTimeAsync();
+        //            product_Zips = converterHelper.ConvertProductListToProductZipList(allProducts);
+        //            ViewBag.Categories = categories;
+        //            ViewBag.product = product_Zips;
+        //            return View();
+
+
+        //        }
+        //    }
+        //    product_Zips = converterHelper.ConvertProductListToProductZipList(await productRepository.GetAllAsync());
+        //    ViewBag.product = product_Zips;
+        //    categories = await categoryRepository.GetCategoriesSortedByBuyTimeAsync();
+        //    ViewBag.Categories = categories;
+        //    return View();
+        //}
+
+
+
+        //public async Task<IActionResult> Index2(int page = 1)
+        //{
+        //    int pageSize = 42; // Hiển thị 7 dòng x 6 cột
+        //    ConverterHelper converterHelper = new ConverterHelper();
+        //    var categories = await categoryRepository.GetCategoriesSortedByBuyTimeAsync();
+
+        //    List<Product_zip> product_Zips = converterHelper.ConvertProductListToProductZipList(await productRepository.GetAllAsync());
+
+        //    int totalProducts = product_Zips.Count;
+        //    int totalPages = (int)Math.Ceiling((double)totalProducts / pageSize);
+
+        //    var pagedProducts = product_Zips
+        //        .Skip((page - 1) * pageSize)
+        //        .Take(pageSize)
+        //        .ToList();
+
+        //    ViewBag.product = pagedProducts;
+        //    ViewBag.Categories = categories;
+        //    ViewBag.TotalPages = totalPages;
+        //    ViewBag.CurrentPage = page;
+
+        //    return View();
+        //}
+
+        public async Task<IActionResult> Index(int page = 1)
         {
-            ConverterHelper converterHelper = new ConverterHelper();   
-            //var categories = await productRepository.GetAllCategoriesAsync();
-            List<Product_zip> product_Zips = converterHelper.ConvertProductListToProductZipList(await productRepository.GetAllAsync());
-            ViewBag.product = product_Zips;
-            var categories = await categoryRepository.GetCategoriesSortedByBuyTimeAsync();
-            ViewBag.Categories = categories;
-            return View();
-        }
-
-
-
-        public async Task<IActionResult> Index2(int page = 1)
-        {
-            int pageSize = 42; // Hiển thị 7 dòng x 6 cột
+            int pageSize = 42; // 7 rows × 6 columns
             ConverterHelper converterHelper = new ConverterHelper();
-            var categories = await categoryRepository.GetCategoriesSortedByBuyTimeAsync();
-            
-            List<Product_zip> product_Zips = converterHelper.ConvertProductListToProductZipList(await productRepository.GetAllAsync());
+
+            List<Product> allProducts = new List<Product>();
+            List<Category> categories = await categoryRepository.GetCategoriesSortedByBuyTimeAsync();
+
+            var sessionId = HttpContext.Request.Cookies["SessionId"];
+            if (sessionId != null)
+            {
+                var user = authenticationRepository.RetrieveFromSession(sessionId);
+                if (user != null)
+                {
+                    List<string> categoriesFromUser = await userDetailRepository.GetCategoriesByPointDescending(user.Id);
+                    foreach (var category in categoriesFromUser)
+                    {
+                        List<Product> productsInCategory = await productRepository.GetByCategoryAsync(category);
+                        allProducts.AddRange(productsInCategory);
+                    }
+                }
+            }
+
+            // If not logged in or user has no personalized categories, fallback to all products
+            if (!allProducts.Any())
+            {
+                allProducts = await productRepository.GetAllAsync();
+            }
+
+            List<Product_zip> product_Zips = converterHelper.ConvertProductListToProductZipList(allProducts);
 
             int totalProducts = product_Zips.Count;
             int totalPages = (int)Math.Ceiling((double)totalProducts / pageSize);
