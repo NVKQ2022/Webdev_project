@@ -104,38 +104,51 @@
     <div class="shopee-navbar" style="background: linear-gradient(to right, #3a7bd5, #6a11cb); color: white;">
         <div class="container py-2 d-flex justify-content-between align-items-center small">
 
-            <!-- Left side: Kết nối -->
-            <div class="d-flex align-items-center">
+            <!-- Left side: Trang Chủ, Kết nối, Hotline -->
+            <div class="d-flex align-items-center gap-3">
+
+                <!-- Trang Chủ -->
+                <a href="/Home/Index2" class="text-white d-flex align-items-center text-decoration-none gap-1" style="line-height:1;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-house" viewBox="0 0 16 16">
+                        <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293zM13 7.207V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V7.207l5-5z" />
+                    </svg>
+                    <span>Trang chủ</span>
+                </a>
+
+                <!-- Kết nối -->
                 <span class="me-2">Kết nối</span>
 
                 <!-- Facebook icon -->
-                <a href="https://www.facebook.com/truong.le.183087/?locale=vi_VN" target="_blank" class="text-white me-2 d-flex align-items-center" style="line-height: 1;">
+                <a href="https://www.facebook.com/truong.le.183087/?locale=vi_VN" target="_blank" class="text-white me-1 d-flex align-items-center" style="line-height: 1;">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-facebook" viewBox="0 0 16 16">
                         <path d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951" />
                     </svg>
                 </a>
 
                 <!-- Gmail icon -->
-                <a href="mailto:23521691@gm.uit.edu.vn" target="_blank" class="text-white d-flex align-items-center" style="line-height: 1;">
+                <a href="mailto:23521691@gm.uit.edu.vn" target="_blank" class="text-white me-1 d-flex align-items-center" style="line-height: 1;">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-envelope" viewBox="0 0 16 16">
                         <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1zm13 2.383-4.708 2.825L15 11.105zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741M1 11.105l4.708-2.897L1 5.383z" />
                     </svg>
                 </a>
+
+                <!-- Hotline -->
+                <a href="tel:0366139459" class="text-white me-1 d-flex align-items-center gap-1" style="line-height: 1;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-headset" viewBox="0 0 16 16">
+                        <path d="M8 1a5 5 0 0 0-5 5v1h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a6 6 0 1 1 12 0v6a2.5 2.5 0 0 1-2.5 2.5H9.366a1 1 0 0 1-.866.5h-1a1 1 0 1 1 0-2h1a1 1 0 0 1 .866.5H11.5A1.5 1.5 0 0 0 13 12h-1a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h1V6a5 5 0 0 0-5-5" />
+                    </svg>
+                    <span>0366139459</span>
+                </a>
+
             </div>
 
 
-            
-            <!-- Right side: Ngôn ngữ + Đăng ký/Đăng nhập -->
+
+
+
+            <!-- Right side: Đăng ký/Đăng nhập -->
             <div class="d-flex align-items-center">
-                <div class="dropdown me-3">
-                    <a class="text-white dropdown-toggle text-decoration-none" href="#" role="button" id="langDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                        Tiếng Việt
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end text-dark" aria-labelledby="langDropdown">
-                        <li><a class="dropdown-item" href="#">Tiếng Việt</a></li>
-                        <li><a class="dropdown-item" href="#">English</a></li>
-                    </ul>
-                </div>
+                
 
                 @if (isLoggedIn)
                 {
@@ -231,7 +244,7 @@
             <div class="row">
                 <div class="col-md-3">
                     <h5>Liên hệ</h5>
-                    <p>Trường Đại học Công nghệ Thông tin - ĐHQG TP.HCM</p>
+                    <p>Nhóm WebDev</p>
                     <p>Hotline: 1900 xxx xxx</p>
                     <p>Email: cskh@wdshop.com</p>
                 </div>

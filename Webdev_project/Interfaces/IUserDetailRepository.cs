@@ -13,6 +13,7 @@ namespace Webdev_project.Interfaces
     public interface IUserDetailRepository
     {
         Task AddUserDetailAsync(UserDetail user);
+        Task<UserDetail> GetUserDetailAsync(int userId);
         Task UpdatePhoneNumberAsync(int userId, string newPhoneNumber);
         Task<UserDetail> GetUserByUserId(int userId);
         Task<List<string>> GetCategoriesByPointDescending(int userId);
