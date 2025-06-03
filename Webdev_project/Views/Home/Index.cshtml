@@ -1,11 +1,11 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
-    // Layout = null;
     var isLoggedIn = ViewBag.isLoggedIn;
     List<string> categories = ViewBag.Categories;
     var categoryNumber = 30;
-    List<Product_zip> product_Zips = ViewBag.product; 
+    List<Product_zip> product_Zips = ViewBag.product;
 }
+
 <style>
     form.input-group {
         width: 100%;
@@ -16,68 +16,77 @@
         display: none;
     }
 
-</style>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    .card {
+        transition: border 0.3s ease, box-shadow 0.3s ease;
+    }
 
-<!-- Font Awesome -->
+        .card:hover {
+            border: 2px solid #a020f0;
+            box-shadow: 0 4px 8px rgba(160, 32, 240, 0.3);
+        }
+
+    /* Màu nền xanh dương cho nút active */
+    .page-item.active .page-link {
+        background-color: #a020f0; /* Bootstrap blue */
+        color: white;
+        border-color: #a020f0;
+    }
+
+    /* Màu hover và màu nút thường */
+    .page-link {
+        color: #a020f0; /* Màu chữ  */
+        border: 1px solid #dee2e6;
+    }
+
+        .page-link:hover {
+            background-color: #e9ecef;
+            color: #a020f0; /* Màu khi hover */
+            border-color: #dee2e6;
+        }
+
+
+    .box-container {
+        background-color: white;
+        padding: 0;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        margin-top: 50px; /* Khoảng cách với header */
+        margin-bottom: 50px; /* Khoảng cách với khối dưới */
+        overflow: hidden;
+    }
+
+
+    .section-header {
+        color: white;
+        font-weight: bold;
+        font-size: 1.2rem;
+        padding: 12px 20px;
+        background: linear-gradient(90deg, #3a7bd5, #6a11cb);
+        margin-bottom: 15px; /* Space below the header */
+    }
+</style>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 
-
-<!-- Banner -->
-<div class="container mt-3">
-    <div class="mb-4">
-        <img src="/images/banner.jpg" class="img-fluid w-100 rounded" alt="Banner">
+<!-- KHỐI DANH MỤC -->
+<div class="container mt-3 box-container">
+    <div class="section-header">
+        <i class="bi bi-grid"></i> DANH MỤC
     </div>
-
-    <!-- Category Shortcuts -->
-    <div class="row text-center mb-4">
-        <div class="col-3 col-md-2">
-            <img src="/images/category1.png" class="img-fluid mb-1" />
-            <p class="small">Hàng Chọn Giá Hời</p>
-        </div>
-        <div class="col-3 col-md-2">
-            <img src="/images/category2.png" class="img-fluid mb-1" />
-            <p class="small">Mã Giảm Giá</p>
-        </div>
-        <div class="col-3 col-md-2">
-            <img src="/images/category3.png" class="img-fluid mb-1" />
-            <p class="small">Shopee Style</p>
-        </div>
-        <div class="col-3 col-md-2">
-            <img src="/images/category3.png" class="img-fluid mb-1" />
-            <p class="small">Voucher 1 Triệu</p>
-        </div>
-        <div class="col-3 col-md-2">
-            <img src="/images/category2.png" class="img-fluid mb-1" />
-            <p class="small">Hàng Quốc Tế</p>
-        </div>
-        <div class="col-3 col-md-2">
-            <img src="/images/category1.png" class="img-fluid mb-1" />
-            <p class="small">Nạp Thẻ & Hóa Đơn</p>
-        </div>
-    </div>
-
-    <!-- Dành Mục -->
-    <h5 class="fw-bold">DANH MỤC</h5>
 
     <div class="position-relative" style="max-width: 1200px; margin: auto;">
         <button class="btn btn-light position-absolute start-0"
-                style="top: 30%; transform: translateY(-50%) translateX(-80%); z-index: 2;" onclick="scrollCategory(-1)">
+                style="top: 30%; transform: translateY(-50%) translateX(-120%); z-index: 2;" onclick="scrollCategory(-1)">
             <i class="bi bi-chevron-left fs-4"></i>
         </button>
 
-        
-
-
-
-        <div id="categoryCarousel" class="d-flex overflow-hidden"
-             style="scroll-behavior: smooth;">
+        <div id="categoryCarousel" class="d-flex overflow-hidden" style="scroll-behavior: smooth;">
             <div id="categoryItems" class="d-flex">
-                @for (int i = 0; i < categoryNumber; i++) // change to your actual count
+                @for (int i = 0; i < categoryNumber; i++)
                 {
                     <div class="text-center flex-shrink-0" style="width: 110px; margin-right: 10px;">
-                        <img src="/images/category1.png"
-                             class="img-fluid mb-2 rounded-circle border border-secondary"
+                        <img src="/images/category1.png" class="img-fluid mb-2 rounded-circle border border-secondary"
                              style="width: 100px; height: 100px; object-fit: cover;" />
                         <p class="small">Danh mục @(i + 1)</p>
                     </div>
@@ -85,98 +94,134 @@
             </div>
         </div>
 
-
         <button class="btn btn-light position-absolute end-0"
-                style="top: 30%; transform: translateY(-50%) translateX(80%); z-index: 2;" onclick="scrollCategory(1)">
+                style="top: 30%; transform: translateY(-50%) translateX(120%); z-index: 2;" onclick="scrollCategory(1)">
             <i class="bi bi-chevron-right fs-4"></i>
         </button>
-    </div>
-
-
-
-
-
-
-        
-
-    <!-- Flash Sale -->
-    <h5 class="fw-bold text-danger mb-3">⚡ FLASH SALE</h5>
-    <div class="row">
-        @for (int i = 0; i < 4; i++)
-        {
-            <div class="col-6 col-md-3 mb-4">
-                <div class="card h-100 border-danger">
-                    <img src="/images/product1.jpg" class="card-img-top" alt="Product">
-                    <div class="card-body">
-                        <h6 class="card-title">Tai nghe Bluetooth @(i + 1)</h6>
-                        <p class="text-danger fw-bold">₫19.000 <del class="text-muted">₫29.000</del></p>
-                    </div>
-                    <div class="card-footer text-center">
-                        <a href="/Products/Details/@(i+1)" class="btn btn-sm btn-danger">Mua ngay</a>
-                    </div>
-                </div>
-            </div>
-        }
     </div>
 </div>
 
 
+<!-- KHỐI GỢI Ý HÔM NAY -->
 @model List<Product_zip>
 
+@{
+    var totalPages = ViewBag.TotalPages;
+    var currentPage = ViewBag.CurrentPage;
+}
 
-
-<div class="container my-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h5 class="fw-bold">GỢI Ý HÔM NAY</h5>
-        <a href="#" class="text-decoration-none text-danger fw-semibold">Xem tất cả &gt;</a>
+<div class="container box-container">
+    <div class="section-header">
+        <i class="bi bi-lightbulb"></i> GỢI Ý HÔM NAY
     </div>
-
-    <<div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 g-3">
-        @if (product_Zips != null)
-        {
-            foreach (var item in product_Zips)
+    <div class="px-3 pb-3">
+        <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 g-3">
+            @if (product_Zips != null)
             {
-                <div class="col">
-                    <!-- Wrap the entire card inside an anchor tag -->
-                    <a href="/Product/Detail/@item.Product_zipId" class="text-decoration-none">
-                        <div class="card h-100 position-relative border">
-                            <img src="@item.Image" class="card-img-top" style="height: 180px; object-fit: cover;" />
-                            <div class="card-body p-2">
-                                <span class="badge bg-danger mb-1 text-white">Yêu thích</span>
-                                <h6 class="card-title text-truncate" title="@item.Name">@item.Name</h6>
-                                <p class="text-muted small mb-1">Đã bán @item.QuantitySold</p>
+                foreach (var item in product_Zips)
+                {
+                    <div class="col">
+                        <!-- ✅ TÍCH HỢP: Bao bọc card bằng link chi tiết sản phẩm -->
+                        <a href="/Product/Detail/@item.Product_zipId" class="text-decoration-none">
+                            <div class="card h-100 position-relative border">
+                                <img src="@item.Image" class="card-img-top" style="height: 180px; object-fit: cover;" />
+                                <div class="card-body p-2">
+                                    <span class="badge bg-danger mb-1 text-white">Yêu thích</span>
+                                    <h6 class="card-title text-truncate" title="@item.Name">@item.Name</h6>
+                                    <p class="text-muted small mb-1">Đã bán @item.QuantitySold</p>
 
-                                <!-- Rating Section -->
-                                <div class="d-flex align-items-center mb-1">
-                                    <div class="star-rating">
-                                        @for (var i = 0; i < 5; i++)
-                                        {
-                                            if (i < Math.Floor(item.Rating))
+                                    <!-- ✅ TÍCH HỢP: Hiển thị rating bằng icon star -->
+                                    <div class="d-flex align-items-center mb-1">
+                                        <div class="star-rating">
+                                            @for (var i = 0; i < 5; i++)
                                             {
-                                                <i class="bi bi-star-fill text-warning"></i> <!-- Filled Star -->
+                                                if (i < Math.Floor(item.Rating))
+                                                {
+                                                    <i class="bi bi-star-fill text-warning"></i> <!-- Filled Star -->
+                                                }
+                                                else if (i < Math.Floor(item.Rating) + 0.5 && item.Rating % 1 != 0)
+                                                {
+                                                    <i class="bi bi-star-half text-warning"></i> <!-- Half Star -->
+                                                }
+                                                else
+                                                {
+                                                    <i class="bi bi-star text-muted"></i> <!-- Empty Star -->
+                                                }
                                             }
-                                            else if (i < Math.Floor(item.Rating) + 0.5 && item.Rating % 1 != 0)
-                                            {
-                                                <i class="bi bi-star-half text-warning"></i> <!-- Half Star -->
-                                            }
-                                            else
-                                            {
-                                                <i class="bi bi-star text-muted"></i> <!-- Empty Star -->
-                                            }
-                                        }
+                                        </div>
+                                        <span class="ms-2 text-muted small">(@item.Rating)</span>
                                     </div>
 
-                                    <span class="ms-2 text-muted small">(@item.Rating)</span>
+                                    <div class="text-danger fw-bold">₫@item.Price.ToString("N0")</div>
+                                    <button class="btn btn-outline-danger btn-sm rounded-circle position-absolute bottom-0 end-0 m-2">
+                                        <i class="bi bi-cart"></i>
+                                    </button>
                                 </div>
-
-                                <div class="text-danger fw-bold">₫@item.Price.ToString("N0")</div>
                             </div>
-                        </div>
-                    </a>
-                </div>
+                        </a>
+                    </div>
+                }
             }
-        }
+        </div>
+
+        <!-- Phân trang -->
+        <div class="text-center mt-4">
+            @if (totalPages > 1)
+            {
+                <nav>
+                    <ul class="pagination justify-content-center">
+                        @if (currentPage > 1)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" href="@Url.Action("Index", new { page = currentPage - 1 })">&laquo;</a>
+                            </li>
+                        }
+
+                        @{
+                            int maxPageLinks = 5;
+                            int startPage = Math.Max(1, currentPage - maxPageLinks / 2);
+                            int endPage = Math.Min(totalPages, startPage + maxPageLinks - 1);
+                            if (endPage - startPage + 1 < maxPageLinks)
+                            {
+                                startPage = Math.Max(1, endPage - maxPageLinks + 1);
+                            }
+                        }
+
+                        @if (startPage > 1)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" href="@Url.Action("Index", new { page = 1 })">1</a>
+                            </li>
+                            <li class="page-item disabled"><span class="page-link">...</span></li>
+                        }
+
+                        @for (int i = startPage; i <= endPage; i++)
+                        {
+                            <li class="page-item @(i == currentPage ? "active" : "")">
+                                <a class="page-link" href="@Url.Action("Index", new { page = i })">@i</a>
+                            </li>
+                        }
+
+                        @if (endPage < totalPages)
+                        {
+                            <li class="page-item disabled"><span class="page-link">...</span></li>
+                            <li class="page-item">
+                                <a class="page-link" href="@Url.Action("Index", new { page = totalPages })">@totalPages</a>
+                            </li>
+                        }
+
+                        @if (currentPage < totalPages)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" href="@Url.Action("Index", new { page = currentPage + 1 })">&raquo;</a>
+                            </li>
+                        }
+                    </ul>
+                </nav>
+            }
+        </div>
     </div>
+</div>
 
 
 

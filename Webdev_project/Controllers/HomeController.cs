@@ -24,13 +24,26 @@ namespace Webdev_project.Controllers
         //[HttpGet("Index/{category}")]
 
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page = 1)
         {
-            ConverterHelper converterHelper = new ConverterHelper();   
+            int pageSize = 42; // Hiển thị 7 dòng x 6 cột
+            ConverterHelper converterHelper = new ConverterHelper();
             var categories = await productRepository.GetAllCategoriesAsync();
             List<Product_zip> product_Zips = converterHelper.ConvertProductListToProductZipList(await productRepository.GetAllAsync());
-            ViewBag.product = product_Zips;
+
+            int totalProducts = product_Zips.Count;
+            int totalPages = (int)Math.Ceiling((double)totalProducts / pageSize);
+
+            var pagedProducts = product_Zips
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            ViewBag.product = pagedProducts;
             ViewBag.Categories = categories;
+            ViewBag.TotalPages = totalPages;
+            ViewBag.CurrentPage = page;
+
             return View();
         }
 
