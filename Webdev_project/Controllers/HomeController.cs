@@ -77,6 +77,11 @@ namespace Webdev_project.Controllers
             return View();
         }
 
+        public IActionResult Policy()
+        {
+            return View();
+        }
+
 
 
 

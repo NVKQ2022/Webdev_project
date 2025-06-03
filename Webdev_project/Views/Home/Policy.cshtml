@@ -1,0 +1,73 @@
+﻿@{
+    ViewData["Title"] = "Chính Sách";
+}
+
+<style>
+    .box-container {
+        background-color: white;
+        padding: 0;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        margin-top: 50px;
+        margin-bottom: 50px;
+        overflow: hidden;
+    }
+
+    .section-header {
+        color: white;
+        font-weight: bold;
+        font-size: 1.4rem;
+        padding: 12px 20px;
+        background: linear-gradient(90deg, #3a7bd5, #6a11cb);
+        margin-bottom: 15px;
+    }
+
+    .content-padding {
+        padding: 20px;
+        line-height: 1.6;
+    }
+
+    h4 {
+        margin-top: 20px;
+        color: #6a11cb;
+    }
+
+    ul {
+        margin-top: 10px;
+        margin-bottom: 10px;
+        padding-left: 20px;
+    }
+</style>
+
+<div class="container box-container">
+    <div class="section-header">
+        <i class="bi bi-file-earmark-text"></i> @ViewData["Title"] của WDShop
+    </div>
+    <div class="content-padding">
+        <h4>📜 Chính sách bảo mật</h4>
+        <p>WDShop cam kết bảo mật thông tin cá nhân của khách hàng. Dữ liệu chỉ được sử dụng phục vụ cho mục đích cung cấp dịch vụ và không chia sẻ cho bên thứ ba.</p>
+        <ul>
+            <li>Thông tin thu thập: Tên, email, số điện thoại, địa chỉ.</li>
+            <li>Mục đích sử dụng: Xử lý đơn hàng, hỗ trợ khách hàng, thông báo dịch vụ.</li>
+            <li>Bảo mật: Áp dụng biện pháp kỹ thuật, công nghệ tiên tiến để bảo vệ dữ liệu.</li>
+        </ul>
+
+        <h4>🔁 Chính sách đổi trả</h4>
+        <p>Hỗ trợ đổi/trả trong vòng 7 ngày kể từ khi nhận hàng với điều kiện:</p>
+        <ul>
+            <li>Sản phẩm còn nguyên vẹn, chưa qua sử dụng.</li>
+            <li>Đầy đủ hóa đơn, phụ kiện.</li>
+            <li>Không áp dụng cho sản phẩm khuyến mãi đặc biệt.</li>
+        </ul>
+        <p>Liên hệ hotline/email để được hỗ trợ đổi trả nhanh chóng.</p>
+
+        <h4>🚚 Chính sách vận chuyển</h4>
+        <ul>
+            <li>Miễn phí vận chuyển với đơn hàng từ 500.000 VNĐ.</li>
+            <li>Giao hàng nhanh chóng từ 2-5 ngày làm việc (tùy khu vực).</li>
+            <li>Đối tác vận chuyển: Giao hàng nhanh, Viettel Post.</li>
+            <li>Khách hàng có thể kiểm tra hàng trước khi thanh toán.</li>
+            <li>Hỗ trợ thay đổi địa chỉ giao hàng trong vòng 24h.</li>
+        </ul>
+    </div>
+</div>

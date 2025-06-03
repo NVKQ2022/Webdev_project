@@ -1,28 +1,191 @@
-﻿@model List<Webdev_project.Models.Product>
+﻿@model List<Webdev_project.Models.Product_zip>
+
 @{
-    ViewData["Title"] = "Kết quả tìm kiếm";
-    var query = ViewBag.Query as string;
+    var keyword = ViewBag.Keyword as string;
+    var totalPages = ViewBag.TotalPages;
+    var currentPage = ViewBag.CurrentPage;
 }
-<h2>Kết quả tìm kiếm cho: "@query"</h2>
-@if (Model.Count == 0)
-{
-    <div>Không tìm thấy sản phẩm nào.</div>
-}
-else
-{
-    <div class="row">
-        @foreach (var p in Model)
+
+<style>
+    .box-container {
+        background-color: white;
+        padding: 0;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        margin-top: 50px;
+        margin-bottom: 50px;
+        overflow: hidden;
+    }
+
+    .section-header {
+        color: white;
+        font-weight: bold;
+        font-size: 1.2rem;
+        padding: 12px 20px;
+        background: linear-gradient(90deg, #3a7bd5, #6a11cb);
+        margin-bottom: 15px;
+    }
+
+    .card {
+        transition: border 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .card:hover {
+            border: 2px solid #a020f0;
+            box-shadow: 0 4px 8px rgba(160, 32, 240, 0.3);
+        }
+
+    .page-item.active .page-link {
+        background-color: #a020f0;
+        color: white;
+        border-color: #a020f0;
+    }
+
+    .page-link {
+        color: #a020f0;
+        border: 1px solid #dee2e6;
+    }
+
+        .page-link:hover {
+            background-color: #e9ecef;
+            color: #a020f0;
+            border-color: #dee2e6;
+        }
+
+    .star-rating i {
+        margin-right: 2px;
+    }
+
+    .badge.bg-danger {
+        background-color: #dc3545 !important;
+    }
+
+    .text-danger {
+        color: #dc3545 !important;
+    }
+
+    .btn-outline-danger {
+        border-color: #dc3545 !important;
+        color: #dc3545 !important;
+    }
+
+        .btn-outline-danger:hover {
+            background-color: #dc3545 !important;
+            color: #fff !important;
+        }
+</style>
+
+<div class="container box-container">
+    <div class="section-header">
+        <i class="bi bi-search"></i> Kết quả tìm kiếm cho: "@keyword"
+    </div>
+    <div class="px-3 pb-3">
+        @if (Model == null || Model.Count == 0)
         {
-            <div class="col-md-4 mb-3">
-                <div class="card">
-                    <img src="@(p.ImageURL != null && p.ImageURL.Count > 0 ? p.ImageURL[0] : "/images/no-image.png")" class="card-img-top" alt="@p.Name" />
-                    <div class="card-body">
-                        <h5 class="card-title">@p.Name</h5>
-                        <p class="card-text text-danger fw-bold">@p.Price.ToString("N0") đ</p>
-                        <a href="/Product/Detail/@p.ProductId" class="btn btn-primary">Xem chi tiết</a>
+            <div>Không tìm thấy sản phẩm nào.</div>
+        }
+        else
+        {
+            <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 g-3">
+                @foreach (var item in Model)
+                {
+                    <div class="col">
+                        <a href="/Product/Detail/@item.Product_zipId" class="text-decoration-none">
+                            <div class="card h-100 position-relative border">
+                                <img src="@item.Image" class="card-img-top" style="height: 180px; object-fit: cover;" />
+                                <div class="card-body p-2">
+                                    <span class="badge bg-danger mb-1 text-white">Yêu thích</span>
+                                    <h6 class="card-title text-truncate" title="@item.Name">@item.Name</h6>
+                                    <p class="text-muted small mb-1">Đã bán @item.QuantitySold</p>
+
+                                    <div class="d-flex align-items-center mb-1">
+                                        <div class="star-rating">
+                                            @for (var i = 0; i < 5; i++)
+                                            {
+                                                if (i < Math.Floor(item.Rating))
+                                                {
+                                                    <i class="bi bi-star-fill text-warning"></i>
+                                                }
+                                                else if (i < Math.Floor(item.Rating) + 0.5 && item.Rating % 1 != 0)
+                                                {
+                                                    <i class="bi bi-star-half text-warning"></i>
+                                                }
+                                                else
+                                                {
+                                                    <i class="bi bi-star text-muted"></i>
+                                                }
+                                            }
+                                        </div>
+                                        <span class="ms-2 text-muted small">(@item.Rating)</span>
+                                    </div>
+
+                                    <div class="text-danger fw-bold">₫@item.Price.ToString("N0")</div>
+                                    <button class="btn btn-outline-danger btn-sm rounded-circle position-absolute bottom-0 end-0 m-2">
+                                        <i class="bi bi-cart"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </a>
                     </div>
-                </div>
+                }
+            </div>
+
+            <!-- Phân trang -->
+            <div class="text-center mt-4">
+                @if (totalPages > 1)
+                {
+                    <nav>
+                        <ul class="pagination justify-content-center">
+                            @if (currentPage > 1)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" href="@Url.Action("Search", new { keyword = keyword, page = currentPage - 1 })">&laquo;</a>
+                                </li>
+                            }
+
+                            @{
+                                int maxPageLinks = 5;
+                                int startPage = Math.Max(1, currentPage - maxPageLinks / 2);
+                                int endPage = Math.Min(totalPages, startPage + maxPageLinks - 1);
+                                if (endPage - startPage + 1 < maxPageLinks)
+                                {
+                                    startPage = Math.Max(1, endPage - maxPageLinks + 1);
+                                }
+                            }
+
+                            @if (startPage > 1)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" href="@Url.Action("Search", new { keyword = keyword, page = 1 })">1</a>
+                                </li>
+                                <li class="page-item disabled"><span class="page-link">...</span></li>
+                            }
+
+                            @for (int i = startPage; i <= endPage; i++)
+                            {
+                                <li class="page-item @(i == currentPage ? "active" : "")">
+                                    <a class="page-link" href="@Url.Action("Search", new { keyword = keyword, page = i })">@i</a>
+                                </li>
+                            }
+
+                            @if (endPage < totalPages)
+                            {
+                                <li class="page-item disabled"><span class="page-link">...</span></li>
+                                <li class="page-item">
+                                    <a class="page-link" href="@Url.Action("Search", new { keyword = keyword, page = totalPages })">@totalPages</a>
+                                </li>
+                            }
+
+                            @if (currentPage < totalPages)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" href="@Url.Action("Search", new { keyword = keyword, page = currentPage + 1 })">&raquo;</a>
+                                </li>
+                            }
+                        </ul>
+                    </nav>
+                }
             </div>
         }
     </div>
-}
+</div>
