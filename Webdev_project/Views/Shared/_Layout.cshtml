@@ -112,7 +112,11 @@
             </div>
 
             <!-- Search Bar (centered, full width in the middle) with icon -->
-            <form class="input-group flex-grow-1 mx-4" style="max-width: 750px;">
+
+
+
+
+            @* <form class="input-group flex-grow-1 mx-4" style="max-width: 750px;">
                 <input class="form-control border-0 rounded-start-pill" type="search"
                        placeholder="LANEIGE DEAL HỜI QUÀ KHỦNG B1G1" />
 
@@ -124,7 +128,32 @@
                     </svg>
 
                 </button>
+            </form> *@
+
+
+
+
+            <form class="search-container d-flex position-relative" id="searchForm"
+                  action="/SearchResult/SearchResults" method="get"
+                  style="max-width: 750px; flex-grow: 1; margin: 0 1.5rem;">
+                <input type="text" id="searchInput" name="query" class="form-control"
+                       placeholder="Tìm kiếm sản phẩm..." autocomplete="off"
+                       style="border-radius: 0; border: 2px solid white;">
+                <button class="btn" type="submit" style="background-color: #6f42c1; border: 2px solid white; border-radius: 0;">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M11.7422 10.3439C12.5329 9.2673 13 7.9382 13 6.5C13 2.91015 10.0899 0 6.5 0C2.91015 0 0 2.91015 0 6.5C0 10.0899 2.91015 13 6.5 13C7.93858 13 9.26801 12.5327 10.3448 11.7415L10.3439 11.7422C10.3734 11.7822 10.4062 11.8204 10.4424 11.8566L14.2929 15.7071C14.6834 16.0976 15.3166 16.0976 15.7071 15.7071C16.0976 15.3166 16.0976 14.6834 15.7071 14.2929L11.8566 10.4424C11.8204 10.4062 11.7822 10.3734 11.7422 10.3439ZM12 6.5C12 9.53757 9.53757 12 6.5 12C3.46243 12 1 9.53757 1 6.5C1 3.46243 3.46243 1 6.5 1C9.53757 1 12 3.46243 12 6.5Z" fill="white" />
+                    </svg>
+                </button>
+                <div id="suggestionsContainer" class="suggestions-container position-absolute" style="top: 100%; left: 0; right: 0; z-index: 1000;"></div>
             </form>
+
+
+
+
+
+
+
+
            
             @*<a asp-controller="ShoppingCart" asp-action="Index" class="btn btn-primary">Giỏ hàng</a>*@
 
@@ -187,7 +216,93 @@
         }
     </style>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="/js/site.js"></script>
+    
 </body>
 </html>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/js/site.js"></script>
+<script>
+     document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('searchInput');
+        const suggestionsContainer = document.getElementById('suggestionsContainer');
+        let debounceTimer;
+
+        searchInput.addEventListener('input', function () {
+            const query = this.value;
+
+            // Xóa bộ đếm thời gian cũ mỗi khi người dùng gõ phím mới
+            clearTimeout(debounceTimer);
+
+            // Nếu ô tìm kiếm trống, hãy ẩn khung đề xuất và dừng lại
+            if (query.length < 2) {
+                suggestionsContainer.innerHTML = '';
+                suggestionsContainer.style.display = 'none';
+                return;
+            }
+
+            // Đặt một bộ đếm thời gian mới (Debouncing).
+            // Yêu cầu API sẽ chỉ được gửi sau khi người dùng ngừng gõ trong 300ms.
+            debounceTimer = setTimeout(() => {
+                // Gọi API để lấy đề xuất
+                fetch(`/api/Search/suggestions?query=${encodeURIComponent(query)}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(suggestions => {
+                        // Hiển thị các đề xuất nhận được
+                        displaySuggestions(suggestions);
+                    })
+                    .catch(error => {
+                        console.error('There has been a problem with your fetch operation:', error);
+                        suggestionsContainer.innerHTML = '';
+                        suggestionsContainer.style.display = 'none';
+                    });
+            }, 300); // 300ms delay
+        });
+
+        // Hàm để hiển thị các đề xuất trong container
+        function displaySuggestions(suggestions) {
+            // Xóa các đề xuất cũ
+            suggestionsContainer.innerHTML = '';
+
+            if (suggestions.length === 0) {
+                suggestionsContainer.style.display = 'none';
+                return;
+            }
+
+            // Tạo và thêm từng mục đề xuất vào container
+            suggestions.forEach(suggestion => {
+                // Mỗi đề xuất là một thẻ 'a' để có thể click vào
+                const suggestionItem = document.createElement('a');
+                suggestionItem.href = suggestion.url; // URL đã được tạo từ Controller
+                suggestionItem.classList.add('suggestion-item');
+
+                // Cấu trúc HTML cho một mục đề xuất
+                suggestionItem.innerHTML = `
+                <div class="suggestion-details">
+                    <div class="suggestion-name">${suggestion.name}</div>
+                    <div class="suggestion-price">${suggestion.price}</div>
+                </div>
+                <img src="${suggestion.imageURL}" alt="${suggestion.name}" class="suggestion-img">
+            `;
+
+                suggestionsContainer.appendChild(suggestionItem);
+            });
+
+            // Hiển thị container
+            suggestionsContainer.style.display = 'block';
+            suggestionsContainer.style.backgroundColor = 'white';
+        }
+
+        // Ẩn khung đề xuất khi người dùng click ra ngoài
+        document.addEventListener('click', function (event) {
+            if (!searchInput.contains(event.target)) {
+                suggestionsContainer.style.display = 'none';
+            }
+        });
+    });
+</script>
