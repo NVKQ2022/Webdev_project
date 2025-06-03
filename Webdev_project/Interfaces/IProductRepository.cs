@@ -5,6 +5,7 @@ namespace Webdev_project.Interfaces
 {
     public interface IProductRepository
     {
+        Task<List<Product>> GetSuggestions(string query);
         Task<List<Product>> GetAllAsync();
         Task<Product> GetByIdAsync(string id);
         Task<Product> GetByNameAsync(string name);

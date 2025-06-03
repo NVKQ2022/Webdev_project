@@ -6,6 +6,7 @@ using MongoDB.Bson;
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 public class ProductRepository:IProductRepository
 {
     private readonly IMongoCollection<Product> _products;
@@ -16,6 +17,15 @@ public class ProductRepository:IProductRepository
         var database = client.GetDatabase(settings.Value.DatabaseName);
         _products = database.GetCollection<Product>(settings.Value.ProductCollectionName);
     }
+
+    public async Task<List<Product>> GetSuggestions(string query)
+    {
+        if (string.IsNullOrWhiteSpace(query) || query.Length < 2)
+        {
+            //return Ok(new List<ProductSuggestionDto>());
+            return null;
+        }
+        var filter = Builders<Product>.Filter.Regex(p => p.Name, new BsonRegularExpression(new Regex(query, RegexOptions.IgnoreCase | RegexOptions.Multiline)));
 
         //Lấy tối đa 7 kết quả gợi ý
         var productsFromDb = await _products.Find(filter)
