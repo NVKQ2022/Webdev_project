@@ -227,7 +227,7 @@ namespace Webdev_project.Controllers
             }
 
             // Get user details
-            var userDetail = await _userDetailRepository.GetUserDetailAsync(user.Id);
+            var userDetail = await userDetailRepository.GetUserDetailAsync(user.Id);
             
             ViewBag.User = user;
             ViewBag.UserDetail = userDetail;
@@ -256,7 +256,7 @@ namespace Webdev_project.Controllers
                 };
 
                 // Add to database
-                await _userDetailRepository.AddReceiveInfoAsync(user.Id, newReceiveInfo);
+                await userDetailRepository.AddReceiveInfoAsync(user.Id, newReceiveInfo);
 
                 return Json(new { success = true });
             }

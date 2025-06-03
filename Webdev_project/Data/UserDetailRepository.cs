@@ -16,6 +16,11 @@ namespace Webdev_project.Data
             var database = client.GetDatabase(settings.Value.DatabaseName);
             _userDetail = database.GetCollection<UserDetail>(settings.Value.UserDetailCollectionName);
         }
+        public async Task<UserDetail> GetUserDetailAsync(int userId)
+        {
+            var filter = Builders<UserDetail>.Filter.Eq(u => u.UserId, userId);
+            return await _userDetail.Find(filter).FirstOrDefaultAsync();
+        }
         public async Task<UserDetail> GetUserByUserId(int userId)
         {
             var filter = Builders<UserDetail>.Filter.Eq(u => u.UserId, userId);

@@ -33,6 +33,13 @@ namespace Webdev_project.Controllers
         }
 
 
+        [HttpGet]
+         public IActionResult MyLogout()
+        {
+
+            //implement logic
+            return RedirectToAction("MyLogin", "Authenticate");
+        }
 
 
         [HttpPost]
