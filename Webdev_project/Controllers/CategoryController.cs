@@ -2,6 +2,7 @@
 using Webdev_project.Data;
 using Webdev_project.Helpers;
 using Webdev_project.Interfaces;
+using Webdev_project.Models;
 
 namespace Webdev_project.Controllers
 {
@@ -50,6 +51,32 @@ namespace Webdev_project.Controllers
             return View(products_zip);
         }
 
+        public async Task<IActionResult> ProductsByCategory(string category, int page = 1)
+        {
+            int pageSize = 42; // số sản phẩm trên 1 trang
+
+            var products = string.IsNullOrEmpty(category) ?
+                            new List<Product>() :
+                            await productRepository.GetByCategoryAsync(category);
+
+            ConverterHelper converterHelper = new ConverterHelper();
+            List<Product_zip> product_Zips = converterHelper.ConvertProductListToProductZipList(products);
+
+            int totalProducts = product_Zips.Count;
+            int totalPages = (int)Math.Ceiling((double)totalProducts / pageSize);
+
+            var pagedProducts = product_Zips
+                                .Skip((page - 1) * pageSize)
+                                .Take(pageSize)
+                                .ToList();
+
+            ViewBag.product = pagedProducts;
+            ViewBag.TotalPages = totalPages;
+            ViewBag.CurrentPage = page;
+            ViewBag.SelectedCategory = category;
+
+            return View("~/Views/SearchResult/CategoryResults.cshtml", pagedProducts);
+        }
 
     }
 }
