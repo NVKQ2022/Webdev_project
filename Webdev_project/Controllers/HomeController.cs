@@ -143,6 +143,16 @@ namespace Webdev_project.Controllers
                 ButtonText = "Đánh Giá Sản Phẩm"
             }
         };
+
+            // Test, Delete later
+            var user = new User 
+            { 
+                Username = HttpContext.Request.Cookies["Username"],
+                Email = "test@example.com",
+                IsAdmin = false
+            };
+            
+            ViewBag.User = user;
             ViewBag.Notifications = notifications;
             ViewBag.Username = HttpContext.Request.Cookies["Username"];
             return View();
