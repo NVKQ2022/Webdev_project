@@ -13,12 +13,14 @@ namespace Webdev_project.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly IAuthenticationRepository authenticationRepository;
         private readonly IProductRepository productRepository;
+        private readonly ICategoryRepository categoryRepository;
 
-        public HomeController(ILogger<HomeController> logger, IAuthenticationRepository authenticationRepository, IProductRepository productRepository)
+        public HomeController(ILogger<HomeController> logger, IAuthenticationRepository authenticationRepository, IProductRepository productRepository, ICategoryRepository categoryRepository)
         {
             _logger = logger;
             this.authenticationRepository = authenticationRepository;
             this.productRepository = productRepository;
+            this.categoryRepository = categoryRepository;
         }
 
         //[HttpGet("Index/{category}")]
@@ -27,9 +29,10 @@ namespace Webdev_project.Controllers
         public async Task<IActionResult> Index()
         {
             ConverterHelper converterHelper = new ConverterHelper();   
-            var categories = await productRepository.GetAllCategoriesAsync();
+            //var categories = await productRepository.GetAllCategoriesAsync();
             List<Product_zip> product_Zips = converterHelper.ConvertProductListToProductZipList(await productRepository.GetAllAsync());
             ViewBag.product = product_Zips;
+            var categories = await categoryRepository.GetCategoriesSortedByBuyTimeAsync();
             ViewBag.Categories = categories;
             return View();
         }

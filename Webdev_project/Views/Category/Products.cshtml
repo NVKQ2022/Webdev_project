@@ -1,0 +1,90 @@
+﻿@model List<Product_zip>
+@{
+    var cateName = ViewBag.CategoryName;
+    var sort = ViewBag.Sort as string ?? "default";
+    var search = ViewBag.Search as string ?? "";
+}
+
+<div class="container my-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-bold">Danh mục: @cateName (@Model.Count sản phẩm)</h5>
+        <a href="/" class="text-decoration-none text-secondary">← Trang chủ</a>
+    </div>
+
+    <!-- Bộ lọc -->
+    <form method="get" class="row g-2 mb-3 align-items-end">
+        <input type="hidden" name="CateName" value="@cateName" />
+
+        <div class="col-md-4">
+            <label for="search" class="form-label">Tìm kiếm</label>
+            <input type="text" class="form-control" name="search" id="search" value="@search" placeholder="Tìm tên sản phẩm..." />
+        </div>
+
+        <div class="col-md-4">
+            <label for="sort" class="form-label">Sắp xếp theo</label>
+            <select class="form-select" name="sort" id="sort">
+                <option value="default" selected="@(sort == "default" ? "selected" : null)">Mặc định</option>
+                <option value="price-asc" selected="@(sort == "price-asc" ? "selected" : null)">Giá tăng dần</option>
+                <option value="price-desc" selected="@(sort == "price-desc" ? "selected" : null)">Giá giảm dần</option>
+                <option value="name" selected="@(sort == "name" ? "selected" : null)">Tên sản phẩm A-Z</option>
+                <option value="sold" selected="@(sort == "sold" ? "selected" : null)">Bán chạy</option>
+
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-danger w-100">Áp dụng</button>
+        </div>
+    </form>
+
+    <!-- Sản phẩm -->
+    <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 g-3">
+        @if (Model != null && Model.Any())
+        {
+            foreach (var item in Model)
+            {
+                <div class="col">
+                    <a href="/Product/Detail/@item.Product_zipId" class="text-decoration-none">
+                        <div class="card h-100 position-relative border">
+                            <img src="@item.Image" class="card-img-top" style="height: 180px; object-fit: cover;" />
+                            <div class="card-body p-2">
+                                <span class="badge bg-danger mb-1 text-white">Yêu thích</span>
+                                <h6 class="card-title text-truncate" title="@item.Name">@item.Name</h6>
+                                <p class="text-muted small mb-1">Đã bán @item.QuantitySold</p>
+
+                                <div class="d-flex align-items-center mb-1">
+                                    <div class="star-rating">
+                                        @for (var i = 0; i < 5; i++)
+                                        {
+                                            if (i < Math.Floor(item.Rating))
+                                            {
+                                                <i class="bi bi-star-fill text-warning"></i>
+                                            }
+                                            else if (i < item.Rating)
+                                            {
+                                                <i class="bi bi-star-half text-warning"></i>
+                                            }
+                                            else
+                                            {
+                                                <i class="bi bi-star text-muted"></i>
+                                            }
+                                        }
+                                    </div>
+                                    <span class="ms-2 text-muted small">(@item.Rating)</span>
+                                </div>
+
+                                <div class="text-danger fw-bold">₫@item.Price.ToString("N0")</div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12 text-center">
+                <p class="text-muted">Không có sản phẩm nào phù hợp.</p>
+            </div>
+        }
+    </div>
+</div>

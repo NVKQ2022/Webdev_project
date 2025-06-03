@@ -11,6 +11,7 @@ namespace Webdev_project.Models
 
         public string CateName { get; set; }
 
+        public string Image {  get; set; }
         public int BuyTime { get; set; }
 
         public int ProductQuantity { get; set; }

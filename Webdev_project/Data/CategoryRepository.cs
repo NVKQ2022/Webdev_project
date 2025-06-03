@@ -57,4 +57,12 @@ public class CategoryRepository : ICategoryRepository
         await _categories.InsertOneAsync(newCategory);
     }
 
+    public async Task<List<Category>> GetCategoriesSortedByBuyTimeAsync()
+    {
+        var sortDefinition = Builders<Category>.Sort.Descending(c => c.BuyTime);
+        return await _categories.Find(FilterDefinition<Category>.Empty)
+                                       .Sort(sortDefinition)
+                                       .ToListAsync();
+    }
+
 }
