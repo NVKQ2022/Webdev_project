@@ -52,6 +52,7 @@ namespace Webdev_project.Data
             return result?.Cart ?? new List<CartItem>();
         }
 
+
         public async Task<List<string>> GetCategoriesByPointDescending(int userId)
         {
             var user = await GetUserByUserId(userId);
@@ -140,6 +141,15 @@ namespace Webdev_project.Data
                 c => c.ProductId == productId
             );
             await _userDetail.UpdateOneAsync(filter, update);
+        }
+
+
+        public async Task<List<ReceiveInfo>> GetReceiveInfoAsync(int userId)
+        {
+            var filter = Builders<UserDetail>.Filter.Eq(u => u.UserId, userId);
+            var projection = Builders<UserDetail>.Projection.Include(u => u.ReceiveInfo).Exclude("_id");
+            var result = await _userDetail.Find(filter).Project<UserDetail>(projection).FirstOrDefaultAsync();
+            return result?.ReceiveInfo ?? new List<ReceiveInfo>();
         }
 
         public async Task AddReceiveInfoAsync(int userId, ReceiveInfo newInfo)

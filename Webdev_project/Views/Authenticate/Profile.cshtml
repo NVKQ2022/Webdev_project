@@ -5,27 +5,28 @@
     User user = ViewBag.User;
     // UserDetail userDetail = ViewBag.UserDetail;
     // var receiveInfos = userDetail?.ReceiveInfo ?? new List<ReceiveInfo>();
-    UserDetail userDetail = new UserDetail 
-    {
-        UserId = 1,
-        PhoneNumber = "0123456789",
-        ReceiveInfo = new List<ReceiveInfo>
-        {
-            new ReceiveInfo 
-            { 
-                Name = "Nguyễn Việt Kỳ Quân",
-                Phone = "0123456789",
-                Address = "Trường ĐH CNTT, ĐHQG TP.HCM"
-            },
-            new ReceiveInfo 
-            {
-                Name = "Nguyễn Việt Kỳ Quân",
-                Phone = "0987654321",
-                Address = "Ký túc xá khu A, ĐHQG TP.HCM"
-            }
-        }
-    };
-    var receiveInfos = userDetail.ReceiveInfo;
+    // UserDetail userDetail = new UserDetail 
+    // {
+    //     UserId = 1,
+    //     PhoneNumber = "0123456789",
+    //     ReceiveInfo = new List<ReceiveInfo>
+    //     {
+    //         new ReceiveInfo 
+    //         { 
+    //             Name = "Nguyễn Việt Kỳ Quân",
+    //             Phone = "0123456789",
+    //             Address = "Trường ĐH CNTT, ĐHQG TP.HCM"
+    //         },
+    //         new ReceiveInfo 
+    //         {
+    //             Name = "Nguyễn Việt Kỳ Quân",
+    //             Phone = "0987654321",
+    //             Address = "Ký túc xá khu A, ĐHQG TP.HCM"
+    //         }
+    //     }
+    // };
+    var userDetail =ViewBag.UserDetail;
+    List<ReceiveInfo> receiveInfos = userDetail.ReceiveInfo;
     var notifi = ViewBag.Notifications;
 }
 
@@ -581,68 +582,132 @@
 
     // Thêm địa chỉ
     // document.getElementById('addressForm').addEventListener('submit', async function(event) {
-    document.getElementById('addressForm').addEventListener('submit', function(event) {
-        event.preventDefault();
-        console.log('Form submitted');
 
-        const name = document.getElementById("fullName").value.trim();
-        const phone = document.getElementById("phone").value.trim();
-        const province = document.getElementById("province").options[document.getElementById("province").selectedIndex].text;
-        const district = document.getElementById("district").options[document.getElementById("district").selectedIndex].text;
-        const ward = document.getElementById("ward").value;
-        const details = document.getElementById("details").value.trim();
 
-        if (!name || !phone || !province || !district || !ward || !details) {
-            alert("Vui lòng nhập đầy đủ thông tin địa chỉ.");
-            return;
-        }
 
-        if (!isValidPhone(phone)) {
-            alert("Số điện thoại không hợp lệ. Vui lòng nhập lại.");
-            return;
-        }
 
-        const fullAddress = `${details}, ${ward}, ${district}, ${province}`;
-        // console.log('Sending address:', { name, phone, address: fullAddress });
-        // Thêm địa chỉ mới vào mảng addresses
-        addresses.push({
-            name: name,
-            phone: phone,
-            address: fullAddress
+
+
+    // document.getElementById('addressForm').addEventListener('submit', function(event) {
+    //     event.preventDefault();
+    //     console.log('Form submitted');
+
+    //     const name = document.getElementById("fullName").value.trim();
+    //     const phone = document.getElementById("phone").value.trim();
+    //     const province = document.getElementById("province").options[document.getElementById("province").selectedIndex].text;
+    //     const district = document.getElementById("district").options[document.getElementById("district").selectedIndex].text;
+    //     const ward = document.getElementById("ward").value;
+    //     const details = document.getElementById("details").value.trim();
+
+    //     if (!name || !phone || !province || !district || !ward || !details) {
+    //         alert("Vui lòng nhập đầy đủ thông tin địa chỉ.");
+    //         return;
+    //     }
+
+    //     if (!isValidPhone(phone)) {
+    //         alert("Số điện thoại không hợp lệ. Vui lòng nhập lại.");
+    //         return;
+    //     }
+
+    //     const fullAddress = `${details}, ${ward}, ${district}, ${province}`;
+    //     // console.log('Sending address:', { name, phone, address: fullAddress });
+    //     // Thêm địa chỉ mới vào mảng addresses
+    //     addresses.push({
+    //         name: name,
+    //         phone: phone,
+    //         address: fullAddress
+    //     });
+
+    //     // Cập nhật giao diện
+    //     updateAddressList();
+        
+    //     // Đóng form và hiển thị thông báo
+    //     hideAddForm();
+    //     alert('Thêm địa chỉ thành công!');
+
+    //     Code cố dùng database
+    //     try {
+    //         const response = await fetch('/Home/AddAddress', {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Content-Type': 'application/x-www-form-urlencoded',
+    //             },
+    //             body: `name=${encodeURIComponent(name)}&phone=${encodeURIComponent(phone)}&address=${encodeURIComponent(fullAddress)}`
+    //         });
+
+    //         const result = await response.json();
+    //         console.log('Response:', result);
+
+    //         if (result.success) {
+    //             alert('Thêm địa chỉ thành công!');
+    //             window.location.reload();
+    //         } else {
+    //             throw new Error(result.message || 'Không thể thêm địa chỉ');
+    //         }
+    //     } catch (error) {
+    //         console.error('Error:', error);
+    //         alert("Có lỗi xảy ra khi thêm địa chỉ. Vui lòng thử lại.");
+    //     }
+       
+    // });
+
+
+
+
+    document.getElementById('addressForm').addEventListener('submit', async function (event) {
+    event.preventDefault();
+
+    const name = document.getElementById("fullName").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+    const province = document.getElementById("province").options[document.getElementById("province").selectedIndex].text;
+    const district = document.getElementById("district").options[document.getElementById("district").selectedIndex].text;
+    const ward = document.getElementById("ward").options[document.getElementById("ward").selectedIndex].text;
+    const details = document.getElementById("details").value.trim();
+
+    if (!name || !phone || !province || !district || !ward || !details) {
+        alert("Vui lòng nhập đầy đủ thông tin địa chỉ.");
+        return;
+    }
+
+    if (!isValidPhone(phone)) {
+        alert("Số điện thoại không hợp lệ. Vui lòng nhập lại.");
+        return;
+    }
+
+    const fullAddress = `${details}, ${ward}, ${district}, ${province}`;
+
+    try {
+        const response = await fetch('/Authenticate/AddAddress', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `name=${encodeURIComponent(name)}&phone=${encodeURIComponent(phone)}&address=${encodeURIComponent(fullAddress)}`
         });
 
-        // Cập nhật giao diện
-        updateAddressList();
-        
-        // Đóng form và hiển thị thông báo
-        hideAddForm();
-        alert('Thêm địa chỉ thành công!');
+        const result = await response.json();
+        console.log('Response:', result);
 
-        /* Code cố dùng database
-        try {
-            const response = await fetch('/Home/AddAddress', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: `name=${encodeURIComponent(name)}&phone=${encodeURIComponent(phone)}&address=${encodeURIComponent(fullAddress)}`
-            });
-
-            const result = await response.json();
-            console.log('Response:', result);
-
-            if (result.success) {
-                alert('Thêm địa chỉ thành công!');
-                window.location.reload();
-            } else {
-                throw new Error(result.message || 'Không thể thêm địa chỉ');
+        if (result.success) {
+            // Optional: Update addresses array/UI
+            if (typeof addresses !== "undefined") {
+                addresses.push({ name, phone, address: fullAddress });
+                updateAddressList();
             }
-        } catch (error) {
-            console.error('Error:', error);
-            alert("Có lỗi xảy ra khi thêm địa chỉ. Vui lòng thử lại.");
+
+            hideAddForm();
+            alert('Thêm địa chỉ thành công!');
+            window.location.reload();
+        } else {
+            throw new Error(result.message || 'Không thể thêm địa chỉ');
         }
-        */
-    });
+    } catch (error) {
+        console.error('Error:', error);
+        alert("Có lỗi xảy ra khi thêm địa chỉ. Vui lòng thử lại.");
+    }
+});
+
+
 
     // Hàm cập nhật giao diện danh sách địa chỉ
     function updateAddressList() {
