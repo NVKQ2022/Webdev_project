@@ -216,8 +216,10 @@ namespace Webdev_project.Controllers
                 }
             };
 
+
             // Get user from session
             var user = authenticationRepository.RetrieveFromSession(HttpContext.Request.Cookies["SessionId"]);
+            
             if (user == null)
             {
                 return RedirectToAction("MyLogin", "Authenticate");
@@ -225,9 +227,11 @@ namespace Webdev_project.Controllers
 
             // Get user details
             var userDetail = await userDetailRepository.GetUserDetailAsync(user.Id);
+            var receiveInfo = await userDetailRepository.GetReceiveInfoAsync(user.Id);
 
             ViewBag.User = user;
             ViewBag.UserDetail = userDetail;
+            
             ViewBag.Notifications = notifications;
             return View();
         }
@@ -235,6 +239,13 @@ namespace Webdev_project.Controllers
         [HttpPost]
         public async Task<IActionResult> AddAddress(string name, string phone, string address)
         {
+            // Create new ReceiveInfo
+            ReceiveInfo newReceiveInfo = new ReceiveInfo
+            {
+                Name = name,
+                Phone = phone,
+                Address = address
+            };
             try
             {
                 // Get user from session
@@ -244,13 +255,7 @@ namespace Webdev_project.Controllers
                     return RedirectToAction("MyLogin", "Authenticate");
                 }
 
-                // Create new ReceiveInfo
-                var newReceiveInfo = new ReceiveInfo
-                {
-                    Name = name,
-                    Phone = phone,
-                    Address = address
-                };
+                
 
                 // Add to database
                 await userDetailRepository.AddReceiveInfoAsync(user.Id, newReceiveInfo);
@@ -259,7 +264,7 @@ namespace Webdev_project.Controllers
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = ex.Message });
+                return Json(new { success = false, message = ex.Message ,ReceiveInfo = newReceiveInfo});
             }
         }
 

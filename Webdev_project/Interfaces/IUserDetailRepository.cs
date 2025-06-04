@@ -27,7 +27,7 @@ namespace Webdev_project.Interfaces
 
         Task RemoveCartItemAsync(int userId, string productId);
 
-       
+        Task<List<ReceiveInfo>> GetReceiveInfoAsync(int userId);
         Task AddReceiveInfoAsync(int userId, ReceiveInfo newInfo);
         Task<bool> DeleteReceiveInfoAsync(int userId, ReceiveInfo targetInfo);
         Task UpdateBankingInfoAsync(int userId, string newAccount, string newCard);
