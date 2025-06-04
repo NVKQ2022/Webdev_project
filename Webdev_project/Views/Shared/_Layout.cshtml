@@ -2,6 +2,7 @@
     bool isLoggedIn = ViewBag.isLoggedIn ?? false;
     string userName = ViewBag.userName ?? "";
     var cartItemNumber = ViewBag.cartItemNumber;
+    var isAdmin = ViewBag.isAdmin;
 }
 
 
@@ -149,7 +150,7 @@
             <!-- Right side: Đăng ký/Đăng nhập -->
             <div class="d-flex align-items-center">
                 
-
+                
                 @if (isLoggedIn)
                 {
                     <div class="dropdown">
@@ -160,9 +161,10 @@
                             <span>@userName</span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end text-dark shadow" aria-labelledby="userMenu">
+                            @if(isAdmin){<li><a class="dropdown-item" href="/Authenticate/Admin">Admin</a></li>}
                             <li><a class="dropdown-item" href="/Authenticate/Profile">Tài Khoản Của Tôi</a></li>
                             <li><a class="dropdown-item" href="/Order/MyOrders">Đơn Mua</a></li>
-                            <li><a class="dropdown-item" href="/Athenticate/MyLogout">Đăng Xuất</a></li>
+                            <li><a class="dropdown-item" href="/Authenticate/MyLogout">Đăng Xuất</a></li>
                         </ul>
                     </div>
                 }
@@ -171,6 +173,10 @@
                     <a href="/Authenticate/MyRegister" class="text-white me-2 text-decoration-none">Đăng Ký</a>
                     <a href="/Authenticate/MyLogin" class="text-white text-decoration-none">Đăng Nhập</a>
                 }
+
+                @* <div id="user-area" class="d-flex align-items-center text-white"></div> *@
+
+
             </div>
 
         </div>
@@ -414,7 +420,7 @@
 
 
         // dynamicly update addToCart
-                 function getCookieValue(name) {
+                 function getCookie(name) {
             const cookies = document.cookie.split(';');
             for (let cookie of cookies) {
                 const [key, value] = cookie.trim().split('=');
@@ -424,12 +430,47 @@
         }
 
         function updateCartCountDisplay() {
-            const cartCount = getCookieValue("CartItemNumber");
+            const cartCount = getCookie("CartItemNumber");
             const badge = document.getElementById("cartItemBadge");
             if (badge) {
                 badge.innerText = cartCount && parseInt(cartCount) > 0 ? cartCount : "";
             }
         }
+
+
+
+        function renderUserInfo() {
+        const sessionId = getCookie("SessionId");
+        const username = getCookie("Username");
+        const userArea = document.getElementById("user-area");
+        if (!userArea) return;
+
+      if (sessionId && username) {
+            userArea.innerHTML = `
+                <div class="dropdown">
+                    <a class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
+                       href="#" role="button" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTM9eDR87r3p64w_TkB2yGvWzwxYWfx9QvWuA&s"
+                             alt="avatar" width="30" height="30" class="rounded-circle me-2" />
+                        <span>${username}</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end text-dark shadow" aria-labelledby="userMenu">
+                        <li><a class="dropdown-item" href="/Authenticate/Profile">Tài Khoản Của Tôi</a></li>
+                        <li><a class="dropdown-item" href="/Order/MyOrders">Đơn Mua</a></li>
+                        <li><a class="dropdown-item" href="#" id="logout-btn">Đăng Xuất</a></li>
+                    </ul>
+                </div>
+            `;
+        } else {
+            userArea.innerHTML = `
+                <a href="/Authenticate/MyRegister" class="text-white me-2 text-decoration-none">Đăng Ký</a>
+                <a href="/Authenticate/MyLogin" class="text-white text-decoration-none">Đăng Nhập</a>
+            `;
+        }
+    }
+
+
+
 
         // Run on every page load
         document.addEventListener("DOMContentLoaded", function () {

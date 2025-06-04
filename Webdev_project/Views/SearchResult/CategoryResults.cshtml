@@ -81,6 +81,74 @@
         <i class="bi bi-grid"></i> Danh mục sản phẩm: "@category"
     </div>
 
+
+
+
+
+
+    <form method="get" class="row g-2 mb-3">
+    <input type="hidden" name="CateName" value="@category" />
+    <div class="col-auto">
+        <input name="search" class="form-control" type="text" placeholder="Tìm sản phẩm..." value="@ViewBag.Search" />
+    </div>
+    <div class="col-auto">
+        <select name="sort" class="form-select" onchange="this.form.submit()">
+    @if (ViewBag.Sort == "default")
+    {
+        <option value="default" selected>Mặc định</option>
+    }
+    else
+    {
+        <option value="default">Mặc định</option>
+    }
+
+    @if (ViewBag.Sort == "price-asc")
+    {
+        <option value="price-asc" selected>Giá tăng dần</option>
+    }
+    else
+    {
+        <option value="price-asc">Giá tăng dần</option>
+    }
+
+    @if (ViewBag.Sort == "price-desc")
+    {
+        <option value="price-desc" selected>Giá giảm dần</option>
+    }
+    else
+    {
+        <option value="price-desc">Giá giảm dần</option>
+    }
+
+    @if (ViewBag.Sort == "name")
+    {
+        <option value="name" selected>Tên (A-Z)</option>
+    }
+    else
+    {
+        <option value="name">Tên (A-Z)</option>
+    }
+
+    @if (ViewBag.Sort == "sold")
+    {
+        <option value="sold" selected>Bán chạy</option>
+    }
+    else
+    {
+        <option value="sold">Bán chạy</option>
+    }
+</select>
+
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-primary">Lọc</button>
+    </div>
+</form>
+
+
+
+
+
     <div class="px-3 pb-3">
         @if (Model == null || Model.Count == 0)
         {
@@ -158,7 +226,7 @@
                             @if (startPage > 1)
                             {
                                 <li class="page-item">
-                                    <a class="page-link" href="@Url.Action("ProductsByCategory", new { category = category, page = 1 })">1</a>
+                                    <a class="page-link" href="@Url.Action("Products", new { CateName = category, page = 1, sort = ViewBag.Sort, search = ViewBag.Search })">1</a>
                                 </li>
                                 <li class="page-item disabled"><span class="page-link">...</span></li>
                             }
@@ -166,7 +234,7 @@
                             @for (int i = startPage; i <= endPage; i++)
                             {
                                 <li class="page-item @(i == currentPage ? "active" : "")">
-                                    <a class="page-link" href="@Url.Action("ProductsByCategory", new { category = category, page = i })">@i</a>
+                                    <a class="page-link" href="@Url.Action("Products", new { CateName = category, page = i, sort = ViewBag.Sort, search = ViewBag.Search })">@i</a>
                                 </li>
                             }
 
@@ -174,14 +242,14 @@
                             {
                                 <li class="page-item disabled"><span class="page-link">...</span></li>
                                 <li class="page-item">
-                                    <a class="page-link" href="@Url.Action("ProductsByCategory", new { category = category, page = totalPages })">@totalPages</a>
+                                    <a class="page-link" href="@Url.Action("Products", new { CateName = category, page = totalPages, sort = ViewBag.Sort, search = ViewBag.Search })">@totalPages</a>
                                 </li>
                             }
 
                             @if (currentPage < totalPages)
                             {
                                 <li class="page-item">
-                                    <a class="page-link" href="@Url.Action("ProductsByCategory", new { category = category, page = currentPage + 1 })">&raquo;</a>
+                                    <a class="page-link" href="@Url.Action("Products", new { CateName = category, page = currentPage + 1, sort = ViewBag.Sort, search = ViewBag.Search })">&raquo;</a>
                                 </li>
                             }
                         </ul>

@@ -1,0 +1,19 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Đăng xuất</title>
+    <script>
+        // Redirect to login page with unique query to prevent cache
+        setTimeout(function () {
+            window.location.href = '/Authenticate/MyLogin?t=' + new Date().getTime();
+        }, 100); // allow cookies to clear first
+    </script>
+</head>
+<body>
+    <p>Đang đăng xuất...</p>
+</body>
+</html>

@@ -34,11 +34,26 @@ namespace Webdev_project.Controllers
 
 
         [HttpGet]
-         public IActionResult MyLogout()
+        public IActionResult MyLogout()
         {
+            string? sessionId = HttpContext.Request.Cookies["SessionId"];
+            if (!string.IsNullOrEmpty(sessionId))
+            {
+                authenticationRepository.DeleteSession(sessionId);
+            }
 
-            //implement logic
-            return RedirectToAction("MyLogin", "Authenticate");
+            // Delete cookies
+            Response.Cookies.Delete("SessionId");
+            Response.Cookies.Delete("Username");
+            Response.Cookies.Delete("CartItemNumber");
+
+            // Redirect to a fresh logout page that runs JS
+            return RedirectToAction("LogoutSuccess", "Authenticate");
+        }
+
+        public IActionResult LogoutSuccess()
+        {
+            return View();
         }
 
 
@@ -49,7 +64,7 @@ namespace Webdev_project.Controllers
             return View(user);
         }
         [HttpGet]
-        public async Task<IActionResult> Profile(string category)
+        public async Task<IActionResult> Admin(string category)
         {
             User? user=  authenticationRepository.RetrieveFromSession(HttpContext.Request.Cookies["sessionId"]);
             ViewBag.User = user;
@@ -76,13 +91,13 @@ namespace Webdev_project.Controllers
             return View();
         }
 
-        [HttpPost]
-        public  IActionResult Profile()
-        {
-            var product = new Product();
-            productRepository.AddAsync(product);
-            return View();
-        }
+        //[HttpPost]
+        //public  IActionResult Profile()
+        //{
+        //    var product = new Product();
+        //    productRepository.AddAsync(product);
+        //    return View();
+        //}
         [HttpPost]
         public async Task<IActionResult>MyLogin(string email, string password)
         {
@@ -146,5 +161,123 @@ namespace Webdev_project.Controllers
                 return View();
             }
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        public async Task<IActionResult> Profile()
+        {
+            var notifications = new List<OrderNotification>
+            {
+                new OrderNotification {
+                    ImageUrl = "https://phucanhcdn.com/media/product/55711_laptop_asus_vivobook_15_oled_a1505va_ma469w_6.jpg",
+                    Status = "Giao kiện hàng thành công",
+                    PackageCode = "SPXVN057191684675",
+                    OrderCode = "2505296R62JNTS",
+                    Date = new DateTime(2025, 5, 31, 9, 23, 0),
+                    Message = "đã giao thành công đến bạn.",
+                    ButtonText = "Xem Chi Tiết"
+                },
+                new OrderNotification {
+                    ImageUrl = "https://www.techspot.com/images/products/2023/keyboards/org/2023-02-16-product-3.jpg",
+                    Status = "Giao kiện hàng thành công",
+                    PackageCode = "SPXVN055448964355",
+                    OrderCode = "2505296SDBF0D3",
+                    Date = new DateTime(2025, 5, 31, 9, 23, 0),
+                    Message = "đã giao thành công đến bạn.",
+                    ButtonText = "Xem Chi Tiết"
+                },
+                new OrderNotification {
+                    ImageUrl = "https://product.hstatic.net/200000637319/product/gearvn-webcam-razer-kiyo-x-1_f806112c1b8e4209a2b4f4f332b4471b_eaff436e2bd94171844c5cfce593ad5b.jpg",
+                    Status = "Đơn hàng đã hoàn tất",
+                    OrderCode = "250511HAHE4838",
+                    Date = new DateTime(2025, 5, 16, 15, 10, 0),
+                    Message = "đã hoàn thành. Bạn hãy đánh giá sản phẩm trước ngày 15-06-2025 để nhận 200 xu",
+                    ButtonText = "Đánh Giá Sản Phẩm"
+                }
+            };
+
+            // Get user from session
+            var user = authenticationRepository.RetrieveFromSession(HttpContext.Request.Cookies["SessionId"]);
+            if (user == null)
+            {
+                return RedirectToAction("MyLogin", "Authenticate");
+            }
+
+            // Get user details
+            var userDetail = await userDetailRepository.GetUserDetailAsync(user.Id);
+
+            ViewBag.User = user;
+            ViewBag.UserDetail = userDetail;
+            ViewBag.Notifications = notifications;
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddAddress(string name, string phone, string address)
+        {
+            try
+            {
+                // Get user from session
+                var user = authenticationRepository.RetrieveFromSession(HttpContext.Request.Cookies["SessionId"]);
+                if (user == null)
+                {
+                    return RedirectToAction("MyLogin", "Authenticate");
+                }
+
+                // Create new ReceiveInfo
+                var newReceiveInfo = new ReceiveInfo
+                {
+                    Name = name,
+                    Phone = phone,
+                    Address = address
+                };
+
+                // Add to database
+                await userDetailRepository.AddReceiveInfoAsync(user.Id, newReceiveInfo);
+
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
     }
+
+
+
+    public class OrderNotification
+    {
+        public string ImageUrl { get; set; }
+        public string Message { get; set; }
+        public string PackageCode { get; set; }
+        public string OrderCode { get; set; }
+        public DateTime Date { get; set; }
+        public string Status { get; set; } // e.g. "Giao kiện hàng thành công"
+        public string ButtonText { get; set; } // e.g. "Xem Chi Tiết", "Đánh Giá Sản Phẩm"
+    }
+
+
+
 }

@@ -96,7 +96,7 @@ namespace Webdev_project.Data
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                string query = "SELECT Id, Email, Username, IsAdmin FROM users WHERE Id = @Id";
+                string query = @"SELECT Id, Email, Username, IsAdmin FROM users WHERE Id = @Id";
         SqlCommand command = new SqlCommand(query, connection);
         command.Parameters.AddWithValue("@Id", id);
 
@@ -118,7 +118,7 @@ namespace Webdev_project.Data
         public void DeleteSession(string sessionId)
         {
             using var connection = new SqlConnection(_connectionString);
-            string query = "@DELETE FROM session WHERE SessionId='@SessionId'";
+            string query = @"DELETE FROM session WHERE SessionId='@SessionId'";
 
             using var cmd = new SqlCommand(query, connection);
             cmd.Parameters.AddWithValue("@SessionId", sessionId);

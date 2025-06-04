@@ -1,5 +1,4 @@
 ﻿using Webdev_project.Models;
-
 namespace Webdev_project.Interfaces
 {
     public interface ISessionRepository
@@ -9,5 +8,7 @@ namespace Webdev_project.Interfaces
         //bool  RetrieveIsAdminFromSession(string sessionId);
 
         User? RetrieveFromSession(string? sessionId);
+
+        void DeleteSession(string sessionId);
     }
 }

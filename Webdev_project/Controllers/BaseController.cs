@@ -31,6 +31,7 @@ namespace Webdev_project.Controllers
                 var user = _authRepo.RetrieveFromSession(sessionId);
                 if (user != null)
                 {
+                    ViewBag.isAdmin = user.IsAdmin;
                     ViewBag.isLoggedIn = true;
                     ViewBag.userName = user.Username;
                     ViewBag.cartItemNumber = cartItemNumber;
