@@ -43,11 +43,11 @@ public class SearchController : ControllerBase
 
         var suggestions = productsFromDb.Select(p => new ProductSuggestionDto
         {
-            ProductID = p.ProductID,
+            ProductID = p.ProductId,
             Name = p.Name,
             Price = $"{p.Price:N0}₫", 
             ImageURL = p.ImageURL?.FirstOrDefault(), // Lấy ảnh đầu tiên nếu có
-            URL = Url.Action("Detail", "Product", new { id = p.ProductID }) ?? $"/Product/Detail/{p.ProductID}"
+            URL = Url.Action("Detail", "Product", new { id = p.ProductId }) ?? $"/Product/Detail/{p.ProductId}"
         }).ToList();
 
         return Ok(suggestions);

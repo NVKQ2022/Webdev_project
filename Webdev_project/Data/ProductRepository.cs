@@ -33,7 +33,7 @@ public class ProductRepository:IProductRepository
                                                      .Limit(7)
                                                      .Project(p => new Product
                                                      {
-                                                         ProductID = p.ProductID,
+                                                         ProductId = p.ProductId,
                                                          Name = p.Name,
                                                          Price = p.Price,
                                                          ImageURL = p.ImageURL
