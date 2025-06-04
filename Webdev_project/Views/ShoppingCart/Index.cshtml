@@ -240,7 +240,7 @@
                         @((item.UnitPrice * item.Quantity).ToString("N0", System.Globalization.CultureInfo.GetCultureInfo("vi-VN"))) ₫
                     </div>
                     <div class="remove-button">
-                        <form asp-action="Remove" method="post" style="display:inline;">
+                        <form asp-action="RemoveItem" method="post" style="display:inline;">
                             <input type="hidden" name="productId" value="@item.ProductId" />
                             <button type="submit" title="Xóa" aria-label="Xóa" style="background:none; border:none; cursor:pointer; color:#dc3545;">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
@@ -348,6 +348,7 @@
                     })
                     .fail(function () {
                         alert('Xóa sản phẩm thất bại!');
+                        console.log(productId);
                     });
             });
 

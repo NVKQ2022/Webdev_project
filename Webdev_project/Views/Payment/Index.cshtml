@@ -1,0 +1,610 @@
+﻿@model List<Webdev_project.Models.CartItem>
+
+@{
+    ViewBag.Title = "Trang thanh toán";
+    decimal total = 0;
+    var user = ViewBag.User as Webdev_project.Models.User;
+    List<ReceiveInfo> receiveInfos= ViewBag.ReceiveInfos;
+}
+
+<head>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-geosearch@3.11.0/dist/geosearch.css" />
+    <style>
+        body {
+            background-color: #f5f5f5;
+        }
+        /* Container */
+        .payment-container {
+            background-color: white;
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+            .payment-container h2 {
+                font-size: 20px;
+                margin-bottom: 20px;
+                color: #6f42c1;
+            }
+
+        /* Bảng sản phẩm */
+        .payment-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+            .payment-table th,
+            .payment-table td {
+                padding: 12px;
+                border-bottom: 1px solid #ddd;
+                text-align: left;
+            }
+
+            .payment-table th {
+                background-color: #fafafa;
+                font-size: 14px;
+                color: #555;
+            }
+
+            .payment-table td img {
+                width: 80px;
+                border-radius: 4px;
+                border: 1px solid #eee;
+            }
+
+        /* Button */
+        .btn-purple {
+            background-color: #6f42c1;
+            color: white;
+            border: none;
+            font-weight: 500;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+            .btn-purple:hover {
+                background-color: #5a32a3;
+                color: white;
+            }
+
+        /* Địa chỉ người dùng */
+        .address-content {
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+
+        .address-text {
+            display: block;
+            margin-top: 4px;
+            color: #333;
+        }
+
+        .default-badge {
+            display: inline-block;
+            padding: 2px 6px;
+            background-color: #ebe3f9;
+            color: #6f42c1;
+            font-size: 12px;
+            border: 1px solid #6f42c1;
+            border-radius: 3px;
+            margin-left: 10px;
+        }
+
+        .change-link {
+            float: right;
+            color: #6f42c1;
+            cursor: pointer;
+            font-size: 13px;
+            text-decoration: underline;
+        }
+
+        /* Danh sách địa chỉ người dùng */
+        .address-list {
+            margin-top: 12px;
+            border-top: 1px solid #eee;
+            padding-top: 12px;
+        }
+
+        .address-option {
+            display: flex;
+            gap: 8px;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+            .address-option input[type="radio"] {
+                margin-top: 6px;
+            }
+
+        .address-details {
+            font-size: 13px;
+            color: #555;
+        }
+
+        /* Form */
+        .new-address-form {
+            margin-top: 10px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background-color: #f9f9f9;
+        }
+
+        .form-field {
+            margin-bottom: 10px;
+        }
+
+        .input-field {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* Button */
+        .add-address-btn {
+            background: none;
+            border: 1px dashed #c2bde5;
+            padding: 8px;
+            font-size: 14px;
+            width: 100%;
+            border-radius: 5px;
+            margin-top: 10px;
+            cursor: pointer;
+            color: #6f42c1;
+        }
+
+        .button-group {
+            text-align: right;
+            margin-top: 12px;
+        }
+
+        .btn-cancel,
+        .btn-confirm {
+            padding: 6px 14px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            margin-left: 8px;
+        }
+
+        .btn-cancel {
+            background-color: #eee;
+            color: #333;
+        }
+
+        .btn-confirm {
+            background-color: #6f42c1;
+            color: white;
+        }
+
+        /* Ẩn/Hiện */
+        .hidden {
+            display: none;
+        }
+
+        .payment-option {
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+            .payment-option.active {
+                border-color: #6f42c1;
+                background-color: #fff0ea;
+                color: #6f42c1;
+                font-weight: bold;
+            }
+
+        #map {
+            width: 100%;
+            height: 300px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border: 1px solid #ddd;
+            z-index: 1;
+        }
+
+        /* Fix cho leaflet controls */
+        .leaflet-top,
+        .leaflet-bottom {
+            z-index: 400 !important;
+        }
+
+        .payment-methods {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+
+<!-- Phần địa chỉ -->
+<div class="payment-container">
+    <h5><b>Địa chỉ nhận hàng</b></h5>
+
+    <div class="address-content" id="currentAddress">
+        <strong>Nguyễn Văn A</strong> (+84) 123456789
+        <span class="address-text">12, Ấp 5, Huyện ABC, TPHCM</span>
+        <span class="default-badge">Mặc định</span>
+        <a class="change-link" onclick="showAddressList()">Thay đổi</a>
+    </div>
+
+    <!-- Danh sách địa chỉ -->
+    <div class="address-list hidden" id="addressList">
+         <h4 class="mb-4">Sổ địa chỉ</h4>
+                    
+                    <!-- Existing Addresses -->
+                    <div class="address-list mb-4">
+                        @foreach (var address in receiveInfos)
+                        {
+                            <label class="address-option">
+                                <input type="radio" name="selectedAddress" @(address == receiveInfos.First() ? "checked" : "") />
+                                <div>
+                                    <strong>@address.Name</strong> - @address.Phone
+                                    <div class="address-details">@address.Address</div>
+                                    @if(address == receiveInfos.First())
+                                    {
+                                        <span class="default-badge">Mặc định</span>
+                                    }
+                                </div>
+                            </label>
+                        }
+                    </div>
+
+        <div id="additionalAddresses"></div>
+
+        <button class="add-address-btn" onclick="showAddForm()">+ Thêm địa chỉ mới</button>
+
+        <!-- Thêm địa chỉ mới -->
+        <div class="new-address-form hidden" id="newAddressForm">
+            <div class="form-field">
+                <input type="text" id="fullName" placeholder="Họ và tên" class="input-field" />
+            </div>
+            <div class="form-field">
+                <input type="text" id="phone" placeholder="Số điện thoại" class="input-field" />
+            </div>
+            <div class="form-field">
+                <select id="province" class="input-field" onchange="loadDistricts()">
+                    <option value="">Chọn Tỉnh/Thành phố</option>
+                </select>
+            </div>
+            <div class="form-field">
+                <select id="district" class="input-field" onchange="loadWards()">
+                    <option value="">Chọn Quận/Huyện</option>
+                </select>
+            </div>
+            <div class="form-field">
+                <select id="ward" class="input-field">
+                    <option value="">Chọn Phường/Xã</option>
+                </select>
+            </div>
+            <div class="form-field">
+                <input type="text" id="details" placeholder="Địa chỉ cụ thể (số nhà, tên đường...)" class="input-field" />
+            </div>
+            <div class="button-group">
+                <button class="btn-cancel" onclick="hideAddForm()">Trở lại</button>
+                <button class="btn-confirm" onclick="addAddress()">Thêm</button>
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button class="btn-cancel" onclick="hideAddressList()">Hủy</button>
+            <button class="btn-confirm" onclick="selectAddress()">Xác nhận</button>
+        </div>
+    </div>
+</div>
+
+<!-- Thông tin đơn hàng -->
+<div class="payment-container">
+    <h5><b>Thông tin đơn hàng</b></h5>
+    <table class="payment-table">
+        <thead>
+            <tr>
+                <th>Hình ảnh</th>
+                <th>Sản phẩm</th>
+                <th>Số lượng</th>
+                <th>Đơn giá</th>
+                <th>Thành tiền</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                total += item.UnitPrice * item.Quantity;
+                <tr>
+                    <td><img src="@item.Image" alt="Ảnh sản phẩm" /></td>
+                    <td>@item.ProductName</td>
+                    <td>@item.Quantity</td>
+                    <td>@String.Format("{0:N0}đ", item.UnitPrice)</td>
+                    <td>@String.Format("{0:N0}đ", item.UnitPrice * item.Quantity)</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<!-- Thông tin đặt hàng -->
+@using (Html.BeginForm("PaymentResult", "Payment", FormMethod.Post))
+{
+    <div class="payment-container">
+        <div class="row">
+            <!-- Cột trái - Bản đồ -->
+            <div class="col-md-4">
+                <h5><b>Vị trí giao hàng</b></h5>
+                <div id="map"></div>
+            </div>
+
+            <!-- Cột phải - Phương thức thanh toán -->
+            <div class="col-md-8">
+                <h5><b>Phương thức thanh toán</b></h5>
+                <input type="hidden" id="paymentMethod" name="paymentMethod" value="COD" />
+                <div class="payment-methods">
+                    <button type="button" class="payment-option" onclick="selectPaymentMethod(this, 'Card')">Thẻ Tín dụng/Ghi nợ</button>
+                    <button type="button" class="payment-option active" onclick="selectPaymentMethod(this, 'COD')">Thanh toán khi nhận hàng</button>
+                </div>
+
+                <p><strong>Tổng tiền:</strong> @String.Format("{0:N0}đ", ViewBag.TotalAmount)</p>
+                <button type="submit" class="btn-purple">Đặt hàng</button>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- Thêm thư viện Leaflet và Geosearch -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/leaflet-geosearch@3.11.0/dist/bundle.min.js"></script>
+
+<script>
+    // Đợi cho tất cả resources load xong
+    document.addEventListener('DOMContentLoaded', function() {
+        let map;
+        let marker;
+        const provider = new GeoSearch.OpenStreetMapProvider();
+
+        async function initMap() {
+            try {
+                // Vị trí mặc định (TP.HCM)
+                const defaultLocation = [10.8231, 106.6297];
+                
+                // Khởi tạo bản đồ
+                map = L.map('map', {
+                    center: defaultLocation,
+                    zoom: 15,
+                    scrollWheelZoom: false // Tắt zoom bằng chuột để tránh conflict với scroll trang
+                });
+                
+                // Thêm layer OpenStreetMap
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19,
+                    attribution: '© OpenStreetMap contributors'
+                }).addTo(map);
+
+                // Thêm marker
+                marker = L.marker(defaultLocation).addTo(map);
+
+                // Hiển thị vị trí ban đầu
+                await updateMapFromAddress();
+
+                // Fix cho vấn đề render
+                setTimeout(() => {
+                    map.invalidateSize();
+                }, 100);
+            } catch (error) {
+                console.error('Lỗi khởi tạo bản đồ:', error);
+            }
+        }
+
+        // Hàm cập nhật vị trí trên bản đồ
+        async function updateMapFromAddress() {
+            const addressText = document.querySelector('.address-text')?.textContent;
+            if (!addressText) return;
+
+            try {
+                const results = await provider.search({ query: addressText + ', Vietnam' });
+                if (results.length > 0) {
+                    const { x: lng, y: lat } = results[0];
+                    map.setView([lat, lng], 15);
+                    marker.setLatLng([lat, lng]);
+                }
+            } catch (error) {
+                console.error('Không thể tìm thấy địa chỉ:', error);
+            }
+        }
+
+        // Chọn và cập nhật địa chỉ mới
+        async function selectAddress() {
+            const selectedRadio = document.querySelector('input[name="selectedAddress"]:checked');
+
+            if (!selectedRadio) {
+                alert("Vui lòng chọn một địa chỉ!");
+                return;
+            }
+
+            // Lấy thông tin địa chỉ
+            const addressOption = selectedRadio.parentElement;
+            const nameElement = addressOption.querySelector("strong");
+            const textContent = addressOption.textContent;
+            const addressDetails = addressOption.querySelector(".address-details");
+
+            if (!nameElement || !addressDetails) {
+                alert("Không thể lấy thông tin địa chỉ.");
+                return;
+            }
+
+            const name = nameElement.textContent;
+            const phone = textContent.split('-')[1].trim().split('\n')[0];
+            const address = addressDetails.textContent;
+
+            // Cập nhật hiển thị
+            document.getElementById("currentAddress").innerHTML = `
+                <strong>${name}</strong> (${phone})
+                <span class="address-text">${address}</span>
+                <a class="change-link" onclick="showAddressList()">Thay đổi</a>
+            `;
+
+            // Cập nhật vị trí trên bản đồ
+            await updateMapFromAddress();
+
+            // Ẩn danh sách địa chỉ
+            hideAddressList();
+        }
+
+        // Gán các hàm vào window để có thể gọi từ onclick
+        window.selectAddress = selectAddress;
+        window.updateMapFromAddress = updateMapFromAddress;
+
+        // Khởi tạo bản đồ
+        initMap();
+    });
+
+    // Ẩn/Hiện danh sách địa chỉ người nhận
+    function showAddressList() {
+        document.getElementById("addressList").classList.remove("hidden");
+    }
+
+    function hideAddressList() {
+        document.getElementById("addressList").classList.add("hidden");
+    }
+
+	// Ẩn/hiện form thêm địa chỉ mới
+    function showAddForm() {
+        document.getElementById("newAddressForm").classList.remove("hidden");
+        document.querySelector(".add-address-btn").classList.add("hidden");
+    }
+
+    function hideAddForm() {
+        document.getElementById("newAddressForm").classList.add("hidden");
+        document.querySelector(".add-address-btn").classList.remove("hidden");
+        clearForm();
+    }
+
+    // Clear Form
+    function clearForm() {
+        document.getElementById("fullName").value = "";
+        document.getElementById("phone").value = "";
+        document.getElementById("addressLine").value = "";
+        document.getElementById("details").value = "";
+    }
+
+    // Số điện thoại đúng chuẩn
+    function isValidPhone(phone) {
+        return /^\d{10}$/.test(phone);
+    }
+
+    // Thêm địa chỉ
+    function addAddress() {
+        const name = document.getElementById("fullName").value.trim();
+        const phone = document.getElementById("phone").value.trim();
+        const province = document.getElementById("province").options[document.getElementById("province").selectedIndex].text;
+        const district = document.getElementById("district").options[document.getElementById("district").selectedIndex].text;
+        const ward = document.getElementById("ward").value;
+        const details = document.getElementById("details").value.trim();
+
+        if (!name || !phone || !province || !district || !ward || !details) {
+            alert("Vui lòng nhập đầy đủ thông tin địa chỉ.");
+            return;
+        }
+		if (!isValidPhone(phone)) {
+			alert("Số điện thoại không hợp lệ. Vui lòng nhập lại.");
+			return;
+		}
+        const fullAddress = `${details}, ${ward}, ${district}, ${province}`;
+
+        const newAddressHTML = `
+            <label class="address-option">
+                <input type="radio" name="selectedAddress" />
+                <div>
+                    <strong>${name}</strong> - ${phone}
+                    <div class="address-details">${fullAddress}</div>
+                </div>
+            </label>
+        `;
+
+        document.getElementById("additionalAddresses").innerHTML += newAddressHTML;
+        hideAddForm();
+    }
+
+	// Tải danh sách tỉnh/thành phố
+    const apiBase = "https://provinces.open-api.vn/api";
+
+    window.onload = function () {
+        fetch(`${apiBase}/p/`)
+            .then(res => res.json())
+            .then(data => {
+                const provinceSelect = document.getElementById("province");
+                data.forEach(province => {
+                    const option = document.createElement("option");
+                    option.value = province.code;
+                    option.textContent = province.name;
+                    provinceSelect.appendChild(option);
+                });
+            });
+    };
+
+    function loadDistricts() {
+        const provinceCode = document.getElementById("province").value;
+        const districtSelect = document.getElementById("district");
+        const wardSelect = document.getElementById("ward");
+        districtSelect.innerHTML = '<option value="">Chọn Quận/Huyện</option>';
+        wardSelect.innerHTML = '<option value="">Chọn Phường/Xã</option>';
+
+        if (!provinceCode) return;
+
+        fetch(`${apiBase}/p/${provinceCode}?depth=2`)
+            .then(res => res.json())
+            .then(data => {
+                data.districts.forEach(district => {
+                    const option = document.createElement("option");
+                    option.value = district.code;
+                    option.textContent = district.name;
+                    districtSelect.appendChild(option);
+                });
+            });
+    }
+
+    function loadWards() {
+        const districtCode = document.getElementById("district").value;
+        const wardSelect = document.getElementById("ward");
+        wardSelect.innerHTML = '<option value="">Chọn Phường/Xã</option>';
+
+        if (!districtCode) return;
+
+        fetch(`${apiBase}/d/${districtCode}?depth=2`)
+            .then(res => res.json())
+            .then(data => {
+                data.wards.forEach(ward => {
+                    const option = document.createElement("option");
+                    option.value = ward.name;
+                    option.textContent = ward.name;
+                    wardSelect.appendChild(option);
+                });
+            });
+    }
+
+	// Chọn phương thức thanh toán
+    function selectPaymentMethod(button, method) {
+        document.querySelectorAll(".payment-option").forEach(btn => btn.classList.remove("active"));
+        button.classList.add("active");
+        document.getElementById("paymentMethod").value = method;
+    }
+
+</script>
+
+<!-- 
+    Leaflet: Thư viện bản đồ chính
+    Geosearch: Plugin để tìm kiếm địa chỉ và chuyển thành tọa độ
+    Sử dụng CDN để load nhanh và cache tốt
+-->
