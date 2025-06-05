@@ -17,7 +17,7 @@ namespace Webdev_project.Controllers
         public async Task<IActionResult> MyOrders()
         {
             var user = authenticationRepository.RetrieveFromSession(HttpContext.Request.Cookies["sessionId"]);
-            List<Order> orders = await orderRepository.GetOrdersByUserAsync(user.Id.ToString());
+            List<Order> orders = await orderRepository.GetOrdersByUserAsync(user.Id);
              
 
             ViewBag.Orders = orders;

@@ -12,7 +12,7 @@ public class Order
     [BsonRepresentation(BsonType.ObjectId)]
     public string OrderID { get; set; }  // Maps to "_id"
 
-    public string UserID { get; set; }
+    public int UserID { get; set; }
 
     public List<OrderItem> Items { get; set; }
 

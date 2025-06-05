@@ -26,7 +26,7 @@ namespace Webdev_project.Data
             return await _orders.Find(o => o.OrderID == id).FirstOrDefaultAsync();
         }
 
-        public async Task<List<Order>> GetOrdersByUserAsync(string userId)
+        public async Task<List<Order>> GetOrdersByUserAsync(int userId)
         {
             return await _orders.Find(o => o.UserID == userId).ToListAsync();
         }

@@ -14,13 +14,15 @@ namespace Webdev_project.Controllers
         private readonly IProductRepository productRepository;
         private readonly ICategoryRepository categoryRepository;
         private readonly IUserDetailRepository userDetailRepository;
-        public AuthenticateController(IAuthenticationRepository authenticationRepository, IProductRepository productRepository,ICategoryRepository categoryRepository,IUserDetailRepository userDetailRepository)
+        private readonly IOrderRepository orderRepository;
+        public AuthenticateController(IAuthenticationRepository authenticationRepository, IProductRepository productRepository,ICategoryRepository categoryRepository,IUserDetailRepository userDetailRepository, IOrderRepository orderRepository)
         {
             
             this.productRepository= productRepository;
             this.authenticationRepository = authenticationRepository;
             this.categoryRepository = categoryRepository;
             this.userDetailRepository = userDetailRepository;
+            this.orderRepository = orderRepository;
         }
         [HttpGet]
         public IActionResult MyLogin()
@@ -190,35 +192,6 @@ namespace Webdev_project.Controllers
 
         public async Task<IActionResult> Profile()
         {
-            var notifications = new List<OrderNotification>
-            {
-                new OrderNotification {
-                    ImageUrl = "https://phucanhcdn.com/media/product/55711_laptop_asus_vivobook_15_oled_a1505va_ma469w_6.jpg",
-                    Status = "Giao kiện hàng thành công",
-                    PackageCode = "SPXVN057191684675",
-                    OrderCode = "2505296R62JNTS",
-                    Date = new DateTime(2025, 5, 31, 9, 23, 0),
-                    Message = "đã giao thành công đến bạn.",
-                    ButtonText = "Xem Chi Tiết"
-                },
-                new OrderNotification {
-                    ImageUrl = "https://www.techspot.com/images/products/2023/keyboards/org/2023-02-16-product-3.jpg",
-                    Status = "Giao kiện hàng thành công",
-                    PackageCode = "SPXVN055448964355",
-                    OrderCode = "2505296SDBF0D3",
-                    Date = new DateTime(2025, 5, 31, 9, 23, 0),
-                    Message = "đã giao thành công đến bạn.",
-                    ButtonText = "Xem Chi Tiết"
-                },
-                new OrderNotification {
-                    ImageUrl = "https://product.hstatic.net/200000637319/product/gearvn-webcam-razer-kiyo-x-1_f806112c1b8e4209a2b4f4f332b4471b_eaff436e2bd94171844c5cfce593ad5b.jpg",
-                    Status = "Đơn hàng đã hoàn tất",
-                    OrderCode = "250511HAHE4838",
-                    Date = new DateTime(2025, 5, 16, 15, 10, 0),
-                    Message = "đã hoàn thành. Bạn hãy đánh giá sản phẩm trước ngày 15-06-2025 để nhận 200 xu",
-                    ButtonText = "Đánh Giá Sản Phẩm"
-                }
-            };
 
 
             // Get user from session
@@ -232,11 +205,10 @@ namespace Webdev_project.Controllers
             // Get user details
             var userDetail = await userDetailRepository.GetUserDetailAsync(user.Id);
             var receiveInfo = await userDetailRepository.GetReceiveInfoAsync(user.Id);
-
+            var orders = await orderRepository.GetOrdersByUserAsync(user.Id);
             ViewBag.User = user;
             ViewBag.UserDetail = userDetail;
-            
-            ViewBag.Notifications = notifications;
+            ViewBag.Orders =orders;
             return View();
         }
 

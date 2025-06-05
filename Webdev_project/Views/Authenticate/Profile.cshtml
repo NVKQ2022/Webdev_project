@@ -27,7 +27,11 @@
     // };
     var userDetail =ViewBag.UserDetail;
     List<ReceiveInfo> receiveInfos = userDetail.ReceiveInfo;
-    var notifi = ViewBag.Notifications;
+    var notifi = ViewBag.Notifications;// fix to orders
+
+    var orders = ViewBag.Orders;
+
+
 }
 
 <style>
@@ -461,33 +465,120 @@
                         <h4 class="mb-0">Cập Nhật Đơn Hàng</h4>
                         <a href="#" class="btn btn-outline-secondary btn-sm">Đánh dấu Đã đọc tất cả</a>
                     </div>
+                    <div class="mb-3">
+                        <label for="statusFilter" class="form-label">Lọc theo trạng thái:</label>
+                        <select id="statusFilter" class="form-select form-select-sm" onchange="filterOrders()">
+                            <option value="all">Tất cả</option>
+                            <option value="Pending">Chờ xử lý</option>
+                            <option value="Shipped">Đã gửi</option>
+                            <option value="Delivered">Đã giao</option>
+                            <option value="Cancelled">Đã huỷ</option>
+                        </select>
+                    </div>
 
-                    @foreach (var n in notifi)
-                    {
-                        <div class="d-flex notification-item align-items-start">
-                            <img src="@n.ImageUrl" width="100" height="100" class="me-3 rounded border" />
-                            <div class="flex-grow-1">
-                                <div class="fw-bold">@n.Status</div>
+
+
+
+
+
+                 @*    INSERT *@
+                 @foreach (var order in orders){
+                        <div class="border rounded p-3 mb-4 bg-light order-card" data-status="@order.Status">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
                                 <div>
-                                    @if (!string.IsNullOrEmpty(n.PackageCode))
-                                    {
-                                        <span>Kiện hàng <strong>@n.PackageCode</strong></span>
-                                    }
-                                    @if (!string.IsNullOrEmpty(n.OrderCode))
-                                    {
-                                        <span> của đơn hàng <strong>@n.OrderCode</strong></span>
-                                    }
-                                    <span> @n.Message</span>
+                                    <strong>Trạng thái:</strong> @order.Status<br />
+                                    <strong>Mã đơn hàng:</strong> @order.OrderID<br />
+                                    <span class="text-muted small">@order.CreatedAt.ToLocalTime().ToString("HH:mm dd-MM-yyyy")</span>
                                 </div>
-                                <div class="text-muted small">@n.Date.ToString("HH:mm dd-MM-yyyy")</div>
+                                <div>
+                                    <a href="/Orders/Details/@order.OrderID" class="btn btn-outline-secondary btn-sm">Chi tiết</a>
+                                </div>
                             </div>
-                            <div>
-                                <button class="btn btn-outline-secondary btn-sm">@n.ButtonText</button>
+
+                            @foreach (var item in order.Items)
+                            {
+                                <div class="d-flex align-items-start mb-3 ps-2">
+                                    <img src="@item.Image" width="80" height="80" class="me-3 rounded border" />
+                                    <div>
+                                        <a href="/Product/Detail/@item.ProductID" class="fw-bold text-decoration-none">
+                                            @item.ProductName
+                                        </a>
+                                        <div>Số lượng: @item.Quantity</div>
+                                        <div>Giá mỗi cái: <strong>@item.UnitPrice.ToString("N0")₫</strong></div>
+                                    </div>
+                                </div>
+                            }
+
+                            <div class="text-end mt-2">
+                                <strong>Tổng cộng:</strong> @order.TotalAmount.ToString("N0")₫
+                            </div>
+
+                            <div class="text-end mt-3">
+                                @if (order.Status == "Pending")
+                                {
+                                    <button class="btn btn-danger btn-sm">Huỷ đơn</button>
+                                }
+                                else if (order.Status == "Delivered")
+                                {
+                                    <button class="btn btn-outline-primary btn-sm">Đánh giá sản phẩm</button>
+                                }
                             </div>
                         </div>
-                    }
+                 }
+                   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   @*  @foreach (var order in orders)
+                    {
+                        <div class="border rounded p-3 mb-4 bg-light">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div>
+                                    <strong>Trạng thái:</strong> @order.Status<br />
+                                    <strong>Mã đơn hàng:</strong> @order.OrderID<br />
+                                    <span class="text-muted small">@order.CreatedAt.ToLocalTime().ToString("HH:mm dd-MM-yyyy")</span>
+                                </div>
+                                <div>
+                                    <button class="btn btn-outline-secondary btn-sm">Chi tiết</button>
+                                </div>
+                            </div>
+
+                            @foreach (var item in order.Items)
+                            {
+                                <div class="d-flex align-items-start mb-3 ps-2">
+                                    <img src="@item.Image" width="80" height="80" class="me-3 rounded border" />
+                                    <div>
+                                        <div><strong>@item.ProductName</strong></div>
+                                        <div>Số lượng: @item.Quantity</div>
+                                        <div>Giá mỗi cái: <strong>@item.UnitPrice.ToString("N0")₫</strong></div>
+                                    </div>
+                                </div>
+                            }
+
+                            <div class="text-end mt-2">
+                                <strong>Tổng cộng:</strong> @order.TotalAmount.ToString("N0")₫
+                            </div>
+                        </div>
+                    } *@
                 </div>
             </div>
+
         </div>
     </div>
 </div>
@@ -854,4 +945,11 @@
                 alert("Không thể tải danh sách phường xã. Vui lòng thử lại.");
             });
     }
+          function filterOrders() {
+            const filter = document.getElementById("statusFilter").value;
+            document.querySelectorAll(".order-card").forEach(card => {
+                const status = card.getAttribute("data-status");
+                card.style.display = (filter === "all" || filter === status) ? "block" : "none";
+            });
+        }
 </script>
