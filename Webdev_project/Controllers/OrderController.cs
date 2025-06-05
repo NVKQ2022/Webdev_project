@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AspNetCoreGeneratedDocument;
+using Microsoft.AspNetCore.Mvc;
 using Webdev_project.Interfaces;
 
 namespace Webdev_project.Controllers
@@ -14,13 +15,20 @@ namespace Webdev_project.Controllers
             this.productRepository = productRepository;
             this.orderRepository = orderRepository;
         }
-        public async Task<IActionResult> MyOrders()
+        public async Task<IActionResult> Detail(string id)
         {
             var user = authenticationRepository.RetrieveFromSession(HttpContext.Request.Cookies["sessionId"]);
-            List<Order> orders = await orderRepository.GetOrdersByUserAsync(user.Id);
+            if (user == null) 
+            {
+                return RedirectToAction("MyLogin", "Authenticate");
+            }
+          
              
-
-            ViewBag.Orders = orders;
+            var order = await orderRepository.GetOrderByIdAsync(id);
+            //var order = await orderRepository.GetOrderByIdAsync("683753ca1d53f57b6a0d1280");
+            
+            ViewBag.OrderId = id;
+            ViewBag.Order = order;
             return View();
         }
     }

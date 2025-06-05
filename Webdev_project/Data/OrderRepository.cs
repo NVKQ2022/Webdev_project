@@ -24,11 +24,13 @@ namespace Webdev_project.Data
         public async Task<Order> GetOrderByIdAsync(string id)
         {
             return await _orders.Find(o => o.OrderID == id).FirstOrDefaultAsync();
+         
         }
 
         public async Task<List<Order>> GetOrdersByUserAsync(int userId)
         {
             return await _orders.Find(o => o.UserID == userId).ToListAsync();
+
         }
 
         public async Task AddOrderAsync(Order order)

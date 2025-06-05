@@ -58,6 +58,7 @@ namespace Webdev_project.Helpers
             using (SHA256 sha = SHA256.Create())
             {
                 byte[] hashBytes = sha.ComputeHash(Encoding.UTF8.GetBytes(combined));
+                return password;///need to fix
                 return Convert.ToBase64String(hashBytes);
             }
         }

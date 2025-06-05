@@ -1,0 +1,61 @@
+﻿@{
+    ViewData["Title"] = "Order Details";
+    var order = ViewBag.Order;// Replace YourNamespace.Models with your actual namespace
+    var orderId = ViewBag.OrderId;
+}
+
+<h1>Order Details</h1>
+
+@if (order != null)
+{
+    <div>
+        <h2>General Information</h2>
+        <p><strong>Order ID:</strong> @order.OrderID</p>
+        <p><strong>User ID:</strong> @order.UserID</p>
+        <p><strong>Status:</strong> @order.Status</p>
+        <p><strong>Payment Method:</strong> @order.PaymentMethod</p>
+        <p><strong>Order Date:</strong> @order.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss")</p>
+        <p><strong>Total Amount:</strong> @string.Format("{0:N0}₫", order.TotalAmount)</p>
+    </div>
+
+    <div>
+        <h2>Receiver Information</h2>
+        <p><strong>Name:</strong> @order.ReceiveInfo?.Name</p>
+        <p><strong>Phone:</strong> @order.ReceiveInfo?.Phone</p>
+        <p><strong>Address:</strong> @order.ReceiveInfo?.Address</p>
+    </div>
+
+    <div>
+        <h2>Items</h2>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Image</th>
+                    <th>Product Name</th>
+                    <th>Quantity</th>
+                    <th>Unit Price</th>
+                    <th>Total Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in order.Items)
+                {
+                    <tr>
+                        <td>
+                            <img src="@item.Image" alt="@item.ProductName" style="max-width: 80px;" />
+                        </td>
+                        <td>@item.ProductName</td>
+                        <td>@item.Quantity</td>
+                        <td>@string.Format("{0:N0}₫", item.UnitPrice)</td>
+                        <td>@string.Format("{0:N0}₫", item.Quantity * item.UnitPrice)</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <p>@orderId</p>
+    <p>Order data not available.</p>
+}
