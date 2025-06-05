@@ -155,7 +155,7 @@
         <h2 class="mb-4">Welcome, @user.Username</h2>
         <h3>Admin Dashboard - Products by Category</h3>
 
-        <form method="get" asp-action="Profile" class="mb-3">
+        <form method="get" asp-action="Admin" class="mb-3">
             <label for="category" class="form-label">Select Category:</label>
             <select name="category" id="category" class="form-select w-auto d-inline-block" onchange="this.form.submit()">
                 <option value="">-- Select --</option>
@@ -164,7 +164,7 @@
                     var isSelected = (cat == selectedCategory) ? "selected" : "";
                     <option value="@cat" selected="@(cat == selectedCategory)">@cat</option>
                 }
-            </select>
+            </select> 
         </form>
 
         @if (!string.IsNullOrEmpty(selectedCategory) && products.Any())

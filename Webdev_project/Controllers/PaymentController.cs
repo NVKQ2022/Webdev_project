@@ -40,7 +40,7 @@ namespace Webdev_project.Controllers
         }
 
         [HttpPost]
-        public ActionResult PaymentResult(string paymentMethod, decimal totalAmount)
+        public IActionResult PaymentResult(string paymentMethod, decimal totalAmount)
         {
             ViewBag.PaymentMethod = paymentMethod;
             ViewBag.TotalAmount = totalAmount;
@@ -49,7 +49,7 @@ namespace Webdev_project.Controllers
 
 
         [HttpPost]
-        public ActionResult SubmitPayment(string paymentMethod, decimal totalAmount)
+        public IActionResult SubmitPayment(string paymentMethod, decimal totalAmount)
         {
             return RedirectToAction("PaymentResult", new {
     paymentMethod = "COD",

@@ -28,6 +28,7 @@ namespace Webdev_project.Data
         }
         public async Task AddUserDetailAsync(UserDetail user)
         {
+
             await _userDetail.InsertOneAsync(user);
         }
 

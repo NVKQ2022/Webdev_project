@@ -167,6 +167,11 @@
             <div id="categoryItems" class="d-flex">
                 @foreach (var category in Categories)
                 {
+
+                    <a asp-controller="Category" asp-action="Products" asp-route-CateName="@category.CateName">
+                        
+                   
+
                     <div class="card shadow-sm border-0" role="button" tabindex="0" aria-label="@category.CateName" onclick="loadProducts('@category.CateName')">
                         <img src="@category.Image" class="card-img-top" alt="@category.CateName" />
                         <div class="card-body p-2">
@@ -175,6 +180,7 @@
                             <p class="mb-0 small text-muted">Sản phẩm: <span class="text-dark">@category.ProductQuantity</span></p>
                         </div>
                     </div>
+                    </a>
                 }
             </div>
         </div>

@@ -64,6 +64,12 @@ namespace Webdev_project.Controllers
             return View(user);
         }
         [HttpGet]
+
+
+
+
+
+
         public async Task<IActionResult> Admin(string category)
         {
             User? user=  authenticationRepository.RetrieveFromSession(HttpContext.Request.Cookies["sessionId"]);
@@ -82,8 +88,6 @@ namespace Webdev_project.Controllers
                 {
                     await userDetailRepository.UpdateCategoryScoreAsync(user.Id, category, UserAction.ClickCategory);
                 }
-
-                
 
 
 
