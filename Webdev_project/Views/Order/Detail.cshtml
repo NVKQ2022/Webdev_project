@@ -3,55 +3,339 @@
     var order = ViewBag.Order;// Replace YourNamespace.Models with your actual namespace
     var orderId = ViewBag.OrderId;
 }
+<style>
+    .order-detail {
+        background-color: #f5f5f5;
+        padding: 20px;
+    }
 
-<h1>Order Details</h1>
+    .order-container {
+        background-color: white;
+        padding: 24px;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        margin-bottom: 20px;
+    }
 
+    /* Order info styles */
+    .order-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        padding: 15px 20px;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+    }
+
+    .order-info-item {
+        flex: 1;
+    }
+
+    .order-info-item strong {
+        color: #4B5563;
+        margin-right: 8px;
+    }
+
+    /* Thanh trạng thái */
+    .order-progress {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 20px 0;
+        position: relative;
+        padding: 0 40px;
+    }
+
+    .progress-step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+        z-index: 1;
+    }
+
+    .step-icon {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background-color: #fff;
+        border: 2px solid #ddd;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 8px;
+    }
+
+    .step-text {
+        font-size: 14px;
+        color: #666;
+        text-align: center;
+        max-width: 100px;
+    }
+
+    .progress-line {
+        position: absolute;
+        top: 15px;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background-color: #ddd;
+        z-index: 0;
+    }
+
+    /* Nút trạng thái */
+    .progress-step.active .step-icon {
+        background-color: #8B5CF6;
+        border-color: #8B5CF6;
+        color: white;
+    }
+
+    .progress-step.active .step-text {
+        color: #8B5CF6;
+        font-weight: bold;
+    }
+
+    .progress-step.completed .step-icon {
+        background-color: #8B5CF6;
+        border-color: #8B5CF6;
+        color: white;
+    }
+
+    .progress-line.completed {
+        background-color: #8B5CF6;
+    }
+
+    /* Cancelled state styles */
+    .progress-step.cancelled .step-icon {
+        background-color: #EF4444;
+        border-color: #EF4444;
+        color: white;
+    }
+
+    .progress-step.cancelled .step-text {
+        color: #EF4444;
+        font-weight: bold;
+    }
+
+    /* Progress line positioning fix */
+    .order-progress::before {
+        content: '';
+        position: absolute;
+        top: 15px;
+        left: 65px;
+        right: 65px;
+        height: 2px;
+        background-color: #ddd;
+        z-index: 0;
+    }
+
+    .order-progress.has-completed::before {
+        background-color: #8B5CF6;
+    }
+
+    /* Content section styles */
+    .content-section {
+        margin-bottom: 30px;
+    }
+
+    .content-section:last-child {
+        margin-bottom: 0;
+    }
+
+    .content-section h2 {
+        margin-bottom: 20px;
+        color: #374151;
+        font-size: 18px;
+    }
+
+    /* Two column layout */
+    .two-column-layout {
+        display: flex;
+        gap: 30px;
+        align-items: flex-start;
+        position: relative;
+    }
+
+    .two-column-layout::before {
+        content: '';
+        position: absolute;
+        left: 300px;
+        top: 0;
+        bottom: 0;
+        width: 1px;
+        background-color: #e5e7eb;
+    }
+
+    .left-column {
+        flex: 0 0 300px;
+        padding-right: 30px;
+    }
+
+    .right-column {
+        flex: 1;
+        padding-left: 30px;
+    }
+
+    .receiver-info {
+        background-color: #f8f9fa;
+        padding: 15px 20px;
+        border-radius: 8px;
+    }
+
+    .receiver-info p {
+        margin-bottom: 8px;
+    }
+
+    .receiver-info p:last-child {
+        margin-bottom: 0;
+    }
+
+    /* Table styles */
+    .table {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    .table th {
+        background-color: #f8f9fa;
+        padding: 12px;
+    }
+
+    .table td {
+        padding: 12px;
+        vertical-align: middle;
+    }
+
+    /* Payment info styles */
+    .payment-info {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid #eee;
+    }
+
+    .payment-method {
+        font-size: 16px;
+        color: #666;
+        margin-bottom: 8px;
+    }
+
+    .total-amount {
+        font-size: 24px;
+        font-weight: bold;
+        color: #8B5CF6;
+    }
+
+    .total-amount strong {
+        font-size: 18px;
+        color: #374151;
+        margin-right: 8px;
+    }
+</style>
 @if (order != null)
 {
-    <div>
-        <h2>General Information</h2>
-        <p><strong>Order ID:</strong> @order.OrderID</p>
-        <p><strong>User ID:</strong> @order.UserID</p>
-        <p><strong>Status:</strong> @order.Status</p>
-        <p><strong>Payment Method:</strong> @order.PaymentMethod</p>
-        <p><strong>Order Date:</strong> @order.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss")</p>
-        <p><strong>Total Amount:</strong> @string.Format("{0:N0}₫", order.TotalAmount)</p>
-    </div>
+    <div class="order-detail">
+        <div class="order-container">
+            @{
+                var currentStatus = order.Status?.ToLower() ?? "";
+                var isProcessing = currentStatus == "pending";
+                var isShipped = currentStatus == "shipped";
+                var isDelivered = currentStatus == "delivered";
+                var isCancelled = currentStatus == "cancelled";
+            }
+            <h4>Trạng thái đơn hàng</h4>
+            <div class="order-info">
 
-    <div>
-        <h2>Receiver Information</h2>
-        <p><strong>Name:</strong> @order.ReceiveInfo?.Name</p>
-        <p><strong>Phone:</strong> @order.ReceiveInfo?.Phone</p>
-        <p><strong>Address:</strong> @order.ReceiveInfo?.Address</p>
-    </div>
-
-    <div>
-        <h2>Items</h2>
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Image</th>
-                    <th>Product Name</th>
-                    <th>Quantity</th>
-                    <th>Unit Price</th>
-                    <th>Total Price</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in order.Items)
+                <div class="order-info-item">
+                    <strong>Mã đơn hàng:</strong> @order.OrderID
+                </div>
+                <div class="order-info-item">
+                    <strong>Mã người dùng:</strong> @order.UserID
+                </div>
+                <div class="order-info-item">
+                    <strong>Ngày đặt hàng:</strong> @order.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss")
+                </div>
+            </div>
+            <div class="order-progress @((isShipped || isDelivered) ? "has-completed" : "")">
+                <div class="progress-step @(isProcessing ? "active" : "") @((isShipped || isDelivered) ? "completed" : "") @(isCancelled ? "cancelled" : "")">
+                    <div class="step-icon">1</div>
+                    <div class="step-text">Chờ xử lý</div>
+                </div>
+                @if (isCancelled)
                 {
-                    <tr>
-                        <td>
-                            <img src="@item.Image" alt="@item.ProductName" style="max-width: 80px;" />
-                        </td>
-                        <td>@item.ProductName</td>
-                        <td>@item.Quantity</td>
-                        <td>@string.Format("{0:N0}₫", item.UnitPrice)</td>
-                        <td>@string.Format("{0:N0}₫", item.Quantity * item.UnitPrice)</td>
-                    </tr>
+                    <div class="progress-step cancelled">
+                        <div class="step-icon"><i class="fas fa-times"></i></div>
+                        <div class="step-text">Đã hủy</div>
+                    </div>
                 }
-            </tbody>
-        </table>
+                else
+                {
+                    <div class="progress-step @(isShipped ? "active" : "") @(isDelivered ? "completed" : "")">
+                        <div class="step-icon">2</div>
+                        <div class="step-text">Đã gửi</div>
+                    </div>
+                }
+                <div class="progress-step @(isDelivered ? "active" : "")">
+                    <div class="step-icon">3</div>
+                    <div class="step-text">Đã giao</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="order-container">
+            <div class="two-column-layout">
+                <div class="left-column">
+                    <h4>Thông tin người nhận</h4>
+                    <div class="receiver-info">
+                        <p><strong>Tên:</strong> @order.ReceiveInfo?.Name</p>
+                        <p><strong>Số điện thoại:</strong> @order.ReceiveInfo?.Phone</p>
+                        <p><strong>Địa chỉ:</strong> @order.ReceiveInfo?.Address</p>
+                    </div>
+                </div>
+
+                <div class="right-column">
+                    <h4>Sản phẩm</h4>
+                    @{
+                        var totalAmount = 0;
+                    }
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Hình ảnh</th>
+                                <th>Tên sản phẩm</th>
+                                <th>Số lượng</th>
+                                <th>Đơn giá</th>
+                                <th>Tổng tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in order.Items)
+                            {
+                                <tr>
+                                    <td>
+                                        <img src="@item.Image" alt="@item.ProductName" style="max-width: 80px;" />
+                                    </td>
+                                    <td>@item.ProductName</td>
+                                    <td>@item.Quantity</td>
+                                    <td>@string.Format("{0:N0}₫", item.UnitPrice)</td>
+                                    <td>@string.Format("{0:N0}₫", item.Quantity * item.UnitPrice)</td>
+                                    @{
+                                        totalAmount += item.Quantity * item.UnitPrice;
+                                    }
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    <div class="payment-info">
+                        <p class="payment-method"><strong>Phương thức thanh toán:</strong> @order.PaymentMethod</p>
+                        <p class="total-amount"><strong>Thành tiền:</strong>@string.Format("{0:N0}₫", totalAmount)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 }
 else
