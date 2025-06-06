@@ -52,9 +52,9 @@ namespace Webdev_project.Controllers
         public IActionResult SubmitPayment(string paymentMethod, decimal totalAmount)
         {
             return RedirectToAction("PaymentResult", new {
-    paymentMethod = "COD",
-    totalAmount = totalAmount
-});
+                paymentMethod = paymentMethod,
+                totalAmount = totalAmount
+            });
 
         }
 

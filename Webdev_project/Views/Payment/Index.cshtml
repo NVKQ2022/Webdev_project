@@ -350,10 +350,10 @@
             <!-- Cột phải - Phương thức thanh toán -->
             <div class="col-md-8">
                 <h5><b>Phương thức thanh toán</b></h5>
-                <input type="hidden" id="paymentMethod" name="paymentMethod" value="COD" />
+                <input type="hidden" id="paymentMethod" name="paymentMethod" @* value="COD" *@ />
                 <div class="payment-methods">
                     <button type="button" class="payment-option" onclick="selectPaymentMethod(this, 'Card')">Thẻ Tín dụng/Ghi nợ</button>
-                    <button type="button" class="payment-option active" onclick="selectPaymentMethod(this, 'COD')">Thanh toán khi nhận hàng</button>
+                    <button type="button" class="payment-option active" onclick="selectPaymentMethod(this, 'Cash')">Thanh toán khi nhận hàng</button>
                 </div>
 
                 <p><strong>Tổng tiền:</strong> @String.Format("{0:N0}đ", ViewBag.TotalAmount)</p>

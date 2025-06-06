@@ -2,8 +2,8 @@
     ViewBag.Title = "Kết quả thanh toán";
     Layout = "~/Views/Shared/_Layout.cshtml";
 
-    var paymentMethod = TempData["PaymentMethod"] as string ?? "COD";
-    var totalAmount = TempData["TotalAmount"] != null ? Convert.ToDecimal(TempData["TotalAmount"]) : 0;
+    var paymentMethod = ViewBag.PaymentMethod;//TempData["PaymentMethod"] as string ?? "COD";
+    var totalAmount = ViewBag.TotalAmount;//TempData["TotalAmount"] != null ? Convert.ToDecimal(TempData["TotalAmount"]) : 0;
 }
 
 <style>
@@ -67,6 +67,8 @@
     <img src="https://cdn-icons-png.flaticon.com/512/845/845646.png" alt="Success" class="success-icon" />
     <h2>Đặt hàng thành công!</h2>
     <p>Đơn hàng sẽ được giao đến bạn trong khoảng 2 đến 3 ngày</p>
+    <p>@paymentMethod
+        @totalAmount</p>
     <div class="payment-buttons">
         <a href="@Url.Action("Index", "Home")" class="btn-main">Về trang chủ</a>
     </div>
