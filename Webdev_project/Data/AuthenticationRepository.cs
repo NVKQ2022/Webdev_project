@@ -39,7 +39,40 @@ namespace Webdev_project.Data
             }
         }
 
+        public int GetCurrentUserId()
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                string query = @"SELECT Id FROM userId";
+                SqlCommand command = new SqlCommand(query, connection);
+                connection.Open();
+                SqlDataReader reader = command.ExecuteReader();
 
+                if (reader.Read())
+                {
+                    return reader.GetInt32(0);
+                }
+
+                return 10000; // Trả về null nếu sai tài khoản/mật khẩu
+            }
+        }
+
+        public bool UpdateCurrentUserId()
+        {
+            int newId= GetCurrentUserId()+1;
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                string query = @"UPDATE userId SET Id = @Id";
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@Id", newId);
+                connection.Open();
+                SqlDataReader reader = command.ExecuteReader();
+
+
+               
+            }
+            return true;
+        }
         public User? AuthenticateUser(string email, string password)// done
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
@@ -74,7 +107,7 @@ namespace Webdev_project.Data
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                string query = "SELECT IsAdmin FROM users WHERE Id=@Id";
+                string query = @"SELECT IsAdmin FROM users WHERE Id=@Id";
                 SqlCommand command = new SqlCommand(query, connection);
                 command.Parameters.AddWithValue("@Id", userId);
 

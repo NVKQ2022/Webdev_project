@@ -8,7 +8,9 @@ namespace Webdev_project.Interfaces
         User? AuthenticateUser(string email, string password);
         User? GetUserById(int id);
         bool AdminAuthorize(string userId);
-        
+        int GetCurrentUserId();
+
+        bool UpdateCurrentUserId();
     }
 
 }

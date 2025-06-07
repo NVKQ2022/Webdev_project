@@ -3,30 +3,9 @@
     ViewData["Title"] = "Thông tin tài khoản";
     Layout = "~/Views/Shared/_Layout.cshtml";
     User user = ViewBag.User;
-    // UserDetail userDetail = ViewBag.UserDetail;
-    // var receiveInfos = userDetail?.ReceiveInfo ?? new List<ReceiveInfo>();
-    // UserDetail userDetail = new UserDetail 
-    // {
-    //     UserId = 1,
-    //     PhoneNumber = "0123456789",
-    //     ReceiveInfo = new List<ReceiveInfo>
-    //     {
-    //         new ReceiveInfo 
-    //         { 
-    //             Name = "Nguyễn Việt Kỳ Quân",
-    //             Phone = "0123456789",
-    //             Address = "Trường ĐH CNTT, ĐHQG TP.HCM"
-    //         },
-    //         new ReceiveInfo 
-    //         {
-    //             Name = "Nguyễn Việt Kỳ Quân",
-    //             Phone = "0987654321",
-    //             Address = "Ký túc xá khu A, ĐHQG TP.HCM"
-    //         }
-    //     }
-    // };
+    
     var userDetail =ViewBag.UserDetail;
-    List<ReceiveInfo> receiveInfos = userDetail.ReceiveInfo;
+    List<ReceiveInfo>? receiveInfos = userDetail.ReceiveInfo;
     var notifi = ViewBag.Notifications;// fix to orders
 
     var orders = ViewBag.Orders;

@@ -3,6 +3,7 @@
 using Webdev_project.Models;
 using Webdev_project.Interfaces;
 using Webdev_project.Helpers;
+using MongoDB.Bson.Serialization.Attributes;
 namespace Webdev_project.Controllers
 {
     public class AuthenticateController : Controller
@@ -155,9 +156,26 @@ namespace Webdev_project.Controllers
                 IsAdmin = false
             };
 
+            var userDetail = new UserDetail
+            {
+                UserId = authenticationRepository.GetCurrentUserId()+1,
+                Avatar = String.Empty,
+                Category = new Dictionary<string, int>(),
+                Cart = new List<CartItem>(),
+                ReceiveInfo = new List<ReceiveInfo>(),
+                PhoneNumber = string.Empty,
+                Gender = string.Empty,
+                Birthday = new DateTime(),
+                Banking = new Banking()
+
+            };
+
+
             try
             {
                 authenticationRepository.AddUser(user);
+                authenticationRepository.UpdateCurrentUserId();
+                userDetailRepository.AddUserDetailAsync(userDetail);
                 ViewBag.Message = "Đăng ký thành công! Bạn có thể đăng nhập.";
                 return RedirectToAction("MyLogin");
             }
