@@ -21,7 +21,9 @@ namespace Webdev_project.Interfaces
         Task<List<CartItem>> GetCartItemsAsync(int userId);
 
         Task<int?> UpdateCartItemQuantityAsync(int userId, string productId, int changeAmount);
-        
+
+        Task<int?> InsertCartItemQuantityAsync(int userId, string productId, int quantity);
+
 
         Task AddCartItemAsync(int userId, CartItem item);
 

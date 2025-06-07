@@ -223,7 +223,19 @@
             @foreach (var item in Model)
             {
                 <div class="product-row" id="row-@item.ProductId">
-                    <input type="checkbox" class="product-check" data-price="@(item.UnitPrice * item.Quantity)" onchange="updateCartTotal()" />
+                    
+
+                    <input type="checkbox" class="product-check"
+                           data-product-id="@item.ProductId"
+                           data-quantity="@item.Quantity"
+                           data-unit-price="@item.UnitPrice"
+                           data-name="@item.ProductName"
+                           data-image="@item.Image"
+
+
+                           data-price="@(item.UnitPrice * item.Quantity)"
+                           onchange="updateCartTotal()" />
+
                     <div class="product-info">
                         <img src="@item.Image" class="product-img" alt="@item.ProductName" />
                         <div>
@@ -254,11 +266,24 @@
             }
         </div>
 
+
+
+        <form id="paymentForm" method="post" action="/Payment/BuyItems">
         <div class="cart-summary">
+
+
+            <input type="hidden" name="selectedItems" id="selectedItemsJson" />
             <h4>Tổng thanh toán:</h4>
+
             <div class="total" id="cart-total">₫0</div>
-            <button class="btn btn-danger btn-lg px-5">Mua hàng</button>
+
+            @* <button id="submit-selected" class="btn btn-danger btn-lg px-5">Mua hàng</button> *@
+            <button type="submit" id="submit-selected" class="btn btn-danger btn-lg px-5">Mua hàng</button>
         </div>
+        </form>
+
+
+
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -267,7 +292,7 @@
             return number.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
         }
 
-                function updateCartTotal() {
+        function updateCartTotal() {
             let total = 0;
             let checkedCount = 0;
 
@@ -302,37 +327,86 @@
                 toggleAll(this);
             });
 
-            // Xử lý nút tăng số lượng
-            $('.btn-increase').click(function () {
-                const productId = $(this).data('product-id');
-                $.post('/ShoppingCart/UpdateQuantity', { productId: productId, delta: 1 }, function (newQuantity) {
-                    if (newQuantity <= 0) return;
-                    const $qtySpan = $('#row-' + productId).find('.quantity-controls span');
-                    $qtySpan.text(newQuantity);
 
-                    const unitPrice = parseFloat($('#row-' + productId).find('.product-price').data('unit-price'));
-                    const totalPrice = unitPrice * newQuantity;
-                    $('#row-' + productId).find('.product-price').text(formatCurrency(totalPrice));
 
-                    updateCartTotal();
+
+            const debounceTimers = {};
+           
+            // VERSION 3
+
+
+        $('.btn-increase').click(function () {
+            const productId = $(this).data('product-id');
+
+            // Clear previous debounce timer for this product
+            clearTimeout(debounceTimers[productId]);
+
+            const $row = $('#row-' + productId);
+            const $quantitySpan = $row.find('.quantity-controls span');
+
+            // 👇 Increase current quantity and update UI immediately
+            let currentQuantity = parseInt($quantitySpan.text());
+            const newQuantity = currentQuantity + 1;
+            $quantitySpan.text(newQuantity);
+
+            // Update total price and checkbox data-quantity
+            const unitPrice = parseFloat($row.find('.product-price').data('unit-price'));
+            const totalPrice = unitPrice * newQuantity;
+            $row.find('.product-price').text(formatCurrency(totalPrice));
+            $row.find('input.product-check')
+                .data('quantity', newQuantity)
+                .attr('data-quantity', newQuantity);
+
+            // ✅ Debounce server update with actual quantity
+            debounceTimers[productId] = setTimeout(() => {
+                $.post('/ShoppingCart/UpdateQuantity', {
+                    productId: productId,
+                    quantity: newQuantity  // 👈 Send full quantity now
+                }, function (updatedQuantity) {
+                    updateCartTotal();  // Optional refresh
                 });
-            });
+            }, 750);
+        });
 
-            // Xử lý nút giảm số lượng
-            $('.btn-decrease').click(function () {
-                const productId = $(this).data('product-id');
-                $.post('/ShoppingCart/UpdateQuantity', { productId: productId, delta: -1 }, function (newQuantity) {
-                    if (newQuantity <= 0) return;
-                    const $qtySpan = $('#row-' + productId).find('.quantity-controls span');
-                    $qtySpan.text(newQuantity);
+            //VERSION 3
 
-                    const unitPrice = parseFloat($('#row-' + productId).find('.product-price').data('unit-price'));
-                    const totalPrice = unitPrice * newQuantity;
-                    $('#row-' + productId).find('.product-price').text(formatCurrency(totalPrice));
+        $('.btn-decrease').click(function () {
+            const productId = $(this).data('product-id');
 
-                    updateCartTotal();
+            // Clear existing timer
+            clearTimeout(debounceTimers[productId]);
+
+            const $row = $('#row-' + productId);
+            const $quantitySpan = $row.find('.quantity-controls span');
+
+            let currentQuantity = parseInt($quantitySpan.text());
+
+            if (currentQuantity <= 1) return; // Optional: prevent going below 1
+
+            const newQuantity = currentQuantity - 1;
+            $quantitySpan.text(newQuantity);
+
+            const unitPrice = parseFloat($row.find('.product-price').data('unit-price'));
+            const totalPrice = unitPrice * newQuantity;
+            $row.find('.product-price').text(formatCurrency(totalPrice));
+
+            $row.find('input.product-check')
+                .data('quantity', newQuantity)
+                .attr('data-quantity', newQuantity);
+
+            // Debounce: send current quantity to server
+            debounceTimers[productId] = setTimeout(() => {
+                $.post('/ShoppingCart/UpdateQuantity', {
+                    productId: productId,
+                    quantity: newQuantity
+                }, function (updatedQuantity) {
+                    updateCartTotal();  // Optional
                 });
-            });
+            }, 750);
+        });
+
+
+
 
             // Xử lý nút xóa (giữ form submit ajax)
             $('.remove-button form').on('submit', function (e) {
@@ -355,6 +429,69 @@
             // Khởi tạo tổng tiền lúc đầu
             updateCartTotal();
         });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        //SUBMIT FORM
+
+                document.getElementById("paymentForm").addEventListener("submit", function (e) {
+            const selectedItems = [];
+
+            document.querySelectorAll(".product-check:checked").forEach(checkbox => {
+                const row = checkbox.closest(".product-row");
+                const quantity = parseInt(row.querySelector(".quantity-controls span").innerText);
+
+                const item = {
+                    productId: checkbox.dataset.productId,
+                    productName: checkbox.dataset.name,
+                    image: checkbox.dataset.image,
+                    quantity: quantity,
+                    unitPrice: parseInt(checkbox.dataset.unitPrice)
+                };
+
+                selectedItems.push(item);
+            });
+
+            // Inject JSON string into hidden input
+            document.getElementById("selectedItemsJson").value = JSON.stringify(selectedItems);
+
+            // Allow the form to submit as usual
+        });
+
+
+
+
+
+
+
+
+
+
     </script>
 
 </body>

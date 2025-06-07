@@ -132,7 +132,41 @@ namespace Webdev_project.Data
             return null;
         }
 
+        public async Task<int?> InsertCartItemQuantityAsync(int userId, string productId, int quantity)
+        {
+            // Step 1: Get current quantity
+            var user = await _userDetail.Find(
+                Builders<UserDetail>.Filter.Eq(u => u.UserId, userId)
+            ).FirstOrDefaultAsync();
 
+            var item = user?.Cart?.FirstOrDefault(c => c.ProductId == productId);
+            if (item == null) return null;
+
+       
+
+            // Step 2: Check if the new quantity would be <= 1
+            if (quantity <= 0)
+            {
+                return item.Quantity; // Don't allow reducing to 1 or below
+            }
+
+            // Step 3: Proceed with update
+            var filter = Builders<UserDetail>.Filter.And(
+                Builders<UserDetail>.Filter.Eq(u => u.UserId, userId),
+                Builders<UserDetail>.Filter.ElemMatch(u => u.Cart, c => c.ProductId == productId)
+            );
+
+            var update = Builders<UserDetail>.Update.Set("Cart.$.Quantity", quantity);/*.Inc("Cart.$.Quantity", changeAmount);*/
+
+            var result = await _userDetail.UpdateOneAsync(filter, update);
+
+            if (result.ModifiedCount > 0)
+            {
+                return quantity;
+            }
+
+            return null;
+        }
 
         public async Task RemoveCartItemAsync(int userId, string productId)
         {

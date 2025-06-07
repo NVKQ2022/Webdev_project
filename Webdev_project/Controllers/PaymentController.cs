@@ -3,6 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 using Webdev_project.Helpers;
 using Webdev_project.Models;
 using Webdev_project.Interfaces;
+using System.Text.Json;
+using MongoDB.Bson.IO;
+using Newtonsoft.Json;
+
 
 namespace Webdev_project.Controllers
 {
@@ -16,9 +20,24 @@ namespace Webdev_project.Controllers
             this.authenticationRepository = authenticationRepository;
             this.userDetailRepository = userDetailRepository;
         }
-        //[HttpPost]
-        [HttpGet]
-        public async Task<IActionResult> Index()
+
+
+
+
+        [HttpPost]
+        public IActionResult BuyItems(string selectedItems)
+        {
+            var items = Newtonsoft.Json.JsonConvert.DeserializeObject<List<CartItem>>(selectedItems);
+
+            // Pass to view
+            return View("Index", items);
+        }
+
+
+
+
+        [HttpGet]       
+        public async Task<IActionResult> IndexOld()
         {
             var user = authenticationRepository.RetrieveFromSession(HttpContext.Request.Cookies["SessionId"]);
             // Lấy giỏ hàng từ session

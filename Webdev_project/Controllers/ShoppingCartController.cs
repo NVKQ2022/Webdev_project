@@ -39,13 +39,16 @@ namespace Webdev_project.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> UpdateQuantity(string productId, int delta)
+        public async Task<IActionResult> UpdateQuantity(string productId, int quantity)
         {
             string sessionId = Request.Cookies["SessionId"];
             var userId = authenticationRepository.RetrieveFromSession(sessionId).Id;
-            var updateQuantity = await userDetailRepository.UpdateCartItemQuantityAsync(userId, productId, delta);
-
-
+            
+            // check if valid stock (add a function to the product repository
+            // if valid
+           // var updateQuantity = await userDetailRepository.UpdateCartItemQuantityAsync(userId, productId, quantity);
+            //else
+            var updateQuantity = await userDetailRepository.InsertCartItemQuantityAsync(userId, productId,quantity);
 
             return Ok(updateQuantity);
         }
