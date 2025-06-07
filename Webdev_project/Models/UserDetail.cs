@@ -12,15 +12,17 @@ namespace Webdev_project.Models
         public string Id { get; set; }
 
         public int UserId { get; set; }
+        public string Name { get; set; }
         public string Avatar { get; set; }
+        public string PhoneNumber { get; set; }
+        public string Gender { get; set; }
 
         // e.g., { "Laptop": 2, "Keyboard": 1 }
         public Dictionary<string, int> Category { get; set; }
         public List<CartItem> Cart { get; set; }
         public List<ReceiveInfo> ReceiveInfo { get; set; }
 
-        public string PhoneNumber { get; set; }
-        public string Gender { get; set; }
+      
 
         [BsonDateTimeOptions(Kind = DateTimeKind.Utc)]
         public DateTime Birthday { get; set; }

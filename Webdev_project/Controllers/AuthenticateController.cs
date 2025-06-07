@@ -4,6 +4,8 @@ using Webdev_project.Models;
 using Webdev_project.Interfaces;
 using Webdev_project.Helpers;
 using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Driver;
+using Webdev_project.Data;
 namespace Webdev_project.Controllers
 {
     public class AuthenticateController : Controller
@@ -66,13 +68,13 @@ namespace Webdev_project.Controllers
             var user = new User { Username = name, Email = email };
             return View(user);
         }
+
+
+
+
+
+
         [HttpGet]
-
-
-
-
-
-
         public async Task<IActionResult> Admin(string category)
         {
             User? user=  authenticationRepository.RetrieveFromSession(HttpContext.Request.Cookies["sessionId"]);
@@ -229,6 +231,43 @@ namespace Webdev_project.Controllers
             ViewBag.Orders =orders;
             return View();
         }
+
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateProfile([FromBody] UserInfo model)
+        {
+
+            if (model == null)
+                return BadRequest("Invalid data");
+            var user = authenticationRepository.RetrieveFromSession(HttpContext.Request.Cookies["SessionId"]);
+            
+            bool success = await userDetailRepository.UpdateUserInfo(user.Id, model.Name, model.PhoneNumber, model.Gender, model.Birthday);
+            if (success)
+                return Ok(new { message = "Cập nhật thành công" });
+            else
+                return NotFound(new { message = $"Không tìm thấy người dùng với id {user.Id}" });
+        }
+
+
+        public class UserInfo
+        {
+            
+            public string Name { get; set; }
+            public string PhoneNumber { get; set; }
+            public string Gender { get; set; }
+            public DateTime Birthday { get; set; }
+        }
+
+
+
+
+
+
+
+
+
+
+
 
         [HttpPost]
         public async Task<IActionResult> AddAddress(string name, string phone, string address)

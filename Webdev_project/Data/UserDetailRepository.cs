@@ -16,6 +16,18 @@ namespace Webdev_project.Data
             var database = client.GetDatabase(settings.Value.DatabaseName);
             _userDetail = database.GetCollection<UserDetail>(settings.Value.UserDetailCollectionName);
         }
+        public async Task<bool> UpdateUserInfo(int userId,string name, string phoneNumber, string gender, DateTime birthDay)
+        {
+            var filter = Builders<UserDetail>.Filter.Eq(u => u.UserId, userId);
+            var update = Builders<UserDetail>.Update
+                .Set(u => u.Name, name)
+                .Set(u => u.PhoneNumber, phoneNumber)
+                .Set(u => u.Gender, gender)
+                .Set(u => u.Birthday, birthDay);
+
+            var result= await _userDetail.UpdateOneAsync(filter, update);
+            return result.MatchedCount > 0 && result.ModifiedCount > 0;
+        }
         public async Task<UserDetail> GetUserDetailAsync(int userId)
         {
             var filter = Builders<UserDetail>.Filter.Eq(u => u.UserId, userId);

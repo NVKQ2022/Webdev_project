@@ -13,6 +13,9 @@ namespace Webdev_project.Interfaces
     public interface IUserDetailRepository
     {
         Task AddUserDetailAsync(UserDetail user);
+
+        Task<bool> UpdateUserInfo(int userId,string name, string phoneNumber, string gender, DateTime birthDay);
+
         Task<UserDetail> GetUserDetailAsync(int userId);
         Task UpdatePhoneNumberAsync(int userId, string newPhoneNumber);
         Task<UserDetail> GetUserByUserId(int userId);

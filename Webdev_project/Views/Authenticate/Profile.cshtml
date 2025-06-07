@@ -315,7 +315,7 @@
             <div id="profile" class="content-section active">
                 <div class="profile-main">
                     <h4 class="mb-4">Thông tin tài khoản</h4>
-                    <form>
+@*                     <form>
                         <div class="form-group">
                             <label class="form-label">Họ Tên</label>
                             <input type="text" class="form-control" value="@user.Username">
@@ -367,7 +367,44 @@
                         </div>
 
                         <button type="submit" class="btn btn-purple">LƯU THAY ĐỔI</button>
+                    </form> *@
+
+
+                    <form id="profileForm">
+                        <input type="hidden" name="Id" value="@userDetail?.Id" />
+
+                        <div class="form-group">
+                            <label>Họ tên</label>
+                            <input type="text" name="Name" class="form-control" value="@userDetail?.Name" />
+                        </div>
+
+                        <div class="form-group">
+                            <label>Giới tính</label>
+                            <div>
+                                <label class="me-3">
+                                    <input type="radio" name="Gender" value="Nam" @(userDetail?.Gender == "Nam" ? "checked" : "") /> Nam
+                                </label>
+                                <label>
+                                    <input type="radio" name="Gender" value="Nữ" @(userDetail?.Gender == "Nữ" ? "checked" : "") /> Nữ
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Số điện thoại</label>
+                            <input type="tel" name="PhoneNumber" class="form-control" value="@userDetail?.PhoneNumber" />
+                        </div>
+
+                        <div class="form-group">
+                            <label>Ngày sinh</label>
+                            <input type="date" name="Birthday" class="form-control" value="@userDetail?.Birthday.ToString("yyyy-MM-dd")" />
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
                     </form>
+
+                    <div id="updateMessage" class="mt-3 text-success"></div>
+
                 </div>
             </div>
 
@@ -524,45 +561,47 @@
 
 
 
-                   @*  @foreach (var order in orders)
-                    {
-                        <div class="border rounded p-3 mb-4 bg-light">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <div>
-                                    <strong>Trạng thái:</strong> @order.Status<br />
-                                    <strong>Mã đơn hàng:</strong> @order.OrderID<br />
-                                    <span class="text-muted small">@order.CreatedAt.ToLocalTime().ToString("HH:mm dd-MM-yyyy")</span>
-                                </div>
-                                <div>
-                                    <button class="btn btn-outline-secondary btn-sm">Chi tiết</button>
-                                </div>
-                            </div>
-
-                            @foreach (var item in order.Items)
-                            {
-                                <div class="d-flex align-items-start mb-3 ps-2">
-                                    <img src="@item.Image" width="80" height="80" class="me-3 rounded border" />
-                                    <div>
-                                        <div><strong>@item.ProductName</strong></div>
-                                        <div>Số lượng: @item.Quantity</div>
-                                        <div>Giá mỗi cái: <strong>@item.UnitPrice.ToString("N0")₫</strong></div>
-                                    </div>
-                                </div>
-                            }
-
-                            <div class="text-end mt-2">
-                                <strong>Tổng cộng:</strong> @order.TotalAmount.ToString("N0")₫
-                            </div>
-                        </div>
-                    } *@
+                  
                 </div>
             </div>
-
+z
         </div>
     </div>
 </div>
 
 <script>
+
+
+        document.getElementById("profileForm").addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            const form = e.target;
+            const formData = new FormData(form);
+
+            const json = {};
+            formData.forEach((value, key) => {
+                json[key] = value;
+            });
+
+            fetch('/Authenticate/UpdateProfile', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(json)
+            })
+            .then(res => res.ok ? res.json() : Promise.reject("Có lỗi xảy ra"))
+            .then(data => {
+                document.getElementById("updateMessage").innerText = data.message;
+            })
+            .catch(err => {
+                document.getElementById("updateMessage").innerText = err;
+            });
+        });
+
+
+
+
     function showSection(sectionId) {
         // Hide all sections
         document.querySelectorAll('.content-section').forEach(section => {
