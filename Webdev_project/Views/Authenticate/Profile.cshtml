@@ -5,7 +5,7 @@
     User user = ViewBag.User;
     
     var userDetail = ViewBag.UserDetail;
-    List<ReceiveInfo>? receiveInfos = userDetail?.ReceiveInfo ?? new List<ReceiveInfo>();
+    List<ReceiveInfo>? receiveInfos = userDetail != null ? userDetail.ReceiveInfo : new List<ReceiveInfo>();
     var notifi = ViewBag.Notifications;// fix to orders
 
     var orders = ViewBag.Orders;
