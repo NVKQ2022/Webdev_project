@@ -1,4 +1,5 @@
-﻿using MongoDB.Driver;
+﻿using MongoDB.Bson;
+using MongoDB.Driver;
 using Webdev_project.Models;
 
 namespace Webdev_project.Interfaces
@@ -21,6 +22,9 @@ namespace Webdev_project.Interfaces
 
         Task DeleteAsync(string id);
 
+        Task IncrementProductRatingAsync(string productId, int stars);
+        Task DecreaseProductStockAsync(string productId, int amount);
+        
         Task ConvertKhoToStringAsync();
 
         Task EnsureColorIsArrayAsync();

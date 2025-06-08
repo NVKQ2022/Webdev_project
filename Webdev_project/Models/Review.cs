@@ -1,7 +1,12 @@
-﻿namespace Webdev_project.Models
+﻿using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Bson;
+namespace Webdev_project.Models
+
 {
     public class Review
     {
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
         public string ReviewId { get; set; }
 
         public string ProductId { get; set; }

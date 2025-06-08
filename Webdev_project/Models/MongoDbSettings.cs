@@ -12,5 +12,7 @@
         public string CategoryCollectionName { get; set; }
 
         public string UserDetailCollectionName { get; set; }
+
+
     }
 }

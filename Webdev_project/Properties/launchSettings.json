@@ -57,7 +57,8 @@
             "MongoDbSettings__ProductCollectionName": "Product",
             "MongoDbSettings__OrderCollectionName": "Order",
             "MongoDbSettings__CategoryCollectionName": "Category",
-            "MongoDbSettings__UserDetailCollectionName": "UserDetail"
+            "MongoDbSettings__UserDetailCollectionName": "UserDetail",
+            "MongoDbSettings__ReviewCollectionName": "Reviews"
 
 
         }

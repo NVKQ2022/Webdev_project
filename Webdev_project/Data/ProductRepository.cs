@@ -82,6 +82,40 @@ public class ProductRepository:IProductRepository
     }
 
 
+    public async Task IncrementProductRatingAsync(string productId, int stars)
+    {
+        if (stars < 1 || stars > 5)
+            throw new ArgumentException("Stars must be between 1 and 5.");
+
+        var filter = Builders<Product>.Filter.Eq(p => p.ProductId, productId);
+
+        // Create the field name dynamically, e.g., "Rating.rate_4"
+        var update = Builders<Product>.Update.Inc($"Rating.rate_{stars}", 1);
+
+        await _products.UpdateOneAsync(filter, update);
+    }
+
+
+
+
+    public async Task DecreaseProductStockAsync(string productId, int amount)
+    {
+        if (amount <= 0)
+            throw new ArgumentException("Amount must be greater than 0.");
+
+        var filter = Builders<Product>.Filter.Eq(p => p.ProductId, productId);
+
+        // Use $set with $subtract to decrease the current Kho value
+        var update = Builders<Product>.Update.Combine(
+            Builders<Product>.Update.Inc("Sold", amount), // Optional: track sold quantity
+            Builders<Product>.Update.Set("Detail.Kho",
+                new BsonDocument("$subtract", new BsonArray { "$Detail.Kho", amount }))
+        );
+
+        var options = new UpdateOptions { IsUpsert = false };
+
+        await _products.UpdateOneAsync(filter, update, options);
+    }
 
     public async Task ConvertKhoToStringAsync()
     {

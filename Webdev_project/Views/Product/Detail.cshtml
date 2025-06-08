@@ -10,42 +10,43 @@
         string khoString = product.Detail["Kho"].ToString();
         int.TryParse(khoString, out availableStock);
     }
-    
-    // Test review
-    var review = new List<Webdev_project.Models.Review>
-    {
-        new Webdev_project.Models.Review
-        {
-            UserID = 12345,
-            Stars = 5,
-            Comment = "Sản phẩm rất tốt, đóng gói cẩn thận, giao hàng nhanh. Tôi rất hài lòng với chất lượng!",
-            CreatedTime = DateTime.Now.AddDays(-2),
-            MediaURLs = new List<string>
-            {
-                "https://picsum.photos/400/300",
-                "https://picsum.photos/401/300"
-            }
-        },
-        new Webdev_project.Models.Review
-        {
-            UserID = 67890,
-            Stars = 4,
-            Comment = "Sản phẩm khá ổn, tuy nhiên giá hơi cao. Giao hàng đúng hẹn.",
-            CreatedTime = DateTime.Now.AddDays(-5),
-            MediaURLs = new List<string>
-            {
-                "https://picsum.photos/402/300"
-            }
-        },
-        new Webdev_project.Models.Review
-        {
-            UserID = 11111,
-            Stars = 3,
-            Comment = "Sản phẩm tạm được, cần cải thiện thêm về chất lượng phục vụ.",
-            CreatedTime = DateTime.Now.AddDays(-7),
-            MediaURLs = null
-        }
-    };
+
+    // // Test review
+    // var review = new List<Webdev_project.Models.Review>
+    // {
+    //     new Webdev_project.Models.Review
+    //     {
+    //         UserID = 12345,
+    //         Stars = 5,
+    //         Comment = "Sản phẩm rất tốt, đóng gói cẩn thận, giao hàng nhanh. Tôi rất hài lòng với chất lượng!",
+    //         CreatedTime = DateTime.Now.AddDays(-2),
+    //         MediaURLs = new List<string>
+    //         {
+    //             "https://picsum.photos/400/300",
+    //             "https://picsum.photos/401/300"
+    //         }
+    //     },
+    //     new Webdev_project.Models.Review
+    //     {
+    //         UserID = 67890,
+    //         Stars = 4,
+    //         Comment = "Sản phẩm khá ổn, tuy nhiên giá hơi cao. Giao hàng đúng hẹn.",
+    //         CreatedTime = DateTime.Now.AddDays(-5),
+    //         MediaURLs = new List<string>
+    //         {
+    //             "https://picsum.photos/402/300"
+    //         }
+    //     },
+    //     new Webdev_project.Models.Review
+    //     {
+    //         UserID = 11111,
+    //         Stars = 3,
+    //         Comment = "Sản phẩm tạm được, cần cải thiện thêm về chất lượng phục vụ.",
+    //         CreatedTime = DateTime.Now.AddDays(-7),
+    //         MediaURLs = null
+    //     }
+    // };
+    List<Review> review = ViewBag.Reviews;
 }
 
 <style>
@@ -530,7 +531,8 @@
                     <div class="star-rating-input">
                         @for (int i = 1; i <= 5; i++)
                         {
-                            <i class="bi bi-star star-selectable" data-rating="@i"></i>
+                            
+                            <i class="bi bi-star star-selectable" data-rating="@i" style="cursor:pointer;"></i>
                         }
                     </div>
                     <input type="hidden" id="ratingInput" name="rating" value="0" />
@@ -737,8 +739,10 @@
                 });
                 
                 if (response.ok) {
+                    const review = await response.json();
                     alert('Cảm ơn bạn đã đánh giá sản phẩm!');
-                    location.reload(); // Tải lại trang để hiển thị đánh giá mới
+                    console.log('Đánh giá đã gửi thành công:', review);
+                   /*  location.reload(); */ // Tải lại trang để hiển thị đánh giá mới
                 } else {
                     alert('Có lỗi xảy ra khi gửi đánh giá. Vui lòng thử lại sau.');
                 }
