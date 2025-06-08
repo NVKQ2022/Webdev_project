@@ -180,8 +180,8 @@ namespace Webdev_project.Controllers
                 var categories = await productRepository.GetAllCategoriesAsync();
                 authenticationRepository.AddUser(user);
                 authenticationRepository.UpdateCurrentUserId();
-                userDetailRepository.AddUserDetailAsync(userDetail);
-                userDetailRepository.InsertUserCategoriesAsync(user.Id, categories);
+                await userDetailRepository.AddUserDetailAsync(userDetail);
+                await userDetailRepository.InsertUserCategoriesAsync(user.Id, categories);
                 ViewBag.Message = "Đăng ký thành công! Bạn có thể đăng nhập.";
                 return RedirectToAction("MyLogin");
             }
