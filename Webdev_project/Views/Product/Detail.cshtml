@@ -1,4 +1,3 @@
-﻿
 ﻿@{
     var message = ViewBag.Message;
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -11,7 +10,42 @@
         string khoString = product.Detail["Kho"].ToString();
         int.TryParse(khoString, out availableStock);
     }
-    var review = ViewBag.Review;
+    
+    // Test review
+    var review = new List<Webdev_project.Models.Review>
+    {
+        new Webdev_project.Models.Review
+        {
+            UserID = 12345,
+            Stars = 5,
+            Comment = "Sản phẩm rất tốt, đóng gói cẩn thận, giao hàng nhanh. Tôi rất hài lòng với chất lượng!",
+            CreatedTime = DateTime.Now.AddDays(-2),
+            MediaURLs = new List<string>
+            {
+                "https://picsum.photos/400/300",
+                "https://picsum.photos/401/300"
+            }
+        },
+        new Webdev_project.Models.Review
+        {
+            UserID = 67890,
+            Stars = 4,
+            Comment = "Sản phẩm khá ổn, tuy nhiên giá hơi cao. Giao hàng đúng hẹn.",
+            CreatedTime = DateTime.Now.AddDays(-5),
+            MediaURLs = new List<string>
+            {
+                "https://picsum.photos/402/300"
+            }
+        },
+        new Webdev_project.Models.Review
+        {
+            UserID = 11111,
+            Stars = 3,
+            Comment = "Sản phẩm tạm được, cần cải thiện thêm về chất lượng phục vụ.",
+            CreatedTime = DateTime.Now.AddDays(-7),
+            MediaURLs = null
+        }
+    };
 }
 
 <style>
@@ -103,6 +137,54 @@
     input.quantity-input {
         -moz-appearance: textfield;
         width: 60px; /* make it broader */
+    }
+
+    .star-rating-input {
+        font-size: 24px;
+        color: #ddd;
+    }
+    
+    .star-selectable {
+        cursor: pointer;
+        transition: color 0.2s;
+    }
+    
+    .star-selectable:hover,
+    .star-selectable.active {
+        color: #ffc107;
+    }
+    
+    #imagePreview img {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        border-radius: 4px;
+    }
+
+    .progress {
+        background-color: #f0f0f0;
+        border-radius: 4px;
+    }
+
+    .btn-outline-secondary {
+        border-color: #e0e0e0;
+        color: #666;
+    }
+
+    .btn-outline-secondary:hover {
+        background-color: #f8f9fa;
+        border-color: #666;
+        color: #333;
+    }
+
+    .btn-outline-secondary.active {
+        background-color: #6f42c1;
+        color: white;
+        border-color: #6f42c1;
+    }
+
+    .review-item {
+        transition: all 0.3s ease;
     }
 </style>
 
@@ -364,42 +446,306 @@
 </script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <!-- Đánh giá từ người dùng khác -->
-@* <h6 class="fw-bold mt-4">Đánh giá từ người dùng khác</h6>
-    @foreach (var r in rating)
+<div class="container product-container mt-4">
+    <h5 class="fw-bold mb-3">ĐÁNH GIÁ SẢN PHẨM</h5>
+
+    <!-- Tổng quan đánh giá -->
+    <div class="review-overview card border p-4 mb-4">
+        <div class="d-flex align-items-center gap-4">
+            <!-- Điểm đánh giá trung bình -->
+            <div class="text-center">
+                <div class="display-4 fw-bold" style="color: #6f42c1;">5.0</div>               
+                <div class="text-muted">trên 5</div>
+                <div class="mt-2">
+                    @for (int i = 1; i <= 5; i++)
+                    {
+                        <i class="bi bi-star-fill text-warning"></i>
+                    }
+                </div>
+            </div>
+
+            <!-- Thống kê số lượng đánh giá theo sao (sẽ chỉnh lại sau để nhận trực tiếp dữ liệu) -->
+            <div class="flex-grow-1">
+                <div class="d-flex align-items-center mb-1">
+                    <span class="me-2">5 Sao</span>
+                    <div class="progress flex-grow-1" style="height: 8px;">
+                        <div class="progress-bar bg-warning" style="width: 90%"></div>
+                    </div>
+                    <span class="ms-2">(303)</span>
+                </div>
+                <div class="d-flex align-items-center mb-1">
+                    <span class="me-2">4 Sao</span>
+                    <div class="progress flex-grow-1" style="height: 8px;">
+                        <div class="progress-bar bg-warning" style="width: 5%"></div>
+                    </div>
+                    <span class="ms-2">(2)</span>
+                </div>
+                <div class="d-flex align-items-center mb-1">
+                    <span class="me-2">3 Sao</span>
+                    <div class="progress flex-grow-1" style="height: 8px;">
+                        <div class="progress-bar bg-warning" style="width: 2%"></div>
+                    </div>
+                    <span class="ms-2">(1)</span>
+                </div>
+                <div class="d-flex align-items-center mb-1">
+                    <span class="me-2">2 Sao</span>
+                    <div class="progress flex-grow-1" style="height: 8px;">
+                        <div class="progress-bar bg-warning" style="width: 0%"></div>
+                    </div>
+                    <span class="ms-2">(0)</span>
+                </div>
+                <div class="d-flex align-items-center">
+                    <span class="me-2">1 Sao</span>
+                    <div class="progress flex-grow-1" style="height: 8px;">
+                        <div class="progress-bar bg-warning" style="width: 3%"></div>
+                    </div>
+                    <span class="ms-2">(2)</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter buttons -->
+        <div class="mt-4">
+            <button class="btn btn-outline-secondary me-2 mb-2">Tất Cả</button>
+            <button class="btn btn-outline-secondary me-2 mb-2">5 Sao (0)</button>
+            <button class="btn btn-outline-secondary me-2 mb-2">4 Sao (0)</button>
+            <button class="btn btn-outline-secondary me-2 mb-2">3 Sao (0)</button>
+            <button class="btn btn-outline-secondary me-2 mb-2">2 Sao (0)</button>
+            <button class="btn btn-outline-secondary me-2 mb-2">1 Sao (0)</button>
+            <button class="btn btn-outline-secondary me-2 mb-2">Có Bình Luận (0)</button>
+            <button class="btn btn-outline-secondary mb-2">Có Hình Ảnh / Video (0)</button>
+        </div>
+    </div>
+
+    <!-- Form thêm đánh giá -->
+    @if (ViewBag.isLoggedIn == true)
     {
-        <div class="card border p-3 mb-2">
-            <div class="d-flex justify-content-between">
-                <div>
-                    <strong>Người dùng @r.UserID</strong>
-                    <div>
+        <div class="card border p-4 mb-4">
+            <h5 class="mb-3">Thêm đánh giá của bạn</h5>
+            <form id="reviewForm" class="review-form">
+                <input type="hidden" id="productId" value="@product.ProductId" />
+                
+                <div class="mb-3">
+                    <label class="form-label">Đánh giá sao:</label>
+                    <div class="star-rating-input">
                         @for (int i = 1; i <= 5; i++)
                         {
-                            if (i <= r.Stars)
-                            {
-                                <i class="bi bi-star-fill text-warning"></i>
-                            }
-                            else
-                            {
-                                <i class="bi bi-star text-muted"></i>
-                            }
+                            <i class="bi bi-star star-selectable" data-rating="@i"></i>
                         }
                     </div>
+                    <input type="hidden" id="ratingInput" name="rating" value="0" />
                 </div>
-                <small class="text-muted">@r.CreatedTime.ToString("dd/MM/yyyy HH:mm")</small>
-            </div>
-            <p class="mt-2">@r.Comment</p>
-            @if (r.MediaURLs != null && r.MediaURLs.Any(url => url.EndsWith(".jpg") || url.EndsWith(".jpeg") || url.EndsWith(".png") || url.EndsWith(".gif") || url.EndsWith(".webp")))
+
+                <div class="mb-3">
+                    <label for="commentInput" class="form-label">Nhận xét của bạn:</label>
+                    <textarea class="form-control" id="commentInput" rows="3" placeholder="Chia sẻ trải nghiệm của bạn về sản phẩm..."></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Hình ảnh (không bắt buộc):</label>
+                    <input type="file" class="form-control" id="imageInput" multiple accept="image/*" />
+                    <div id="imagePreview" class="d-flex flex-wrap gap-2 mt-2"></div>
+                </div>
+
+                <button type="submit" class="btn btn-purple">Gửi đánh giá</button>
+            </form>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info mb-4">
+            Vui lòng <a href="/Authenticate/MyLogin" class="alert-link">đăng nhập</a> để thêm đánh giá.
+        </div>
+    }
+
+    <!-- Danh sách đánh giá -->
+    @if (review != null && review.Any())
+    {
+        <div id="reviewList">
+            @foreach (var r in review)
             {
-                <div class="mt-2 d-flex flex-wrap gap-2">
-                    @foreach (var media in r.MediaURLs)
+                <div class="card border p-3 mb-3 review-item" data-stars="@r.Stars" data-has-media="@(r.MediaURLs != null && r.MediaURLs.Any())" data-has-comment="@(!string.IsNullOrEmpty(r.Comment))">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-person rounded-circle bg-light d-flex justify-content-center align-items-center" style="font-size: 2rem; width: 40px; height: 40px; color: #6c757d;"></i>                            <div>
+                                <strong>Người dùng @r.UserID</strong>
+                                <div class="mt-1">
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        if (i <= r.Stars)
+                                        {
+                                            <i class="bi bi-star-fill text-warning"></i>
+                                        }
+                                        else
+                                        {
+                                            <i class="bi bi-star text-muted"></i>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <small class="text-muted">@r.CreatedTime.ToString("dd/MM/yyyy HH:mm")</small>
+                    </div>
+                    <p class="mt-3 mb-2">@r.Comment</p>
+                    @if (r.MediaURLs != null && r.MediaURLs.Any())
                     {
-                        if (media.EndsWith(".jpg") || media.EndsWith(".jpeg") || media.EndsWith(".png") || media.EndsWith(".gif") || media.EndsWith(".webp"))
-                        {
-                            <img src="@media" alt="User image" style="max-width: 150px; height: auto;" class="img-thumbnail" />
-                        }
+                        <div class="mt-2 d-flex flex-wrap gap-2">
+                            @foreach (var media in r.MediaURLs)
+                            {
+                                <img src="@media" alt="Hình ảnh đánh giá" 
+                                     class="img-thumbnail" 
+                                     style="width: 150px; height: 120px; object-fit: cover; cursor: pointer"
+                                     onclick="window.open(this.src, '_blank')" />
+                            }
+                        </div>
                     }
                 </div>
             }
         </div>
     }
-</body> *@
+    else
+    {
+        <div class="alert alert-info">
+            Chưa có đánh giá nào cho sản phẩm này.
+        </div>
+    }
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Xử lý đánh giá sao
+        const stars = document.querySelectorAll('.star-selectable');
+        const ratingInput = document.getElementById('ratingInput');
+        
+        // Chức năng lọc đánh giá
+        const filterButtons = document.querySelectorAll('.btn-outline-secondary');
+        filterButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // Xóa trạng thái active khỏi tất cả các nút
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                // Thêm trạng thái active cho nút được click
+                this.classList.add('active');
+                
+                // Lấy tất cả các đánh giá
+                const reviews = document.querySelectorAll('.review-item');
+                
+                // Áp dụng bộ lọc dựa trên nội dung của nút
+                reviews.forEach(review => {
+                    const stars = review.dataset.stars;
+                    const hasMedia = review.dataset.hasMedia === 'True';
+                    const hasComment = review.dataset.hasComment === 'True';
+                    
+                    let shouldShow = false;
+                    const buttonText = this.textContent.trim();
+                    
+                    // Xác định điều kiện hiển thị
+                    if (buttonText === 'Tất Cả') {
+                        shouldShow = true;
+                    } else if (buttonText.includes('Sao')) {
+                        const filterStars = buttonText.split(' ')[0];
+                        shouldShow = stars === filterStars;
+                    } else if (buttonText.includes('Có Hình Ảnh')) {
+                        shouldShow = hasMedia;
+                    } else if (buttonText.includes('Có Bình Luận')) {
+                        shouldShow = hasComment;
+                    }
+                    
+                    // Hiển thị hoặc ẩn đánh giá tương ứng
+                    review.style.display = shouldShow ? 'block' : 'none';
+                });
+            });
+        });
+        
+        // Xử lý hiển thị sao khi người dùng đánh giá
+        stars.forEach(star => {
+            star.addEventListener('click', () => {
+                const rating = star.dataset.rating;
+                ratingInput.value = rating;
+                
+                // Cập nhật hiển thị sao
+                stars.forEach(s => {
+                    if (s.dataset.rating <= rating) {
+                        s.classList.remove('bi-star');
+                        s.classList.add('bi-star-fill');
+                        s.classList.add('active');
+                    } else {
+                        s.classList.add('bi-star');
+                        s.classList.remove('bi-star-fill');
+                        s.classList.remove('active');
+                    }
+                });
+            });
+        });
+        
+        // Xử lý xem trước hình ảnh
+        const imageInput = document.getElementById('imageInput');
+        const imagePreview = document.getElementById('imagePreview');
+        
+        imageInput.addEventListener('change', function() {
+            imagePreview.innerHTML = '';
+            [...this.files].forEach(file => {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.className = 'img-thumbnail';
+                        imagePreview.appendChild(img);
+                    }
+                    reader.readAsDataURL(file);
+                }
+            });
+        });
+        
+        // Xử lý gửi đánh giá
+        const reviewForm = document.getElementById('reviewForm');
+        reviewForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const rating = document.getElementById('ratingInput').value;
+            const comment = document.getElementById('commentInput').value;
+            const productId = document.getElementById('productId').value;
+            
+            // Kiểm tra đánh giá sao
+            if (!rating || rating === '0') {
+                alert('Vui lòng chọn số sao đánh giá');
+                return;
+            }
+            
+            // Kiểm tra nội dung bình luận
+            if (!comment.trim()) {
+                alert('Vui lòng nhập nhận xét của bạn');
+                return;
+            }
+            
+            // Chuẩn bị dữ liệu gửi lên server
+            const formData = new FormData();
+            formData.append('productId', productId);
+            formData.append('rating', rating);
+            formData.append('comment', comment);
+            
+            // Thêm các file hình ảnh vào form
+            const imageFiles = document.getElementById('imageInput').files;
+            for (let i = 0; i < imageFiles.length; i++) {
+                formData.append('images', imageFiles[i]);
+            }
+            
+            try {
+                const response = await fetch('/Product/AddReview', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (response.ok) {
+                    alert('Cảm ơn bạn đã đánh giá sản phẩm!');
+                    location.reload(); // Tải lại trang để hiển thị đánh giá mới
+                } else {
+                    alert('Có lỗi xảy ra khi gửi đánh giá. Vui lòng thử lại sau.');
+                }
+            } catch (error) {
+                console.error('Lỗi:', error);
+                alert('Có lỗi xảy ra khi gửi đánh giá. Vui lòng thử lại sau.');
+            }
+        });
+    });
+</script>
