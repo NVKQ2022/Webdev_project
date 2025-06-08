@@ -79,56 +79,253 @@
 @{
     ViewData["Title"] = "Order Confirmation";
     var totalFormatted = string.Format("{0:N0}₫", Model.TotalAmount);
+    var statusText = Model.Status == "Pending" ? "Chờ xử lý" : Model.Status;
 }
 
-<div class="container mt-5">
-    <h2 class="text-success">🎉 Đặt hàng thành công!</h2>
-    <p>Mã đơn hàng: <strong>@Model.OrderID</strong></p>
-    <p>Trạng thái: <strong>@Model.Status</strong></p>
-    <p>Ngày đặt: <strong>@Model.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</strong></p>
-    <hr />
+<style>
+    .payment-result-container {
+        max-width: 1200px;
+        margin: 60px auto;
+        background: #fff;
+        border-radius: 12px;
+        padding: 40px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
 
-    <h4>Thông tin nhận hàng</h4>
-    <ul>
-        <li><strong>Họ tên:</strong> @Model.ReceiveInfo.Name</li>
-        <li><strong>Điện thoại:</strong> @Model.ReceiveInfo.Phone</li>
-        <li><strong>Địa chỉ:</strong> @Model.ReceiveInfo.Address</li>
-    </ul>
+    .success-icon {
+        width: 80px;
+        margin-bottom: 20px;
+        display: block;
+        margin: 0 auto 20px;
+    }
 
-    <h4 class="mt-4">Chi tiết đơn hàng</h4>
-    <table class="table table-bordered">
-        <thead class="table-light">
-            <tr>
-                <th>Ảnh</th>
-                <th>Tên sản phẩm</th>
-                <th>Số lượng</th>
-                <th>Đơn giá</th>
-                <th>Thành tiền</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model.Items)
-            {
-                var subtotal = item.Quantity * item.UnitPrice;
-                <tr>
-                    <td><img src="@item.Image" alt="product" width="80" /></td>
-                    <td>@item.ProductName</td>
-                    <td>@item.Quantity</td>
-                    <td>@string.Format("{0:N0}₫", item.UnitPrice)</td>
-                    <td>@string.Format("{0:N0}₫", subtotal)</td>
-                </tr>
-            }
-        </tbody>
-        <tfoot>
-            <tr>
-                <th colspan="4" class="text-end">Tổng cộng:</th>
-                <th>@totalFormatted</th>
-            </tr>
-        </tfoot>
-    </table>
+    h2 {
+        color: #28a745;
+        font-size: 28px;
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: 40px;
+    }
 
-    <div class="text-center mt-4">
-        <a href="/" class="btn btn-primary">Về trang chủ</a>
-        @* <a href="/Orders/History" class="btn btn-secondary">Xem lịch sử đơn hàng</a> *@
+    .two-column-layout {
+        display: flex;
+        gap: 30px;
+        margin-top: 30px;
+    }
+
+    .left-column {
+        flex: 0 0 35%;
+    }
+
+    .right-column {
+        flex: 0 0 65%;
+    }
+
+    .section-title {
+        font-size: 18px;
+        color: #333;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #6f42c1;
+    }
+
+    .info-box {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+
+    .info-box p {
+        margin-bottom: 10px;
+        color: #666;
+    }
+
+    .info-box strong {
+        color: #333;
+        margin-right: 8px;
+    }
+
+    .table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        margin-top: 15px;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .table th {
+        background: #9b6dea;
+        color: white;
+        font-weight: 500;
+        padding: 15px;
+        text-align: left;
+        border-right: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .table th:last-child {
+        border-right: none;
+    }
+
+    .table td {
+        padding: 15px;
+        border-bottom: 1px solid #e0e0e0;
+        border-right: 1px solid #e0e0e0;
+        color: #333;
+        vertical-align: middle;
+    }
+
+    .table td:last-child {
+        border-right: none;
+    }
+
+    .table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .table img {
+        width: 80px;
+        border-radius: 4px;
+        border: 1px solid #eee;
+    }
+
+    .table .quantity-column {
+        width: 100px;
+        text-align: center;
+    }
+
+    .price-column {
+        color: #6f42c1;
+        font-weight: 500;
+        width: 150px;
+        text-align: right;
+    }
+
+    .total-row {
+        background: #f8f9fa;
+    }
+
+    .total-row td {
+        padding: 20px 15px;
+    }
+
+    .total-row .price-column {
+        font-size: 24px;
+        font-weight: 600;
+        color: #6f42c1;
+    }
+
+    .payment-buttons {
+        text-align: center;
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid #e0e0e0;
+    }
+
+    .btn-main {
+        background: #6f42c1;
+        color: white;
+        padding: 12px 30px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .btn-main:hover {
+        background: #5a32a3;
+        color: white;
+        text-decoration: none;
+    }
+
+    .final-total {
+        text-align: right;
+        margin-top: 20px;
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 8px;
+    }
+
+    .final-total-label {
+        font-size: 18px;
+        color: #333;
+        margin-right: 15px;
+    }
+
+    .final-total-amount {
+        font-size: 28px;
+        font-weight: 600;
+        color: #6f42c1;
+    }
+
+    @@media (max-width: 768px) {
+        .two-column-layout {
+            flex-direction: column;
+        }
+
+        .left-column, .right-column {
+            flex: 0 0 100%;
+        }
+    }
+</style>
+
+<div class="payment-result-container">
+    <img src="https://cdn-icons-png.flaticon.com/512/845/845646.png" alt="Success" class="success-icon" />
+    <h2>Đặt hàng thành công!</h2>
+    
+    <div class="two-column-layout">
+        <div class="left-column">
+            <div class="info-box">
+                <h4 class="section-title">Thông tin đơn hàng</h4>
+                <p><strong>Mã đơn hàng:</strong> @Model.OrderID</p>
+                <p><strong>Trạng thái:</strong> @statusText</p>
+                <p><strong>Ngày đặt:</strong> @Model.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</p>
+            </div>
+            
+            <div class="info-box">
+                <h4 class="section-title">Thông tin nhận hàng</h4>
+                <p><strong>Họ tên:</strong> @Model.ReceiveInfo?.Name</p>
+                <p><strong>Điện thoại:</strong> @Model.ReceiveInfo?.Phone</p>
+                <p><strong>Địa chỉ:</strong> @Model.ReceiveInfo?.Address</p>
+            </div>
+        </div>
+
+        <div class="right-column">
+            <h4 class="section-title">Chi tiết đơn hàng</h4>
+                            <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Ảnh</th>
+                            <th>Tên sản phẩm</th>
+                            <th class="quantity-column">Số lượng</th>
+                            <th class="price-column">Đơn giá</th>
+                            <th class="price-column">Thành tiền</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Items)
+                        {
+                            var subtotal = item.Quantity * item.UnitPrice;
+                            <tr>
+                                <td><img src="@item.Image" alt="product" /></td>
+                                <td>@item.ProductName</td>
+                                <td class="quantity-column">@item.Quantity</td>
+                                <td class="price-column">@string.Format("{0:N0}₫", item.UnitPrice)</td>
+                                <td class="price-column">@string.Format("{0:N0}₫", subtotal)</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <div class="final-total">
+                    <span class="final-total-label">Tổng cộng:</span>
+                    <span class="final-total-amount">@totalFormatted</span>
+                </div>
+        </div>
+    </div>
+
+    <div class="payment-buttons">
+        <a href="/" class="btn-main">Về trang chủ</a>
     </div>
 </div>

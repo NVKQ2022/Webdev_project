@@ -30,6 +30,8 @@
         border-radius: 8px;
         box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         margin-bottom: 20px;
+        position: sticky;
+        top: 20px;
     }
 
     .profile-main {
@@ -364,15 +366,6 @@
                     <a href="#orderManagement" class="sidebar-link">
                         <i class="fas fa-shopping-bag me-2"></i> Quản lý đơn hàng
                     </a>
-
-                    <a href="#" class="sidebar-link">
-                        <i class="fas fa-eye me-2"></i>
-                        Sản phẩm đã xem
-                    </a>
-                    <a href="#" class="sidebar-link">
-                        <i class="fas fa-sign-out-alt me-2"></i>
-                        Đăng xuất
-                    </a>
                 </div>
             </div>
         </div>
@@ -567,7 +560,7 @@
                                 <div class="text-end mt-3">
                                     @if (order.Status == "Pending")
                                     {
-                                        <button class="btn btn-danger btn-sm">Huỷ đơn</button>
+                                        <button class="btn btn-danger btn-sm" onclick="cancelOrder('@order.OrderID')">Huỷ đơn</button>
                                     }
                                     else if (order.Status == "Delivered")
                                     {
@@ -1109,4 +1102,35 @@
             });
         });
         
+</script>
+
+<script>
+async function cancelOrder(orderId) {
+    if (!confirm('Bạn có chắc chắn muốn huỷ đơn hàng này?')) {
+        return;
+    }
+
+    try {
+        const response = await fetch('/Order/CancelOrder', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ orderId: orderId })
+        });
+
+        const result = await response.json();
+        
+        if (result.success) {
+            alert('Đơn hàng đã được huỷ thành công!');
+            // Reload trang sau khi hủy thành công
+            window.location.reload();
+        } else {
+            throw new Error(result.message || 'Không thể huỷ đơn hàng');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Có lỗi xảy ra khi huỷ đơn hàng. Vui lòng thử lại.');
+    }
+}
 </script>

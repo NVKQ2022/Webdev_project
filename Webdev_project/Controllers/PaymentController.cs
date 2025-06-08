@@ -41,9 +41,10 @@ namespace Webdev_project.Controllers
 
             foreach(var item in items)
             {
-                 string category = await productRepository.GetCategoryByProductIdAsync(item.ProductId);
-                userDetailRepository.UpdateCategoryScoreAsync(user.Id, category, UserAction.Purchase);
+                string category = await productRepository.GetCategoryByProductIdAsync(item.ProductId);
+                await userDetailRepository.UpdateCategoryScoreAsync(user.Id, category, UserAction.Purchase);
             }
+            
             // Calculate total amount
             var total = items.Sum(item => item.UnitPrice * item.Quantity);
             ViewBag.TotalAmount = total;
