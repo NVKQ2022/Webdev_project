@@ -10,11 +10,12 @@ namespace Webdev_project.Controllers
     {
         private readonly IProductRepository productRepository;
         private readonly IAuthenticationRepository authenticationRepository;
-
-        public CategoryController(IProductRepository productRepository, IAuthenticationRepository authenticationRepository) : base(authenticationRepository)
+        private IUserDetailRepository userDetailRepository;
+        public CategoryController(IProductRepository productRepository, IAuthenticationRepository authenticationRepository, IUserDetailRepository userDetailRepository) : base(authenticationRepository)
         {
             this.productRepository = productRepository;
             this.authenticationRepository = authenticationRepository;
+            this.userDetailRepository = userDetailRepository;
         }
         //public async Task<IActionResult> Products(string CateName, string sort = "default", string search = "")
         //{
@@ -87,6 +88,17 @@ namespace Webdev_project.Controllers
                 ? new List<Product>()
                 : await productRepository.GetByCategoryAsync(CateName);
 
+
+            //update score
+            string sessionId = HttpContext.Request.Cookies["SessionId"];
+            if (sessionId != null)
+            {
+                var user = authenticationRepository.RetrieveFromSession(sessionId);
+                if (user != null)
+                {
+                    await userDetailRepository.UpdateCategoryScoreAsync(user.Id, CateName, UserAction.Click);
+                }
+            }
             // Search
             if (!string.IsNullOrEmpty(search))
             {

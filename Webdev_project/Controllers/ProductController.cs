@@ -33,6 +33,15 @@ namespace Webdev_project.Controllers
             {
                 return NotFound("Product not found");
             }
+            string sessionId = HttpContext.Request.Cookies["SessionId"];
+            if (sessionId != null) 
+            {
+                var user= authenticationRepository.RetrieveFromSession(sessionId);
+                if (user != null) 
+                {
+                    await userDetailRepository.UpdateCategoryScoreAsync(user.Id, product.Category, UserAction.Click);
+                }
+            }
             var reviews = await reviewRepository.GetReviewsByProductIdAsync(product.ProductId);
             ViewBag.Reviews = reviews;
             ViewBag.Product = product;

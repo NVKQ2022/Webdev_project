@@ -280,6 +280,10 @@
                     </button>
                 </div>
             </div>
+        <form id="paymentForm" method="post" action="/Payment/BuyItems">
+            <input type="hidden" name="selectedItems" id="selectedItemsJson" />
+        </form>
+
             <!-- Chính sách sản phẩm -->
             <div class="container mt-4">
                 <h5 class="fw-bold mb-3">Chính sách sản phẩm</h5>
@@ -340,6 +344,34 @@
         button.classList.add('active');
         selectedColor = color;
     }
+
+    function buyNow() {
+        const selectedItems = [];
+
+        const quantity = parseInt(document.getElementById("quantityInput").value);
+
+        const addToCartButton = document.querySelector("button[data-product-id]"); // assumes it's the only one on page
+
+        const item = {
+            productId: addToCartButton.dataset.productId,
+            productName: addToCartButton.dataset.productName,
+            image: addToCartButton.dataset.imageUrl,
+            quantity: quantity,
+            unitPrice: parseInt(addToCartButton.dataset.price)
+        };
+
+        selectedItems.push(item);
+
+        // Inject JSON string into hidden input
+        document.getElementById("selectedItemsJson").value = JSON.stringify(selectedItems);
+
+        // Submit form
+        document.getElementById("paymentForm").submit();
+    }
+
+
+
+
 
        document.addEventListener('DOMContentLoaded', function () {
            const input = document.querySelector('.quantity-input');
