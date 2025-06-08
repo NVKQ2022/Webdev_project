@@ -1,4 +1,4 @@
-﻿@{
+﻿@* @{
     ViewBag.Title = "Kết quả thanh toán";
     Layout = "~/Views/Shared/_Layout.cshtml";
 
@@ -71,5 +71,64 @@
         @totalAmount</p>
     <div class="payment-buttons">
         <a href="@Url.Action("Index", "Home")" class="btn-main">Về trang chủ</a>
+    </div>
+</div>
+ *@
+
+@model Webdev_project.Models.Order
+@{
+    ViewData["Title"] = "Order Confirmation";
+    var totalFormatted = string.Format("{0:N0}₫", Model.TotalAmount);
+}
+
+<div class="container mt-5">
+    <h2 class="text-success">🎉 Đặt hàng thành công!</h2>
+    <p>Mã đơn hàng: <strong>@Model.OrderID</strong></p>
+    <p>Trạng thái: <strong>@Model.Status</strong></p>
+    <p>Ngày đặt: <strong>@Model.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</strong></p>
+    <hr />
+
+    <h4>Thông tin nhận hàng</h4>
+    <ul>
+        <li><strong>Họ tên:</strong> @Model.ReceiveInfo.Name</li>
+        <li><strong>Điện thoại:</strong> @Model.ReceiveInfo.Phone</li>
+        <li><strong>Địa chỉ:</strong> @Model.ReceiveInfo.Address</li>
+    </ul>
+
+    <h4 class="mt-4">Chi tiết đơn hàng</h4>
+    <table class="table table-bordered">
+        <thead class="table-light">
+            <tr>
+                <th>Ảnh</th>
+                <th>Tên sản phẩm</th>
+                <th>Số lượng</th>
+                <th>Đơn giá</th>
+                <th>Thành tiền</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Items)
+            {
+                var subtotal = item.Quantity * item.UnitPrice;
+                <tr>
+                    <td><img src="@item.Image" alt="product" width="80" /></td>
+                    <td>@item.ProductName</td>
+                    <td>@item.Quantity</td>
+                    <td>@string.Format("{0:N0}₫", item.UnitPrice)</td>
+                    <td>@string.Format("{0:N0}₫", subtotal)</td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr>
+                <th colspan="4" class="text-end">Tổng cộng:</th>
+                <th>@totalFormatted</th>
+            </tr>
+        </tfoot>
+    </table>
+
+    <div class="text-center mt-4">
+        <a href="/" class="btn btn-primary">Về trang chủ</a>
+        @* <a href="/Orders/History" class="btn btn-secondary">Xem lịch sử đơn hàng</a> *@
     </div>
 </div>

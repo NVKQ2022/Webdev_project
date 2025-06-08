@@ -13,7 +13,7 @@ namespace Webdev_project.Interfaces
         Task<List<Product>> GetByCategoryAsync(string category);
 
 
-
+        Task<string?> GetCategoryByProductIdAsync(string productId);
         Task<List<string>> GetAllCategoriesAsync();
 
         Task AddAsync(Product product);

@@ -459,12 +459,10 @@
                 TotalAmount: @ViewBag.TotalAmount,
                 PaymentMethod: document.getElementById('paymentMethod').value,
                 Status: "Pending",
-                CreatedAt: {
-                    $date: new Date().toISOString()
-                },
+                CreatedAt: new Date().toISOString(), // ✅ ISO string, safe for C#
                 ReceiveInfo: {
                     Name: nameElement.textContent.trim(),
-                    Phone: phoneElement[0],
+                    Phone: document.getElementById('phone').value.trim(),  // ✅ make sure this element exists
                     Address: addressElement.textContent.trim()
                 }
             };

@@ -45,6 +45,19 @@ public class ProductRepository:IProductRepository
         return await _products.Find(p => true).ToListAsync();
     }
 
+    public async Task<string?> GetCategoryByProductIdAsync(string productId)
+    {
+        var filter = Builders<Product>.Filter.Eq(p => p.ProductId, productId);
+        var projection = Builders<Product>.Projection.Include(p => p.Category);
+
+        var result = await _products
+            .Find(filter)
+            .Project<Product>(projection)
+            .FirstOrDefaultAsync();
+
+        return result?.Category;
+    }
+
     public async Task<Product> GetByIdAsync(string id)
     {
         return await _products.Find(p => p.ProductId == id).FirstOrDefaultAsync();

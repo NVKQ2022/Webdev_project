@@ -1,4 +1,6 @@
-﻿namespace Webdev_project.Interfaces
+﻿using Webdev_project.Models;
+namespace Webdev_project.Interfaces
+
 {
     public interface IOrderRepository
     {
