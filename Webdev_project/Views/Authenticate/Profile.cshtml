@@ -4,8 +4,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     User user = ViewBag.User;
     
-    var userDetail =ViewBag.UserDetail;
-    // List<ReceiveInfo>? receiveInfos = userDetail.ReceiveInfo;
+    var userDetail = ViewBag.UserDetail;
     List<ReceiveInfo>? receiveInfos = userDetail != null ? userDetail.ReceiveInfo : new List<ReceiveInfo>();
     var notifi = ViewBag.Notifications;// fix to orders
 
@@ -274,6 +273,61 @@
     .hidden {
         display: none;
     }
+
+    .empty-order-message {
+        text-align: center;
+        padding: 60px 20px;
+        width: 100%;
+    }
+
+        .empty-order-message img {
+            max-width: 140px;
+            border-radius: 50%;
+            border: 2px solid #ddd;
+            object-fit: cover;
+        }
+
+        .empty-order-message p {
+            font-size: 18px;
+            margin: 15px 0;
+        }
+
+        .empty-order-message a {
+            background: linear-gradient(90deg, #3a7bd5, #6a11cb);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+    .custom-order-tabs {
+        display: flex;
+        overflow-x: auto;
+        border-bottom: 2px solid #f5f5f5;
+        background-color: #fff;
+    }
+
+    .order-tab {
+        padding: 10px 16px;
+        color: #333;
+        font-weight: 500;
+        text-decoration: none;
+        border-bottom: 2px solid transparent;
+        white-space: nowrap;
+        transition: all 0.3s ease;
+    }
+
+        .order-tab:hover {
+            color: #6a11cb;
+        }
+
+        .order-tab.active {
+            color: #6a11cb;
+            border-bottom: 2px solid #6a11cb;
+            font-weight: 600;
+        }
 </style>
 
 <div class="container profile-container">
@@ -330,11 +384,11 @@
                 <div class="profile-main">
                     <h4 class="mb-4">Thông tin tài khoản</h4>
                     <form id="profileForm">
-                        <input type="hidden" name="Id" value="@userDetail?.Id" />
+                        <input type="hidden" name="Id" value="@(userDetail?.Id ?? "")" />
 
                         <div class="form-group">
                             <label>Họ tên</label>
-                            <input type="text" name="Name" class="form-control" value="@userDetail?.Name" />
+                            <input type="text" name="Name" class="form-control" value="@(userDetail?.Name ?? "")" />
                         </div>
 
                         <div class="form-group">
@@ -351,12 +405,12 @@
 
                         <div class="form-group">
                             <label>Số điện thoại</label>
-                            <input type="tel" name="PhoneNumber" class="form-control" value="@userDetail?.PhoneNumber" />
+                            <input type="tel" name="PhoneNumber" class="form-control" value="@(userDetail?.PhoneNumber ?? "")" />
                         </div>
 
                         <div class="form-group">
                             <label>Ngày sinh</label>
-                            <input type="date" name="Birthday" class="form-control" value="@userDetail?.Birthday.ToString("yyyy-MM-dd")" />
+                            <input type="date" name="Birthday" class="form-control" value="@(userDetail?.Birthday.ToString("yyyy-MM-dd") ?? DateTime.Now.ToString("yyyy-MM-dd"))" />
                         </div>
 
                         <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
@@ -373,22 +427,34 @@
                     <h4 class="mb-4">Sổ địa chỉ</h4>
                     
                     <!-- Existing Addresses -->
-                    <div class="address-list mb-4">
-                        @foreach (var address in receiveInfos)
-                        {
-                            <label class="address-option">
-                                <input type="radio" name="selectedAddress" @(address == receiveInfos.First() ? "checked" : "") />
-                                <div>
-                                    <strong>@address.Name</strong> - @address.Phone
-                                    <div class="address-details">@address.Address</div>
-                                    @if(address == receiveInfos.First())
-                                    {
-                                        <span class="default-badge">Mặc định</span>
-                                    }
-                                </div>
-                            </label>
-                        }
-                    </div>
+                    @if (receiveInfos != null && receiveInfos.Any())
+                    {
+                        <div class="address-list mb-4">
+                            @foreach (var address in receiveInfos)
+                            {
+                                <label class="address-option">
+                                    <input type="radio" name="selectedAddress" @(address == receiveInfos.First() ? "checked" : "") />
+                                    <div>
+                                        <strong>@address.Name</strong> - @address.Phone
+                                        <div class="address-details">@address.Address</div>
+                                        @if (address == receiveInfos.First())
+                                        {
+                                            <span class="default-badge">Mặc định</span>
+                                        }
+                                    </div>
+                                </label>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="empty-order-message">
+                            <img src="~/images/map.png" alt="Không có địa chỉ" />
+                            <p>Bạn chưa có địa chỉ nhận hàng nào.</p>
+                        </div>
+                    }
+
+
 
                     <!-- Add New Address Button -->
                     <button class="add-address-btn" onclick="showAddForm()">+ Thêm địa chỉ mới</button>
@@ -400,7 +466,7 @@
                                 <input type="text" id="fullName" name="name" placeholder="Họ và tên" class="input-field" value="@user.Username" required />
                             </div>
                             <div class="form-field">
-                                <input type="text" id="phone" name="phone" placeholder="Số điện thoại" class="input-field" value="@userDetail?.PhoneNumber" required />
+                                <input type="text" id="phone" name="phone" placeholder="Số điện thoại" class="input-field" value="@(userDetail?.PhoneNumber ?? "")" required />
                             </div>
                             <div class="form-field">
                                 <select id="province" class="input-field" onchange="loadDistricts()" required>
@@ -438,89 +504,79 @@
                 <div class="profile-main p-0">
                     <div class="d-flex justify-content-between align-items-center order-header">
                         <h4 class="mb-0">Cập Nhật Đơn Hàng</h4>
-                        <a href="#" class="btn btn-outline-secondary btn-sm">Đánh dấu Đã đọc tất cả</a>
-                    </div>
-                    <div class="mb-3">
-                        <label for="statusFilter" class="form-label">Lọc theo trạng thái:</label>
-                        <select id="statusFilter" class="form-select form-select-sm" onchange="filterOrders()">
-                            <option value="all">Tất cả</option>
-                            <option value="Pending">Chờ xử lý</option>
-                            <option value="Shipped">Đã gửi</option>
-                            <option value="Delivered">Đã giao</option>
-                            <option value="Cancelled">Đã huỷ</option>
-                        </select>
+                        <a href="#" class="btn btn-outline-secondary btn-sm">Đánh dấu đã đọc tất cả</a>
                     </div>
 
+                    <!-- Tabs thay cho dropdown -->
+                    <div class="custom-order-tabs mb-3" id="orderTabs">
+                        <a class="order-tab active" data-status="all" href="#">Tất cả</a>
+                        <a class="order-tab" data-status="Pending" href="#">Chờ thanh toán</a>
+                        <a class="order-tab" data-status="Shipped" href="#">Vận chuyển</a>
+                        <a class="order-tab" data-status="Delivering" href="#">Chờ giao hàng</a>
+                        <a class="order-tab" data-status="Delivered" href="#">Hoàn thành</a>
+                        <a class="order-tab" data-status="Cancelled" href="#">Đã huỷ</a>
+                        <a class="order-tab" data-status="Refunded" href="#">Trả hàng/Hoàn tiền</a>
+                    </div>
 
 
+                    <div id="noOrdersMessage" class="empty-order-message" style="display: none;">
+                        <img src="~/images/cart.png" alt="Không có đơn hàng" />
+                        <p>Bạn chưa có đơn hàng nào trong mục này.</p>
+                        <a href="/Home/Index">MUA SẮM NGAY</a>
+                    </div>
 
 
-
-                 @*    INSERT *@
-                 @foreach (var order in orders){
-                        <div class="border rounded p-3 mb-4 bg-light order-card" data-status="@order.Status">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <div>
-                                    <strong>Trạng thái:</strong> @order.Status<br />
-                                    <strong>Mã đơn hàng:</strong> @order.OrderID<br />
-                                    <span class="text-muted small">@order.CreatedAt.ToLocalTime().ToString("HH:mm dd-MM-yyyy")</span>
-                                </div>
-                                <div>
-                                    <a href="/Order/Detail/@order.OrderID" class="btn btn-outline-secondary btn-sm">Chi tiết</a>
-                                </div>
-                            </div>
-
-                            @foreach (var item in order.Items)
-                            {
-                                <div class="d-flex align-items-start mb-3 ps-2">
-                                    <img src="@item.Image" width="80" height="80" class="me-3 rounded border" />
+                    @if (orders == null)
+                    {
+                        <p class="text-danger">Không có dữ liệu đơn hàng</p>
+                    }
+                    else
+                    {
+                        @foreach (var order in orders)
+                        {
+                            <div class="border rounded p-3 mb-4 bg-light order-card" data-status="@order.Status">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
                                     <div>
-                                        <a href="/Product/Detail/@item.ProductID" class="fw-bold text-decoration-none">
-                                            @item.ProductName
-                                        </a>
-                                        <div>Số lượng: @item.Quantity</div>
-                                        <div>Giá mỗi cái: <strong>@item.UnitPrice.ToString("N0")₫</strong></div>
+                                        <strong>Trạng thái:</strong> @order.Status<br />
+                                        <strong>Mã đơn hàng:</strong> @order.OrderID<br />
+                                        <span class="text-muted small">@order.CreatedAt.ToLocalTime().ToString("HH:mm dd-MM-yyyy")</span>
+                                    </div>
+                                    <div>
+                                        <a href="/Order/Detail/@order.OrderID" class="btn btn-outline-secondary btn-sm">Chi tiết</a>
                                     </div>
                                 </div>
-                            }
 
-                            <div class="text-end mt-2">
-                                <strong>Tổng cộng:</strong> @order.TotalAmount.ToString("N0")₫
-                            </div>
-
-                            <div class="text-end mt-3">
-                                @if (order.Status == "Pending")
+                                @foreach (var item in order.Items)
                                 {
-                                    <button class="btn btn-danger btn-sm">Huỷ đơn</button>
+                                    <div class="d-flex align-items-start mb-3 ps-2">
+                                        <img src="@item.Image" width="80" height="80" class="me-3 rounded border" />
+                                        <div>
+                                            <a href="/Product/Detail/@item.ProductID" class="fw-bold text-decoration-none">
+                                                @item.ProductName
+                                            </a>
+                                            <div>Số lượng: @item.Quantity</div>
+                                            <div>Giá mỗi cái: <strong>@item.UnitPrice.ToString("N0")₫</strong></div>
+                                        </div>
+                                    </div>
                                 }
-                                else if (order.Status == "Delivered")
-                                {
-                                    <button class="btn btn-outline-primary btn-sm">Đánh giá sản phẩm</button>
-                                }
+
+                                <div class="text-end mt-2">
+                                    <strong>Tổng cộng:</strong> @order.TotalAmount.ToString("N0")₫
+                                </div>
+
+                                <div class="text-end mt-3">
+                                    @if (order.Status == "Pending")
+                                    {
+                                        <button class="btn btn-danger btn-sm">Huỷ đơn</button>
+                                    }
+                                    else if (order.Status == "Delivered")
+                                    {
+                                        <button class="btn btn-outline-primary btn-sm">Đánh giá sản phẩm</button>
+                                    }
+                                </div>
                             </div>
-                        </div>
-                 }
-                   
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                  
+                        }
+                    }
                 </div>
             </div>
         </div>
@@ -666,13 +722,16 @@
         showSection('profile');
         
         // Khởi tạo addresses từ receiveInfos
-        @foreach (var addr in receiveInfos)
+        @if (receiveInfos != null)
         {
-            @:addresses.push({
-                @:name: "@addr.Name",
-                @:phone: "@addr.Phone",
-                @:address: "@addr.Address"
-            @:});
+            foreach (var addr in receiveInfos)
+            {
+                @:addresses.push({
+                    @:name: "@addr.Name",
+                    @:phone: "@addr.Phone",
+                    @:address: "@addr.Address"
+                @:});
+            }
         }
         
         // Hiển thị danh sách địa chỉ ban đầu
@@ -851,8 +910,10 @@
 
 
     // Hàm cập nhật giao diện danh sách địa chỉ
-    function updateAddressList() {
+        function updateAddressList() {
         const addressList = document.querySelector('.address-list');
+        if (!addressList) return; // Không có div thì không làm gì cả
+
         addressList.innerHTML = '';
 
         addresses.forEach((addr, index) => {
@@ -872,6 +933,7 @@
             addressList.innerHTML += addressHtml;
         });
     }
+
 
     // Hàm xóa địa chỉ
     function deleteAddress(index) {
@@ -995,11 +1057,56 @@
                 alert("Không thể tải danh sách phường xã. Vui lòng thử lại.");
             });
     }
-          function filterOrders() {
-            const filter = document.getElementById("statusFilter").value;
-            document.querySelectorAll(".order-card").forEach(card => {
-                const status = card.getAttribute("data-status");
-                card.style.display = (filter === "all" || filter === status) ? "block" : "none";
+        function setupOrderTabs() {
+            const tabs = document.querySelectorAll('#orderTabs .order-tab');
+            const cards = document.querySelectorAll('.order-card');
+            const noOrdersMessage = document.getElementById('noOrdersMessage');
+
+            function updateDisplay(status) {
+                let hasOrder = false;
+                const filterStatus = status.toLowerCase();
+
+                cards.forEach(card => {
+                    const cardStatus = card.getAttribute("data-status").toLowerCase();
+                    const show = (filterStatus === 'all' || filterStatus === cardStatus);
+                    card.style.display = show ? 'block' : 'none';
+                    if (show) hasOrder = true;
+                });
+
+                if (noOrdersMessage) {
+                    noOrdersMessage.style.display = hasOrder ? 'none' : 'block';
+                }
+            }
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    tabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    updateDisplay(this.dataset.status);
+                });
             });
+
+            updateDisplay("all");
         }
+
+        // Gọi khi trang khởi động và khi bấm sidebar
+        document.addEventListener("DOMContentLoaded", function () {
+            const hash = window.location.hash ? window.location.hash.substring(1) : "profile";
+            if (hash === "orderManagement") {
+                setupOrderTabs();
+            }
+        });
+
+        window.addEventListener("load", function () {
+            document.querySelectorAll('.sidebar-link').forEach(link => {
+                link.addEventListener('click', function (e) {
+                    const sectionId = this.getAttribute('href').substring(1);
+                    if (sectionId === "orderManagement") {
+                        setTimeout(setupOrderTabs, 0);
+                    }
+                });
+            });
+        });
+        
 </script>
