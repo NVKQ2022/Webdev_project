@@ -259,21 +259,16 @@
                     <span class="ms-3 text-muted">@availableStock sản phẩm có sẵn</span>
                 </div>
 
-
-
-
-                
-                
-
-                <button type="button"
-                        class="btn btn-outline-purple"
-                        data-product-id="@product.ProductId"
-                        data-product-name="@product.Name"
-                        data-image-url="@product.ImageURL[0]"
-                        data-price="@product.Price"
-                        onclick="addToCart(this)">
-                    <i class="bi bi-cart-plus"></i> Thêm vào giỏ hàng
-                </button>
+                <div class="d-flex gap-3 mt-4">
+                    <button type="button"
+                            class="btn btn-outline-purple"
+                            data-product-id="@product.ProductId"
+                            data-product-name="@product.Name"
+                            data-image-url="@product.ImageURL[0]"
+                            data-price="@product.Price"
+                            onclick="addToCart(this)">
+                        <i class="bi bi-cart-plus"></i> Thêm vào giỏ hàng
+                    </button>
 
                     <button type="button" class="btn btn-purple" onclick="buyNow()">
                         Mua ngay
