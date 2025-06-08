@@ -153,6 +153,35 @@
             cursor: pointer;
         }
 
+        .empty-cart {
+            text-align: center;
+            padding: 60px 20px;
+            width: 100%;
+        }
+
+            .empty-cart img {
+                max-width: 180px;
+                border-radius: 50%; /* Làm tròn ảnh */
+                border: 2px solid #ddd; /* (Tùy chọn) viền nhẹ nếu muốn */
+                object-fit: cover; /* Đảm bảo ảnh không méo */
+            }
+
+            .empty-cart p {
+                font-size: 18px;
+                margin: 15px 0;
+            }
+
+            .empty-cart a {
+                background: linear-gradient(90deg, #3a7bd5, #6a11cb);
+                color: white;
+                padding: 10px 20px;
+                border-radius: 6px;
+                text-decoration: none;
+                font-weight: bold;
+                font-size: 16px;
+            }
+
+
         media (max-width: 768px) {
             .cart-container
 
@@ -203,8 +232,6 @@
                     content: "Thao tác: ";
                     font-weight: bold;
                 }
-
-        
     </style>
 </head>
 <body>
@@ -212,79 +239,81 @@
     <div class="cart-container">
         <div class="cart-items">
             <h3><i class="bi bi-cart"></i> Giỏ hàng của bạn</h3>
-            <div class="header-row">
-                <input type="checkbox" id="selectAll" onchange="toggleAll(this)" />
-                <span>Sản phẩm</span>
-                <span>Số lượng</span>
-                <span>Thành tiền</span>
-                <span>Thao tác</span>
-            </div>
 
-            @foreach (var item in Model)
+            @if (!Model.Any())
             {
-                <div class="product-row" id="row-@item.ProductId">
-                    
+                <div class="empty-cart">
+                    <img src="~/images/cart.png" alt="Giỏ hàng trống" />
+                    <p>Chưa có sản phẩm trong giỏ hàng của bạn.</p>
+                    <a href="/Home/Index">MUA SẮM NGAY</a>
+                </div>
+            }
+            else
+            {
+                <div class="header-row">
+                    <input type="checkbox" id="selectAll" onchange="toggleAll(this)" />
+                    <span>Sản phẩm</span>
+                    <span>Số lượng</span>
+                    <span>Thành tiền</span>
+                    <span>Thao tác</span>
+                </div>
 
-                    <input type="checkbox" class="product-check"
-                           data-product-id="@item.ProductId"
-                           data-quantity="@item.Quantity"
-                           data-unit-price="@item.UnitPrice"
-                           data-name="@item.ProductName"
-                           data-image="@item.Image"
+                @foreach (var item in Model)
+                {
+                    <div class="product-row" id="row-@item.ProductId">
+                        <input type="checkbox" class="product-check"
+                               data-product-id="@item.ProductId"
+                               data-quantity="@item.Quantity"
+                               data-unit-price="@item.UnitPrice"
+                               data-name="@item.ProductName"
+                               data-image="@item.Image"
+                               data-price="@(item.UnitPrice * item.Quantity)"
+                               onchange="updateCartTotal()" />
 
-
-                           data-price="@(item.UnitPrice * item.Quantity)"
-                           onchange="updateCartTotal()" />
-
-                    <div class="product-info">
-                        <img src="@item.Image" class="product-img" alt="@item.ProductName" />
-                        <div>
-                            <strong>@item.ProductName</strong><br />
-                            <span>@item.UnitPrice.ToString("N0", System.Globalization.CultureInfo.GetCultureInfo("vi-VN")) ₫</span>
+                        <div class="product-info">
+                            <img src="@item.Image" class="product-img" alt="@item.ProductName" />
+                            <div>
+                                <strong>@item.ProductName</strong><br />
+                                <span>@item.UnitPrice.ToString("N0", System.Globalization.CultureInfo.GetCultureInfo("vi-VN")) ₫</span>
+                            </div>
+                        </div>
+                        <div class="quantity-controls">
+                            <button type="button" class="btn-decrease" data-product-id="@item.ProductId">-</button>
+                            <span>@item.Quantity</span>
+                            <button type="button" class="btn-increase" data-product-id="@item.ProductId">+</button>
+                        </div>
+                        <div class="product-price" data-unit-price="@item.UnitPrice">
+                            @((item.UnitPrice * item.Quantity).ToString("N0", System.Globalization.CultureInfo.GetCultureInfo("vi-VN"))) ₫
+                        </div>
+                        <div class="remove-button">
+                            <form asp-action="RemoveItem" method="post" style="display:inline;">
+                                <input type="hidden" name="productId" value="@item.ProductId" />
+                                <button type="submit" title="Xóa" aria-label="Xóa">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                         class="bi bi-trash3 text-danger" viewBox="0 0 16 16" style="margin-left: 15px;">
+                                        <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1z" />
+                                    </svg>
+                                </button>
+                            </form>
                         </div>
                     </div>
-                    <div class="quantity-controls">
-                        <button type="button" class="btn-decrease" data-product-id="@item.ProductId">-</button>
-                        <span>@item.Quantity</span>
-                        <button type="button" class="btn-increase" data-product-id="@item.ProductId">+</button>
-                    </div>
-                    <div class="product-price" data-unit-price="@item.UnitPrice">
-                        @((item.UnitPrice * item.Quantity).ToString("N0", System.Globalization.CultureInfo.GetCultureInfo("vi-VN"))) ₫
-                    </div>
-                    <div class="remove-button">
-                        <form asp-action="RemoveItem" method="post" style="display:inline;">
-                            <input type="hidden" name="productId" value="@item.ProductId" />
-                            <button type="submit" title="Xóa" aria-label="Xóa" style="background:none; border:none; cursor:pointer; color:#dc3545;">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                                     class="bi bi-trash3 text-danger" viewBox="0 0 16 16" style="margin-left: 15px;">
-                                    <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1z" />
-                                </svg>
-                            </button>
-                        </form>
-                    </div>
-                </div>
+                }
             }
         </div>
 
-
-
-        <form id="paymentForm" method="post" action="/Payment/BuyItems">
-        <div class="cart-summary">
-
-
-            <input type="hidden" name="selectedItems" id="selectedItemsJson" />
-            <h4>Tổng thanh toán:</h4>
-
-            <div class="total" id="cart-total">₫0</div>
-
-            @* <button id="submit-selected" class="btn btn-danger btn-lg px-5">Mua hàng</button> *@
-            <button type="submit" id="submit-selected" class="btn btn-danger btn-lg px-5">Mua hàng</button>
-        </div>
-        </form>
-
-
-
+        @if (Model.Any())
+        {
+            <div class="cart-summary">
+                <h4>Tổng thanh toán:</h4>
+                <div class="total" id="cart-total">₫0</div>
+                <form id="paymentForm" method="post" action="/Payment/BuyItems">
+                    <input type="hidden" name="selectedItems" id="selectedItemsJson" />
+                    <button type="submit" id="submit-selected">Mua hàng</button>
+                </form>
+            </div>
+        }
     </div>
+
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
@@ -331,7 +360,7 @@
 
 
             const debounceTimers = {};
-           
+
             // VERSION 3
 
 
@@ -409,22 +438,28 @@
 
 
             // Xử lý nút xóa (giữ form submit ajax)
-            $('.remove-button form').on('submit', function (e) {
-                e.preventDefault();
+                   $('.remove-button form').on('submit', function (e) {
+            e.preventDefault();
 
-                const $form = $(this);
-                const productId = $form.find('input[name="productId"]').val();
+            const $form = $(this);
+            const productId = $form.find('input[name="productId"]').val();
 
-                $.post($form.attr('action') || '/ShoppingCart/RemoveItem', $form.serialize())
-                    .done(function () {
-                        $('#row-' + productId).remove();
-                        updateCartTotal();
-                    })
-                    .fail(function () {
-                        alert('Xóa sản phẩm thất bại!');
-                        console.log(productId);
-                    });
-            });
+            $.post($form.attr('action') || '/ShoppingCart/RemoveItem', $form.serialize())
+                .done(function () {
+                    $('#row-' + productId).remove();
+                    updateCartTotal();
+
+                    // 👉 Nếu không còn sản phẩm nào, reload lại để Razor render giao diện giỏ hàng trống
+                    if ($('.product-row').length === 0) {
+                        location.reload();
+                    }
+                })
+                .fail(function () {
+                    alert('Xóa sản phẩm thất bại!');
+                    console.log(productId);
+                });
+        });
+
 
             // Khởi tạo tổng tiền lúc đầu
             updateCartTotal();
