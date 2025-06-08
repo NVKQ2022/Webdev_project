@@ -638,10 +638,22 @@
 
     // Clear Form
     function clearForm() {
-        document.getElementById("fullName").value = "";
-        document.getElementById("phone").value = "";
-        document.getElementById("addressLine").value = "";
-        document.getElementById("details").value = "";
+        const elements = ['fullName', 'phone', 'addressLine', 'details'];
+        elements.forEach(id => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.value = '';
+            }
+        });
+        
+        // Reset select elements if they exist
+        const selects = ['province', 'district', 'ward'];
+        selects.forEach(id => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.selectedIndex = 0;
+            }
+        });
     }
 
     // Số điện thoại đúng chuẩn
