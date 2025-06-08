@@ -285,7 +285,7 @@
                     <h5>@user.Username</h5>
                 </div>
                 <div>
-                    <a href="#" class="sidebar-link active" onclick="showSection('profile'); return false;">
+                   @*  <a href="#" class="sidebar-link active" onclick="showSection('profile'); return false;">
                         <i class="fas fa-user me-2"></i>
                         Thông tin tài khoản
                     </a>
@@ -296,7 +296,18 @@
                     <a href="#" class="sidebar-link" onclick="showSection('orderManagement'); return false;">
                         <i class="fas fa-shopping-bag me-2"></i>
                         Quản lý đơn hàng
+                    </a> *@
+
+                    <a href="#profile" class="sidebar-link">
+                        <i class="fas fa-user me-2"></i> Thông tin tài khoản
                     </a>
+                    <a href="#addressBook" class="sidebar-link">
+                        <i class="fas fa-map-marker-alt me-2"></i> Sổ địa chỉ
+                    </a>
+                    <a href="#orderManagement" class="sidebar-link">
+                        <i class="fas fa-shopping-bag me-2"></i> Quản lý đơn hàng
+                    </a>
+
                     <a href="#" class="sidebar-link">
                         <i class="fas fa-eye me-2"></i>
                         Sản phẩm đã xem
@@ -315,61 +326,6 @@
             <div id="profile" class="content-section active">
                 <div class="profile-main">
                     <h4 class="mb-4">Thông tin tài khoản</h4>
-@*                     <form>
-                        <div class="form-group">
-                            <label class="form-label">Họ Tên</label>
-                            <input type="text" class="form-control" value="@user.Username">
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Giới tính</label>
-                            <div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="gender" id="male" checked>
-                                    <label class="form-check-label" for="male">Nam</label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="gender" id="female">
-                                    <label class="form-check-label" for="female">Nữ</label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Số điện thoại</label>
-                            <input type="tel" class="form-control">
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Email</label>
-                            <div class="form-control-plaintext">@user.Email</div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Ngày sinh</label>
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <select class="form-select">
-                                        <option>01</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-4">
-                                    <select class="form-select">
-                                        <option>01</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-4">
-                                    <select class="form-select">
-                                        <option>2005</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <button type="submit" class="btn btn-purple">LƯU THAY ĐỔI</button>
-                    </form> *@
-
-
                     <form id="profileForm">
                         <input type="hidden" name="Id" value="@userDetail?.Id" />
 
@@ -564,7 +520,6 @@
                   
                 </div>
             </div>
-z
         </div>
     </div>
 </div>
@@ -602,28 +557,102 @@ z
 
 
 
-    function showSection(sectionId) {
-        // Hide all sections
-        document.querySelectorAll('.content-section').forEach(section => {
-            section.classList.remove('active');
-        });
+    // function showSection(sectionId) {
+    //     // Hide all sections
+    //     document.querySelectorAll('.content-section').forEach(section => {
+    //         section.classList.remove('active');
+    //     });
         
-        // Show selected section
-        const selectedSection = document.getElementById(sectionId);
-        if (selectedSection) {
-            selectedSection.classList.add('active');
+    //     // Show selected section
+    //     const selectedSection = document.getElementById(sectionId);
+    //     if (selectedSection) {
+    //         selectedSection.classList.add('active');
+    //     }
+        
+    //     // Update active state of sidebar links
+    //     document.querySelectorAll('.sidebar-link').forEach(link => {
+    //         link.classList.remove('active');
+    //     });
+        
+    //     const currentLink = document.querySelector(`.sidebar-link[onclick*="${sectionId}"]`);
+    //     if (currentLink) {
+    //         currentLink.classList.add('active');
+    //     }
+    // }
+
+
+
+
+    //NEW SELECTION
+       function showSection(sectionId) {
+            console.log("Trying to show:", sectionId);
+
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // Show the correct section
+            const selectedSection = document.getElementById(sectionId);
+            if (selectedSection) {
+                selectedSection.classList.add('active');
+            } else {
+                console.warn("Section not found:", sectionId);
+            }
+
+            // Update sidebar active state
+            document.querySelectorAll('.sidebar-link').forEach(link => {
+                const href = link.getAttribute('href');
+                if (href === `#${sectionId}`) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
         }
-        
-        // Update active state of sidebar links
+
+        // document.addEventListener("DOMContentLoaded", function () {
+        //     const hash = window.location.hash ? window.location.hash.substring(1) : "profile";
+        //     console.log("Page loaded with hash:", hash);
+        //     showSection(hash);
+
+        //     // Add click listeners to sidebar links
+        //     document.querySelectorAll('.sidebar-link').forEach(link => {
+        //         link.addEventListener('click', function (e) {
+        //             e.preventDefault();
+        //             const sectionId = this.getAttribute('href').substring(1);
+        //             showSection(sectionId);
+        //             history.pushState(null, "", `#${sectionId}`);
+        //         });
+        //     });
+        // });
+
+
+            window.addEventListener("load", function () {
+        const hash = window.location.hash ? window.location.hash.substring(1) : "profile";
+        console.log("Fully loaded, hash:", hash);
+        showSection(hash);
+
+        // Sidebar click listeners
         document.querySelectorAll('.sidebar-link').forEach(link => {
-            link.classList.remove('active');
+            link.addEventListener('click', function (e) {
+                e.preventDefault();
+                const sectionId = this.getAttribute('href').substring(1);
+                showSection(sectionId);
+                history.pushState(null, "", `#${sectionId}`);
+            });
         });
-        
-        const currentLink = document.querySelector(`.sidebar-link[onclick*="${sectionId}"]`);
-        if (currentLink) {
-            currentLink.classList.add('active');
-        }
-    }
+    });
+
+
+
+
+        // Optional: Handle browser back/forward navigation
+        window.addEventListener('popstate', function () {
+            const hash = window.location.hash ? window.location.hash.substring(1) : "profile";
+            showSection(hash);
+        });
+
 
     // Khởi tạo danh sách địa chỉ từ receiveInfos
     let addresses = [];
