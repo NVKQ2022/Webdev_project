@@ -4,6 +4,34 @@
     var quantity = 1;
 
     var product = ViewBag.Product;
+    var ratingDict = product.Rating as Dictionary<string, int> ?? new Dictionary<string, int>();
+    var starCounts = new[] {
+        ratingDict.ContainsKey("rate_5") ? ratingDict["rate_5"] : 0,
+        ratingDict.ContainsKey("rate_4") ? ratingDict["rate_4"] : 0,
+        ratingDict.ContainsKey("rate_3") ? ratingDict["rate_3"] : 0,
+        ratingDict.ContainsKey("rate_2") ? ratingDict["rate_2"] : 0,
+        ratingDict.ContainsKey("rate_1") ? ratingDict["rate_1"] : 0
+    };
+    var total = starCounts.Sum();
+    string[] starLabels = { "5 Sao", "4 Sao", "3 Sao", "2 Sao", "1 Sao" };
+
+
+    int totalVotes = 0;
+    int weightedSum = 0;
+
+    for (int i = 1; i <= 5; i++)
+    {
+        int count = ratingDict.ContainsKey($"rate_{i}") ? ratingDict[$"rate_{i}"] : 0;
+        totalVotes += count;
+        weightedSum += count * i;
+    }
+
+    double average = totalVotes > 0 ? Math.Round((double)weightedSum / totalVotes, 1) : 0;
+    int fullStars = (int)Math.Floor(average);
+    bool hasHalfStar = average - fullStars >= 0.5;
+    int emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+
+
     var availableStock = 0;
     if (product != null && product.Detail != null && product.Detail.ContainsKey("Kho") && product.Detail["Kho"] != null)
     {
@@ -47,6 +75,10 @@
     //     }
     // };
     List<Review> review = ViewBag.Reviews;
+    int countWithComment = review.Count(r => !string.IsNullOrWhiteSpace(r.Comment));
+    int countWithMedia = review.Count(r => r.MediaURLs != null && r.MediaURLs.Any());
+
+    int GetStarCount(int star) => ratingDict.ContainsKey($"rate_{star}") ? ratingDict[$"rate_{star}"] : 0;
 }
 
 <style>
@@ -455,18 +487,25 @@
         <div class="d-flex align-items-center gap-4">
             <!-- Điểm đánh giá trung bình -->
             <div class="text-center">
-                <div class="display-4 fw-bold" style="color: #6f42c1;">5.0</div>               
+                <div class="display-4 fw-bold" style="color: #6f42c1;">@average</div>
                 <div class="text-muted">trên 5</div>
                 <div class="mt-2">
-                    @for (int i = 1; i <= 5; i++)
+                    @for (int i = 0; i < fullStars; i++)
                     {
                         <i class="bi bi-star-fill text-warning"></i>
                     }
+                    @if (hasHalfStar)
+                    {
+                        <i class="bi bi-star-half text-warning"></i>
+                    }
+                    @for (int i = 0; i < emptyStars; i++)
+                    {
+                        <i class="bi bi-star text-muted"></i>
+                    }
                 </div>
             </div>
-
             <!-- Thống kê số lượng đánh giá theo sao (sẽ chỉnh lại sau để nhận trực tiếp dữ liệu) -->
-            <div class="flex-grow-1">
+            @* <div class="flex-grow-1">
                 <div class="d-flex align-items-center mb-1">
                     <span class="me-2">5 Sao</span>
                     <div class="progress flex-grow-1" style="height: 8px;">
@@ -502,19 +541,33 @@
                     </div>
                     <span class="ms-2">(2)</span>
                 </div>
+            </div> *@
+            <div class="flex-grow-1">
+                @for (int i = 0; i < 5; i++)
+                {
+                    var count = starCounts[i];
+                    var percentage = total > 0 ? (count * 100 / total) : 0;
+
+                    <div class="d-flex align-items-center mb-1">
+                        <span class="me-2">@starLabels[i]</span>
+                        <div class="progress flex-grow-1" style="height: 8px;">
+                            <div class="progress-bar bg-warning" style="width: @percentage%"></div>
+                        </div>
+                        <span class="ms-2">(@count)</span>
+                    </div>
+                }
             </div>
         </div>
 
         <!-- Filter buttons -->
         <div class="mt-4">
-            <button class="btn btn-outline-secondary me-2 mb-2">Tất Cả</button>
-            <button class="btn btn-outline-secondary me-2 mb-2">5 Sao (0)</button>
-            <button class="btn btn-outline-secondary me-2 mb-2">4 Sao (0)</button>
-            <button class="btn btn-outline-secondary me-2 mb-2">3 Sao (0)</button>
-            <button class="btn btn-outline-secondary me-2 mb-2">2 Sao (0)</button>
-            <button class="btn btn-outline-secondary me-2 mb-2">1 Sao (0)</button>
-            <button class="btn btn-outline-secondary me-2 mb-2">Có Bình Luận (0)</button>
-            <button class="btn btn-outline-secondary mb-2">Có Hình Ảnh / Video (0)</button>
+            <button class="btn btn-outline-secondary me-2 mb-2">Tất Cả (@review.Count)</button>
+            @for (int i = 5; i >= 1; i--)
+            {
+                <button class="btn btn-outline-secondary me-2 mb-2">@i Sao (@GetStarCount(i))</button>
+            }
+            <button class="btn btn-outline-secondary me-2 mb-2">Có Bình Luận (@countWithComment)</button>
+            <button class="btn btn-outline-secondary mb-2">Có Hình Ảnh / Video (@countWithMedia)</button>
         </div>
     </div>
 
