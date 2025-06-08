@@ -4,8 +4,8 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     User user = ViewBag.User;
     
-    var userDetail =ViewBag.UserDetail;
-    List<ReceiveInfo>? receiveInfos = userDetail.ReceiveInfo;
+    var userDetail = ViewBag.UserDetail;
+    List<ReceiveInfo>? receiveInfos = userDetail?.ReceiveInfo ?? new List<ReceiveInfo>();
     var notifi = ViewBag.Notifications;// fix to orders
 
     var orders = ViewBag.Orders;
@@ -382,11 +382,11 @@
                 <div class="profile-main">
                     <h4 class="mb-4">Thông tin tài khoản</h4>
                     <form id="profileForm">
-                        <input type="hidden" name="Id" value="@userDetail?.Id" />
+                        <input type="hidden" name="Id" value="@(userDetail?.Id ?? "")" />
 
                         <div class="form-group">
                             <label>Họ tên</label>
-                            <input type="text" name="Name" class="form-control" value="@userDetail?.Name" />
+                            <input type="text" name="Name" class="form-control" value="@(userDetail?.Name ?? "")" />
                         </div>
 
                         <div class="form-group">
@@ -403,12 +403,12 @@
 
                         <div class="form-group">
                             <label>Số điện thoại</label>
-                            <input type="tel" name="PhoneNumber" class="form-control" value="@userDetail?.PhoneNumber" />
+                            <input type="tel" name="PhoneNumber" class="form-control" value="@(userDetail?.PhoneNumber ?? "")" />
                         </div>
 
                         <div class="form-group">
                             <label>Ngày sinh</label>
-                            <input type="date" name="Birthday" class="form-control" value="@userDetail?.Birthday.ToString("yyyy-MM-dd")" />
+                            <input type="date" name="Birthday" class="form-control" value="@(userDetail?.Birthday.ToString("yyyy-MM-dd") ?? DateTime.Now.ToString("yyyy-MM-dd"))" />
                         </div>
 
                         <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
@@ -464,7 +464,7 @@
                                 <input type="text" id="fullName" name="name" placeholder="Họ và tên" class="input-field" value="@user.Username" required />
                             </div>
                             <div class="form-field">
-                                <input type="text" id="phone" name="phone" placeholder="Số điện thoại" class="input-field" value="@userDetail?.PhoneNumber" required />
+                                <input type="text" id="phone" name="phone" placeholder="Số điện thoại" class="input-field" value="@(userDetail?.PhoneNumber ?? "")" required />
                             </div>
                             <div class="form-field">
                                 <select id="province" class="input-field" onchange="loadDistricts()" required>
@@ -720,13 +720,16 @@
         showSection('profile');
         
         // Khởi tạo addresses từ receiveInfos
-        @foreach (var addr in receiveInfos)
+        @if (receiveInfos != null)
         {
-            @:addresses.push({
-                @:name: "@addr.Name",
-                @:phone: "@addr.Phone",
-                @:address: "@addr.Address"
-            @:});
+            foreach (var addr in receiveInfos)
+            {
+                @:addresses.push({
+                    @:name: "@addr.Name",
+                    @:phone: "@addr.Phone",
+                    @:address: "@addr.Address"
+                @:});
+            }
         }
         
         // Hiển thị danh sách địa chỉ ban đầu
