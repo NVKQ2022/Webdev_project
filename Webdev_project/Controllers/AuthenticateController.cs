@@ -235,6 +235,27 @@ namespace Webdev_project.Controllers
             ViewBag.Orders =orders;
             return View();
         }
+        public async Task<IActionResult> ProfileOld()
+        {
+
+
+            // Get user from session
+            var user = authenticationRepository.RetrieveFromSession(HttpContext.Request.Cookies["SessionId"]);
+
+            if (user == null)
+            {
+                return RedirectToAction("MyLogin", "Authenticate");
+            }
+
+            // Get user details
+            var userDetail = await userDetailRepository.GetUserDetailAsync(user.Id);
+            var receiveInfo = await userDetailRepository.GetReceiveInfoAsync(user.Id);
+            var orders = await orderRepository.GetOrdersByUserAsync(user.Id);
+            ViewBag.User = user;
+            ViewBag.UserDetail = userDetail;
+            ViewBag.Orders = orders;
+            return View();
+        }
 
 
         [HttpPost]
@@ -297,7 +318,7 @@ namespace Webdev_project.Controllers
                 // Add to database
                 await userDetailRepository.AddReceiveInfoAsync(user.Id, newReceiveInfo);
 
-                return Json(new { success = true });
+                return Json(new { success = true , ReceiveInfo = newReceiveInfo });
             }
             catch (Exception ex)
             {

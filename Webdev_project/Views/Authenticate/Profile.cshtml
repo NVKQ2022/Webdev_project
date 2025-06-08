@@ -5,7 +5,8 @@
     User user = ViewBag.User;
     
     var userDetail =ViewBag.UserDetail;
-    List<ReceiveInfo>? receiveInfos = userDetail.ReceiveInfo;
+    // List<ReceiveInfo>? receiveInfos = userDetail.ReceiveInfo;
+    List<ReceiveInfo>? receiveInfos = userDetail != null ? userDetail.ReceiveInfo : new List<ReceiveInfo>();
     var notifi = ViewBag.Notifications;// fix to orders
 
     var orders = ViewBag.Orders;
@@ -285,7 +286,9 @@
                     <h5>@user.Username</h5>
                 </div>
                 <div>
-                   @*  <a href="#" class="sidebar-link active" onclick="showSection('profile'); return false;">
+
+                   @*  BAN CU *@
+                    @* <a href="#" class="sidebar-link active" onclick="showSection('profile'); return false;">
                         <i class="fas fa-user me-2"></i>
                         Thông tin tài khoản
                     </a>
@@ -526,7 +529,7 @@
 
 <script>
 
-
+    //  ???
         document.getElementById("profileForm").addEventListener("submit", function (e) {
             e.preventDefault();
 
@@ -583,7 +586,7 @@
 
 
 
-    //NEW SELECTION
+    // NEW SELECTION
        function showSection(sectionId) {
             console.log("Trying to show:", sectionId);
 
@@ -611,21 +614,21 @@
             });
         }
 
-        // document.addEventListener("DOMContentLoaded", function () {
-        //     const hash = window.location.hash ? window.location.hash.substring(1) : "profile";
-        //     console.log("Page loaded with hash:", hash);
-        //     showSection(hash);
+        document.addEventListener("DOMContentLoaded", function () {
+            const hash = window.location.hash ? window.location.hash.substring(1) : "profile";
+            console.log("Page loaded with hash:", hash);
+            showSection(hash);
 
-        //     // Add click listeners to sidebar links
-        //     document.querySelectorAll('.sidebar-link').forEach(link => {
-        //         link.addEventListener('click', function (e) {
-        //             e.preventDefault();
-        //             const sectionId = this.getAttribute('href').substring(1);
-        //             showSection(sectionId);
-        //             history.pushState(null, "", `#${sectionId}`);
-        //         });
-        //     });
-        // });
+            // Add click listeners to sidebar links
+            document.querySelectorAll('.sidebar-link').forEach(link => {
+                link.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const sectionId = this.getAttribute('href').substring(1);
+                    showSection(sectionId);
+                    history.pushState(null, "", `#${sectionId}`);
+                });
+            });
+        });
 
 
             window.addEventListener("load", function () {
