@@ -242,12 +242,22 @@ namespace Webdev_project.Data
             await _userDetail.UpdateOneAsync(filter, update);
         }
 
+        public async Task InsertUserCategoriesAsync(int userId, List<string> categoryNames)
+        {
+            var categoryDict = categoryNames.ToDictionary(name => name, name => 0);
+
+            var filter = Builders<UserDetail>.Filter.Eq(u => u.UserId, userId);
+            var update = Builders<UserDetail>.Update.Set(u => u.Category, categoryDict);
+
+            await _userDetail.UpdateOneAsync(filter, update);
+        }
+
         public async Task UpdateCategoryScoreAsync(int userId, string categoryName, UserAction action)
         {
             int points = action switch
             {
-                UserAction.Click => 5,
-                UserAction.AddToCart => 10,
+                UserAction.Click => 50,
+                UserAction.AddToCart => 100,
                 UserAction.Purchase => 200,
                 UserAction.ClickCategory => 100,
                 _ => 0

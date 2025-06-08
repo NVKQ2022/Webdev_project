@@ -89,9 +89,11 @@ namespace Webdev_project.Controllers
                 ViewBag.Categories = categories;
                 ViewBag.SelectedCategory = category;
 
+                
                 if (category != null) 
                 {
-                    await userDetailRepository.UpdateCategoryScoreAsync(user.Id, category, UserAction.ClickCategory);
+                    
+                   // await userDetailRepository.UpdateCategoryScoreAsync(user.Id, category, UserAction.ClickCategory);
                 }
 
 
@@ -131,7 +133,7 @@ namespace Webdev_project.Controllers
 
 
         [HttpPost]
-        public IActionResult MyRegister(string email, string username, string password, string confirmPassword)
+        public async Task<IActionResult> MyRegister(string email, string username, string password, string confirmPassword)
         {
             if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(username) ||
                 string.IsNullOrWhiteSpace(password) || string.IsNullOrWhiteSpace(confirmPassword))
@@ -175,9 +177,11 @@ namespace Webdev_project.Controllers
 
             try
             {
+                var categories = await productRepository.GetAllCategoriesAsync();
                 authenticationRepository.AddUser(user);
                 authenticationRepository.UpdateCurrentUserId();
                 userDetailRepository.AddUserDetailAsync(userDetail);
+                userDetailRepository.InsertUserCategoriesAsync(user.Id, categories);
                 ViewBag.Message = "Đăng ký thành công! Bạn có thể đăng nhập.";
                 return RedirectToAction("MyLogin");
             }

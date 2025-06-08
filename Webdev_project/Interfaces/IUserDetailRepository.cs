@@ -35,6 +35,7 @@ namespace Webdev_project.Interfaces
         Task<List<ReceiveInfo>> GetReceiveInfoAsync(int userId);
         Task AddReceiveInfoAsync(int userId, ReceiveInfo newInfo);
         Task<bool> DeleteReceiveInfoAsync(int userId, ReceiveInfo targetInfo);
+        Task InsertUserCategoriesAsync(int userId, List<string> categoryNames);
         Task UpdateBankingInfoAsync(int userId, string newAccount, string newCard);
         Task UpdateCategoryScoreAsync(int userId, string categoryName, UserAction action);
         
