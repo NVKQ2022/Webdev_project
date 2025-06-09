@@ -38,6 +38,7 @@ namespace Webdev_project.Interfaces
         Task InsertUserCategoriesAsync(int userId, List<string> categoryNames);
         Task UpdateBankingInfoAsync(int userId, string newAccount, string newCard);
         Task UpdateCategoryScoreAsync(int userId, string categoryName, UserAction action);
-        
+
+        Task<List<UserDetail>> GetAllAsync();
     }
 }

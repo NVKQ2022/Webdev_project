@@ -70,5 +70,11 @@ namespace Webdev_project.Data
         {
             await _orders.DeleteOneAsync(o => o.OrderID == id);
         }
+
+        // Phần Admin
+        public async Task<List<Order>> GetAllOrdersAsync()
+        {
+            return await _orders.Find(_ => true).ToListAsync();
+        }
     }
 }

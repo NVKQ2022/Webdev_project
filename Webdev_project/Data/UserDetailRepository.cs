@@ -316,5 +316,10 @@ namespace Webdev_project.Data
             var update = Builders<UserDetail>.Update.Set(u => u.Category, user.Category);
             await _userDetail.UpdateOneAsync(u => u.UserId == userId, update);
         }
+
+        public async Task<List<UserDetail>> GetAllAsync()
+        {
+            return await _userDetail.Find(_ => true).ToListAsync();
+        }
     }
 }

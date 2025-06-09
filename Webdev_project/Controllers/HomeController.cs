@@ -15,14 +15,16 @@ namespace Webdev_project.Controllers
         private readonly IProductRepository productRepository;
         private readonly ICategoryRepository categoryRepository;
         private readonly IUserDetailRepository userDetailRepository;
+        private readonly IOrderRepository orderRepository;
 
-        public HomeController(ILogger<HomeController> logger, IAuthenticationRepository authenticationRepository, IProductRepository productRepository, ICategoryRepository categoryRepository, IUserDetailRepository userDetailRepository) : base(authenticationRepository)
+        public HomeController(ILogger<HomeController> logger, IAuthenticationRepository authenticationRepository, IProductRepository productRepository, ICategoryRepository categoryRepository, IUserDetailRepository userDetailRepository , IOrderRepository orderRepository) : base(authenticationRepository)
         {
             _logger = logger;
             this.authenticationRepository = authenticationRepository;
             this.productRepository = productRepository;
             this.categoryRepository = categoryRepository;
             this.userDetailRepository = userDetailRepository;
+            this.orderRepository = orderRepository;
         }
 
 
@@ -92,6 +94,41 @@ namespace Webdev_project.Controllers
 
         }
 
+        
+        [HttpGet]
+        public async Task<IActionResult> Test(string category)
+        {
+            ConverterHelper converterHelper = new ConverterHelper();
+
+            var categories = await productRepository.GetAllCategoriesAsync();
+            var products = string.IsNullOrEmpty(category)
+                ? new List<Product>()
+                : await productRepository.GetByCategoryAsync(category);
+
+            var categoryList = await categoryRepository.GetCategoriesSortedByBuyTimeAsync();
+            var userDetails = await userDetailRepository.GetAllAsync();
+            var orders = await orderRepository.GetAllOrdersAsync();
+            var allProducts = await productRepository.GetAllAsync(); // tất cả sản phẩm
+            var product_Zips = converterHelper.ConvertProductListToProductZipList(allProducts);
+
+            // Top 5 sản phẩm bán chạy
+            var topSellingProducts = product_Zips
+            .OrderByDescending(p => p.QuantitySold)
+            .Take(5)
+            .ToList(); 
+
+
+            ViewBag.TopSelling = topSellingProducts;
+            ViewBag.AllProducts = allProducts;
+            ViewBag.Categories = categories;
+            ViewBag.Products = products;
+            ViewBag.SelectedCategory = category;
+            ViewBag.CategoryList = categoryList;
+            ViewBag.UserDetails = userDetails;
+            ViewBag.Orders = orders;
+
+            return View();
+        }
 
 
 

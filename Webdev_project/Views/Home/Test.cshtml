@@ -1,1 +1,385 @@
-﻿
+﻿@using Webdev_project.Models
+@{
+    ViewData["Title"] = "Admin Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    List<Product> products = ViewBag.Products;
+    List<Product> allProducts = ViewBag.AllProducts;
+    List<string> categories = ViewBag.Categories;
+    string selectedCategory = ViewBag.SelectedCategory;
+    List<Category> categoryList = ViewBag.CategoryList;
+    List<Order> orders = ViewBag.Orders;
+    List<UserDetail> allDetails = ViewBag.UserDetails;
+    List<Product_zip> topSelling = ViewBag.TopSelling;
+
+}
+
+<style>
+    .tab-pane {
+        animation: fadeEffect 0.5s;
+    }
+
+    keyframes fadeEffect {
+        from
+
+    {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+
+    }
+
+    .table thead {
+        background-color: #6f42c1;
+        color: white;
+    }
+
+    .table th,
+    .table td {
+        text-align: center;
+        vertical-align: middle !important;
+    }
+
+    .dashboard-title {
+        color: #6f42c1;
+        font-weight: bold;
+    }
+
+    .nav-tabs .nav-link.active {
+        font-weight: 600;
+        background-color: #f8f9fa;
+        border-bottom: 2px solid #6f42c1;
+        color: #6f42c1;
+    }
+
+    .nav-tabs .nav-link:hover {
+        color: #5a32a3;
+    }
+
+    .tab-content {
+        background: #fff;
+        border: 1px solid #dee2e6;
+        border-top: none;
+        padding: 20px;
+        border-radius: 0 0 8px 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+
+    .img-thumb {
+        border-radius: 5px;
+        border: 1px solid #ccc;
+    }
+</style>
+
+<div class="container mt-4 mb-5">
+    <h2 class="dashboard-title mb-4">Admin Dashboard</h2>
+    <ul class="nav nav-tabs" id="adminTabs" role="tablist">
+        <li class="nav-item"><a class="nav-link @(string.IsNullOrEmpty(selectedCategory) ? "active" : "")" data-bs-toggle="tab" href="#tab1">Loại sản phẩm</a></li>
+        <li class="nav-item"><a class="nav-link @(!string.IsNullOrEmpty(selectedCategory) ? "active" : "")" data-bs-toggle="tab" href="#tab2">Sản phẩm</a></li>
+        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab3">Đơn hàng</a></li>
+        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab4">Khách hàng</a></li>
+        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab5">Thống kê</a></li>
+    </ul>
+
+    <div class="tab-content" id="adminTabContent">
+        <!-- Tab 1 -->
+        <div class="tab-pane fade show @(string.IsNullOrEmpty(selectedCategory) ? "active" : "")" id="tab1">
+            <h4 class="mb-3">Quản lý loại sản phẩm</h4>
+            <table class="table table-hover table-bordered align-middle">
+                <thead>
+                    <tr><th>Tên</th><th>Ảnh</th><th>Đã mua</th><th>Sản phẩm</th><th></th></tr>
+                </thead>
+                <tbody>
+                    @if (categoryList != null)
+                    {
+                        foreach (var category in categoryList)
+                        {
+                            <tr>
+                                <td>@category.CateName</td>
+                                <td><img src="@category.Image" alt="@category.CateName" width="60" /></td>
+                                <td>@category.BuyTime</td>
+                                <td>@category.ProductQuantity</td>
+                                <td>
+                                    <form method="get" asp-action="Test">
+                                        <input type="hidden" name="category" value="@category.CateName" />
+                                        <button type="submit" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr><td colspan="5">Không có dữ liệu danh mục.</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Tab 2 -->
+        <div class="tab-pane fade show @(!string.IsNullOrEmpty(selectedCategory) ? "active" : "")" id="tab2">
+            <h4 class="mb-3">Sản phẩm theo loại: @selectedCategory</h4>
+            <form method="get" asp-action="Test" class="mb-3">
+                <label for="category" class="form-label">Chọn loại sản phẩm:</label>
+                <select name="category" id="category" class="form-select w-auto d-inline-block" onchange="this.form.submit()">
+                    <option value="">-- Chọn --</option>
+                    @foreach (var cat in categories)
+                    {
+                        <option value="@cat" selected="@(cat == selectedCategory)">@cat</option>
+                    }
+                </select>
+            </form>
+
+            @if (!string.IsNullOrEmpty(selectedCategory) && products.Any())
+            {
+                <table class="table table-hover table-bordered align-middle">
+                    <thead><tr><th>ID</th><th>Tên</th><th>Mô tả</th><th>Giá</th><th>Màu sắc</th><th>Ảnh</th></tr></thead>
+                    <tbody>
+                        @foreach (var p in products)
+                        {
+                            <tr>
+                                <td>@p.ProductId</td>
+                                <td>@p.Name</td>
+                                <td>@p.Description</td>
+                                <td>@p.Price.ToString("C")</td>
+                                <td>
+                                    @foreach (var color in p.Color)
+                                    {
+                                        <span class="badge bg-secondary">@color</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (p.ImageURL?.Any() == true)
+                                    {
+                                        <img src="@p.ImageURL[0]" alt="Image" width="50" />
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else if (!string.IsNullOrEmpty(selectedCategory))
+            {
+                <p>Không có sản phẩm nào trong loại này.</p>
+            }
+            else
+            {
+                <p>Vui lòng chọn loại sản phẩm.</p>
+            }
+        </div>
+
+        <!-- Tab 3 -->
+        <div class="tab-pane fade" id="tab3">
+            <h4 class="mb-3">Quản lý đơn hàng</h4>
+
+            <ul class="nav nav-tabs mb-3" id="orderStatusTabs" role="tablist">
+                <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#all">Tất cả</a></li>
+                <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#Pending">Chờ thanh toán</a></li>
+                <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#Shipped">Vận chuyển</a></li>
+                <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#Delivering">Chờ giao hàng</a></li>
+                <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#Delivered">Hoàn thành</a></li>
+                <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#Cancelled">Đã huỷ</a></li>
+                <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#Refunded">Trả hàng/Hoàn tiền</a></li>
+            </ul>
+
+            <div class="tab-content">
+                @if (orders == null || !orders.Any())
+                {
+                    <div class="text-danger">Không có đơn hàng nào.</div>
+                }
+                else
+                {
+                    var statuses = new[] { "all", "Pending", "Shipped", "Delivering", "Delivered", "Cancelled", "Refunded" };
+                    foreach (var status in statuses)
+                    {
+                        var filteredOrders = status == "all" ? orders : orders.Where(o => o.Status == status);
+                        <div class="tab-pane fade @(status == "all" ? "show active" : "")" id="@status">
+                            @if (!filteredOrders.Any())
+                            {
+                                <div class="text-muted">Không có đơn hàng nào trong mục này.</div>
+                            }
+                            else
+                            {
+                                foreach (var order in filteredOrders)
+                                {
+                                    <div class="border rounded p-3 mb-4 bg-light">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <div>
+                                                <strong>Trạng thái:</strong> @order.Status<br />
+                                                <strong>Mã đơn hàng:</strong> @order.OrderID<br />
+                                                <span class="text-muted small">@order.CreatedAt.ToLocalTime().ToString("HH:mm dd-MM-yyyy")</span>
+                                            </div>
+                                            <div>
+                                                <a href="/Order/Detail/@order.OrderID" class="btn btn-outline-secondary btn-sm">Chi tiết</a>
+                                            </div>
+                                        </div>
+
+                                        @foreach (var item in order.Items)
+                                        {
+                                            <div class="d-flex align-items-start mb-3 ps-2">
+                                                <img src="@item.Image" width="80" height="80" class="me-3 rounded border" />
+                                                <div>
+                                                    <a href="/Product/Detail/@item.ProductID" class="fw-bold text-decoration-none">
+                                                        @item.ProductName
+                                                    </a>
+                                                    <div>Số lượng: @item.Quantity</div>
+                                                    <div>Giá mỗi cái: <strong>@item.UnitPrice.ToString("N0")₫</strong></div>
+                                                </div>
+                                            </div>
+                                        }
+
+                                        <div class="text-end mt-2">
+                                            <strong>Tổng cộng:</strong> @order.TotalAmount.ToString("N0")₫
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+
+        <!-- Tab 4 -->
+        <div class="tab-pane fade" id="tab4">
+            <h4 class="mb-3">Quản lý khách hàng</h4>
+            @if (allDetails == null)
+            {
+                <p class="text-danger">Không có dữ liệu khách hàng.</p>
+            }
+            else
+            {
+                <table class="table table-hover table-bordered align-middle">
+                    <thead><tr><th>ID</th><th>Tên</th><th>Giới tính</th><th>Ngày sinh</th><th>Số điện thoại</th></tr></thead>
+                    <tbody>
+                        @foreach (var detail in allDetails)
+                        {
+                            <tr>
+                                <td>@detail.UserId</td>
+                                <td>@detail.Name</td>
+                                <td>@detail.Gender</td>
+                                <td>@detail.Birthday.ToString("dd/MM/yyyy")</td>
+                                <td>@detail.PhoneNumber</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+
+        <!-- Tab 5: Thống kê doanh thu -->
+        <div class="tab-pane fade" id="tab5">
+            <h4 class="mb-3">Thống kê</h4>
+
+            <!-- Thống kê tổng quan -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card text-center shadow-sm p-3">
+                        <h6 class="text-muted">Loại sản phẩm</h6>
+                        <h3>@categoryList?.Count()</h3>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center shadow-sm p-3">
+                        <h6 class="text-muted">Sản phẩm</h6>
+                        <h3>@allProducts?.Count()</h3>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center shadow-sm p-3">
+                        <h6 class="text-muted">Đơn hàng</h6>
+                        <h3>@orders?.Count()</h3>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center shadow-sm p-3">
+                        <h6 class="text-muted">Khách hàng</h6>
+                        <h3>@allDetails?.Count()</h3>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Biểu đồ đơn hàng -->
+                <div class="col-md-6 mb-4">
+                    <canvas id="orderPieChart" style="max-height: 360px;"></canvas>
+                </div>
+
+                <!-- Biểu đồ doanh số (giả lập) -->
+                <div class="col-md-6 mb-4">
+                    <canvas id="barChart" style="max-height: 360px;"></canvas>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    @section Scripts {
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const pieCtx = document.getElementById('orderPieChart')?.getContext('2d');
+                const barCtx = document.getElementById('barChart')?.getContext('2d');
+
+                const statusCounts = {
+                    pending: @orders.Count(o => o.Status == "Pending"),
+                    success: @orders.Count(o => o.Status == "Delivered"),
+                    cancel: @orders.Count(o => o.Status == "Cancelled")
+                };
+
+                if (pieCtx) {
+                    new Chart(pieCtx, {
+                        type: 'pie',
+                        data: {
+                            labels: ['Chờ xử lý', 'Hoàn thành', 'Đã huỷ'],
+                            datasets: [{
+                                data: [statusCounts.pending, statusCounts.success, statusCounts.cancel],
+                                backgroundColor: ['#facc15', '#4ade80', '#f87171'],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: { position: 'bottom' },
+                                title: { display: true, text: 'Tỉ lệ đơn hàng theo trạng thái' }
+                            }
+                        }
+                    });
+                }
+
+                if (barCtx) {
+                new Chart(barCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: [@Html.Raw(string.Join(",", topSelling.Select(p => "\"" + p.Name + "\"")))],
+                        datasets: [{
+                            label: 'Số lượng đã bán',
+                            data: [@string.Join(",", topSelling.Select(p => p.QuantitySold))],
+                            backgroundColor: '#60a5fa'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { display: false },
+                            title: { display: true, text: 'Top sản phẩm bán chạy' }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                    suggestedMax: 200,
+                    ticks: { stepSize: 20 }
+                            }
+                        }
+                    }
+                });
+            }
+            });
+        </script>
+    }
+
+</div>

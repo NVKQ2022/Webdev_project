@@ -13,5 +13,7 @@ namespace Webdev_project.Interfaces
 
         Task<bool> CancelOrder(string orderId);
         Task<Order> ChooseProductToReview(string orderId);
+        Task<List<Order>> GetAllOrdersAsync();
+
     }
 }
