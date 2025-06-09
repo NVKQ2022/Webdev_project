@@ -58,8 +58,6 @@ namespace Webdev_project.Controllers
             string productId = form["productId"];
             string comment = form["comment"];
             int.TryParse(form["rating"], out int stars);
-
-
             // Replace with your logic to get the current user ID
             var user = authenticationRepository.RetrieveFromSession(HttpContext.Request.Cookies["SessionId"]);
 

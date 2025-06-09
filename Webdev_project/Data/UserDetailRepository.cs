@@ -266,10 +266,7 @@ namespace Webdev_project.Data
             var user = await _userDetail.Find(u => u.UserId == userId).FirstOrDefaultAsync();
             if (user == null) throw new Exception("User not found");
 
-            //// Initialize Category if null
-            //if (user.Category == null)
-            //    user.Category = new Dictionary<string, int>();
-
+            
             // Ensure Reset key exists
             if (!user.Category.ContainsKey("Reset"))
                 user.Category["Reset"] = 0;
