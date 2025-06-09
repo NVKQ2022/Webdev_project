@@ -6,6 +6,7 @@ using Webdev_project.Helpers;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver;
 using Webdev_project.Data;
+using MongoDB.Bson.Serialization.IdGenerators;
 namespace Webdev_project.Controllers
 {
     public class AuthenticateController : Controller
@@ -112,10 +113,13 @@ namespace Webdev_project.Controllers
         [HttpPost]
         public async Task<IActionResult>MyLogin(string email, string password)
         {
+            
             string? ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
             DateTime requestTime = DateTime.UtcNow;
             var userAgent =Request.Headers["User-Agent"].ToString();
-            User? user = authenticationRepository.AuthenticateUser(email, password);
+            string? salt= await authenticationRepository.GetSaltByEmailAsync(email);
+            string hashPassword = SecurityHelper.HashPassword(password, salt);
+            User? user = authenticationRepository.AuthenticateUser(email, hashPassword);
             if (user != null)
             {   
                 HttpContext.Response.Cookies.Append("SessionId", authenticationRepository.CreateSession(user, ipAddress, requestTime, userAgent));
@@ -181,7 +185,7 @@ namespace Webdev_project.Controllers
                 authenticationRepository.AddUser(user);
                 authenticationRepository.UpdateCurrentUserId();
                 await userDetailRepository.AddUserDetailAsync(userDetail);
-                await userDetailRepository.InsertUserCategoriesAsync(user.Id, categories);
+                await userDetailRepository.InsertUserCategoriesAsync(userDetail.UserId, categories);
                 ViewBag.Message = "Đăng ký thành công! Bạn có thể đăng nhập.";
                 return RedirectToAction("MyLogin");
             }

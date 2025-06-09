@@ -73,6 +73,28 @@ namespace Webdev_project.Data
             }
             return true;
         }
+
+        public async Task<string?> GetSaltByEmailAsync(string email)
+        {
+            const string query = "SELECT Salt FROM users WHERE Email = @Email";
+
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (SqlCommand command = new SqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@Email", email);
+
+                await connection.OpenAsync();
+                object? result = await command.ExecuteScalarAsync();
+
+                if (result != null && result != DBNull.Value)
+                {
+                    return result.ToString();
+                }
+
+                return null; // Email not found
+            }
+        }
+
         public User? AuthenticateUser(string email, string password)// done
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))

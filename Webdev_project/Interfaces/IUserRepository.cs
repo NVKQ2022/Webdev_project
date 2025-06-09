@@ -11,6 +11,7 @@ namespace Webdev_project.Interfaces
         int GetCurrentUserId();
 
         bool UpdateCurrentUserId();
+        Task<string?> GetSaltByEmailAsync(string email);
     }
 
 }
