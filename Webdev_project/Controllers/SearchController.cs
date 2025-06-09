@@ -14,10 +14,12 @@ public class SearchController : ControllerBase
 {
     //private readonly IMongoCollection<Product> _productsCollection;
     private readonly IProductRepository productRepository;
-    public SearchController(/*IMongoCollection<Product> productsCollection,*/ IProductRepository productRepository)
+    private readonly IUserDetailRepository userDetailRepository;
+    public SearchController( IProductRepository productRepository, IUserDetailRepository userDetailRepository)
     {
-    //    _productsCollection = productsCollection;
+        //    _productsCollection = productsCollection;
         this.productRepository = productRepository;
+        this.userDetailRepository = userDetailRepository;
     }
 
     public class ProductSuggestionDto
@@ -50,6 +52,7 @@ public class SearchController : ControllerBase
             URL = Url.Action("Detail", "Product", new { id = p.ProductId }) ?? $"/Product/Detail/{p.ProductId}"
         }).ToList();
 
+        
         return Ok(suggestions);
     }
 }

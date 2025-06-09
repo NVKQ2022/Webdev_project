@@ -567,11 +567,18 @@
                                 <div class="text-end mt-3">
                                     @if (order.Status == "Pending")
                                     {
-                                        <button class="btn btn-danger btn-sm">Huỷ đơn</button>
+                                       @*  <button class="btn btn-danger btn-sm">Huỷ đơn</button> *@
+                                        <form asp-action="CancelOrder" asp-controller="Payment" method="post">
+                                            <input type="hidden" name="orderId" value="@order.OrderID" />
+                                            <button type="submit" class="btn btn-danger btn-sm">Huỷ đơn</button>
+                                        </form>
                                     }
                                     else if (order.Status == "Delivered")
                                     {
-                                        <button class="btn btn-outline-primary btn-sm">Đánh giá sản phẩm</button>
+                                        <a asp-controller="Payment" asp-action="ChooseProductToReview" asp-route-orderId="@order.OrderID" class="btn btn-outline-primary btn-sm">
+                                            Đánh giá sản phẩm
+                                        </a>
+                                       @*  <button class="btn btn-outline-primary btn-sm">Đánh giá sản phẩm</button> *@
                                     }
                                 </div>
                             </div>

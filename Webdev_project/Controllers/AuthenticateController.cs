@@ -220,7 +220,8 @@ namespace Webdev_project.Controllers
 
             // Get user from session
             var user = authenticationRepository.RetrieveFromSession(HttpContext.Request.Cookies["SessionId"]);
-            
+            //var categories = await productRepository.GetAllCategoriesAsync();
+            //await userDetailRepository.InsertUserCategoriesAsync(user.Id, categories);
             if (user == null)
             {
                 return RedirectToAction("MyLogin", "Authenticate");

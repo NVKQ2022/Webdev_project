@@ -11,6 +11,7 @@ namespace Webdev_project.Interfaces
 
         Task DeleteOrderAsync(string id);
 
-
+        Task<bool> CancelOrder(string orderId);
+        Task<Order> ChooseProductToReview(string orderId);
     }
 }

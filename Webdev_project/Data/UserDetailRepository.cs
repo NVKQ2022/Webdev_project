@@ -266,9 +266,9 @@ namespace Webdev_project.Data
             var user = await _userDetail.Find(u => u.UserId == userId).FirstOrDefaultAsync();
             if (user == null) throw new Exception("User not found");
 
-            // Initialize Category if null
-            if (user.Category == null)
-                user.Category = new Dictionary<string, int>();
+            //// Initialize Category if null
+            //if (user.Category == null)
+            //    user.Category = new Dictionary<string, int>();
 
             // Ensure Reset key exists
             if (!user.Category.ContainsKey("Reset"))
@@ -306,9 +306,9 @@ namespace Webdev_project.Data
 
             int current = user.Category[categoryName];
 
-            if (categoryName != "Reset" && current < maxValue / 2)
+            if (categoryName != "Reset" && current < maxValue /*/ 2*/)
             {
-                int bonus = (int)Math.Floor(maxValue * 0.2); // 20% of highest
+                int bonus = (int)Math.Floor(maxValue * 0.25); // 25% of highest
                 user.Category[categoryName] += bonus;
             }
 

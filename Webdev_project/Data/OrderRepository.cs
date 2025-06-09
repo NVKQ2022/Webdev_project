@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using Webdev_project.Interfaces;
 using Webdev_project.Models;
@@ -31,6 +32,26 @@ namespace Webdev_project.Data
         {
             return await _orders.Find(o => o.UserID == userId).ToListAsync();
 
+        }
+
+        public async Task<bool> CancelOrder(string orderId)
+        {
+            var filter = Builders<Order>.Filter.Eq(o => o.OrderID, orderId);
+            var update = Builders<Order>.Update.Set(o => o.Status, "Cancelled");
+
+            await _orders.UpdateOneAsync(filter, update);
+
+            return true; // Replace with actual view name
+        }
+
+
+        public async Task<Order> ChooseProductToReview(string orderId)
+        {
+            var order = await _orders.Find(o => o.OrderID == orderId).FirstOrDefaultAsync();
+            if (order == null || order.Status != "Delivered")
+                return null;
+
+            return order; // Show the list of items in that order
         }
 
         public async Task AddOrderAsync(Order order)

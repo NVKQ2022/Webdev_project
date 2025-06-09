@@ -1,0 +1,14 @@
+﻿@model List<OrderItem>
+
+<h3>Chọn sản phẩm để đánh giá</h3>
+@foreach (var item in Model)
+{
+    <div class="mb-3">
+        <img src="@item.Image" width="100" />
+        <strong>@item.ProductName</strong>
+        <a href="@Url.Action("Detail", "Product", new { id = item.ProductID })" class="btn btn-primary btn-sm ms-2">
+            Đánh giá ngay
+        </a>
+    </div>
+}
+

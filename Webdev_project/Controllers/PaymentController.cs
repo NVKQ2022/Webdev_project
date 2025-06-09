@@ -10,13 +10,14 @@ using MongoDB.Bson;
 using System.Text.Json.Serialization;
 using Newtonsoft.Json.Linq;
 using static Webdev_project.Controllers.PaymentController;
+using MongoDB.Driver;
 
 namespace Webdev_project.Controllers
 {
     public class PaymentController : Controller
     {
         private readonly IAuthenticationRepository authenticationRepository;
-        private readonly IUserDetailRepository userDetailRepository; 
+        private readonly IUserDetailRepository userDetailRepository;
         private readonly IProductRepository productRepository;
         private readonly IOrderRepository orderRepository;
         public PaymentController(IAuthenticationRepository authenticationRepository, IUserDetailRepository userDetailRepository, IProductRepository productRepository, IOrderRepository orderRepository)
@@ -39,9 +40,9 @@ namespace Webdev_project.Controllers
             var items = Newtonsoft.Json.JsonConvert.DeserializeObject<List<CartItem>>(selectedItems);
             var address = await userDetailRepository.GetReceiveInfoAsync(user.Id);
 
-            foreach(var item in items)
+            foreach (var item in items)
             {
-                 string category = await productRepository.GetCategoryByProductIdAsync(item.ProductId);
+                string category = await productRepository.GetCategoryByProductIdAsync(item.ProductId);
                 userDetailRepository.UpdateCategoryScoreAsync(user.Id, category, UserAction.Purchase);
             }
             // Calculate total amount
@@ -227,6 +228,25 @@ namespace Webdev_project.Controllers
             {
                 return BadRequest(new { message = ex.Message });
             }
+        }
+
+
+
+
+
+        [HttpPost]
+        public async Task<IActionResult> CancelOrder(string orderId)
+        {
+            await orderRepository.CancelOrder(orderId);
+
+            return Redirect("/Authenticate/Profile#orderManagement");
+        }
+
+        public async Task<IActionResult> ChooseProductToReview(string orderId)
+        {
+            var order= await orderRepository.ChooseProductToReview(orderId);
+
+            return View(order.Items); // Show the list of items in that order
         }
 
     }

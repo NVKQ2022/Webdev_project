@@ -96,7 +96,7 @@ namespace Webdev_project.Controllers
                 var user = authenticationRepository.RetrieveFromSession(sessionId);
                 if (user != null)
                 {
-                    await userDetailRepository.UpdateCategoryScoreAsync(user.Id, CateName, UserAction.Click);
+                    await userDetailRepository.UpdateCategoryScoreAsync(user.Id, CateName, UserAction.ClickCategory);
                 }
             }
             // Search
