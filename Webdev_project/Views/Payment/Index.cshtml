@@ -1,11 +1,10 @@
 ﻿@model List<CartItem>
 
-
 @{
     ViewBag.Title = "Trang thanh toán";
     decimal total = 0;
     var user = ViewBag.User as Webdev_project.Models.User;
-    List<ReceiveInfo> receiveInfos= ViewBag.ReceiveInfos;
+    List<ReceiveInfo> receiveInfos = ViewBag.ReceiveInfos;
 }
 
 <head>
@@ -274,45 +273,49 @@
         @if (receiveInfos != null && receiveInfos.Any())
         {
             var defaultAddress = receiveInfos.First();
-            <strong>@defaultAddress.Name</strong> @defaultAddress.Phone
-            <span class="address-text">@defaultAddress.Address</span>
-            <span class="default-badge">Mặc định</span>
-            <a class="change-link" onclick="showAddressList()">Thay đổi</a>
+            <text>
+                <strong>@defaultAddress.Name</strong> - @defaultAddress.Phone
+                <span class="address-text">@defaultAddress.Address</span>
+                <span class="default-badge">Mặc định</span>
+                <a class="change-link" onclick="showAddressList()">Thay đổi</a>
+            </text>
         }
         else
         {
-            <p>Chưa có địa chỉ nhận hàng. Vui lòng thêm địa chỉ mới.</p>
-            <a class="change-link" onclick="showAddressList()">Thêm địa chỉ</a>
+            <text>
+                <p>Chưa có địa chỉ nhận hàng. Vui lòng thêm địa chỉ mới.</p>
+                <a class="change-link" onclick="showAddressList()">Thêm địa chỉ</a>
+            </text>
         }
     </div>
 
     <!-- Danh sách địa chỉ -->
     <div class="address-list hidden" id="addressList">
-         <h4 class="mb-4">Sổ địa chỉ</h4>
+        <h4 class="mb-4">Sổ địa chỉ</h4>
                     
-                    <!-- Existing Addresses -->
-                    <div class="address-list mb-4">
-                        @foreach (var address in receiveInfos)
+        <!-- Existing Addresses -->
+        <div class="address-list mb-4">
+            @foreach (var address in receiveInfos)
+            {
+                <label class="address-option">
+                    <input type="radio" name="selectedAddress" @(address == receiveInfos.First() ? "checked" : "") />
+                    <div>
+                        <strong>@address.Name</strong> - @address.Phone
+                        <div class="address-details">@address.Address</div>
+                        @if(address == receiveInfos.First())
                         {
-                            <label class="address-option">
-                                <input type="radio" name="selectedAddress" @(address == receiveInfos.First() ? "checked" : "") />
-                                <div>
-                                    <strong>@address.Name</strong> - @address.Phone
-                                    <div class="address-details">@address.Address</div>
-                                    @if(address == receiveInfos.First())
-                                    {
-                                        <span class="default-badge">Mặc định</span>
-                                    }
-                                </div>
-                            </label>
+                            <span class="default-badge">Mặc định</span>
                         }
                     </div>
+                </label>
+            }
+        </div>
 
         <div id="additionalAddresses"></div>
 
         <button class="add-address-btn" onclick="showAddForm()">+ Thêm địa chỉ mới</button>
 
-        <!-- Thêm địa chỉ mới -->
+        <!-- Form thêm địa chỉ mới -->
         <div class="new-address-form hidden" id="newAddressForm">
             <div class="form-field">
                 <input type="text" id="fullName" placeholder="Họ và tên" class="input-field" />
@@ -415,383 +418,387 @@
     </div>
 }
 
-<!-- Thêm thư viện Leaflet và Geosearch -->
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous"></script>
-<script src="https://unpkg.com/leaflet-geosearch@3.11.0/dist/bundle.min.js"></script>
+@section Scripts {
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/leaflet-geosearch@3.11.0/dist/bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            let map;
+            let marker;
+            const provider = new GeoSearch.OpenStreetMapProvider();
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        let map;
-        let marker;
-        const provider = new GeoSearch.OpenStreetMapProvider();
+            // Xử lý form submit
+            document.getElementById('paymentForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
 
-        // Xử lý form submit
-        document.getElementById('paymentForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-
-            // Lấy thông tin địa chỉ
-            const addressElement = document.querySelector('.address-text');
-            const nameElement = document.querySelector('#currentAddress strong');
-            const phoneElement = document.querySelector('#currentAddress').textContent.match(/(\d+)/g);
-
-            if (!addressElement || !nameElement || !phoneElement) {
-                alert('Vui lòng chọn địa chỉ nhận hàng');
-                return;
-            }
-
-            // Lấy thông tin sản phẩm
-            const cartItems = [];
-            document.querySelectorAll('.payment-table tbody tr').forEach(row => {
-                const item = {
-                    ProductID: row.getAttribute('data-product-id'),
-                    ProductName: row.cells[1].textContent.trim(),
-                    Image: row.cells[0].querySelector('img').src,
-                    Quantity: parseInt(row.cells[2].textContent),
-                    UnitPrice: parseInt(row.cells[3].textContent.replace(/[^\d]/g, ''))
-                };
-                cartItems.push(item);
-            });
-
-            // Tạo object chứa toàn bộ thông tin đơn hàng
-            const orderData = {
-                UserID: @(ViewBag.User?.Id ?? 0),
-                Items: cartItems,
-                TotalAmount: @ViewBag.TotalAmount,
-                PaymentMethod: document.getElementById('paymentMethod').value,
-                Status: "Pending",
-                CreatedAt: new Date().toISOString(), // ✅ ISO string, safe for C#
-                ReceiveInfo: {
-                    Name: nameElement.textContent.trim(),
-                    Phone: document.getElementById('phone').value.trim(),  // ✅ make sure this element exists
-                    Address: addressElement.textContent.trim()
-                }
-            };
-
-            try {
-                const response = await fetch('/Payment/ProcessOrder', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(orderData)
-                });
-
-                if (response.ok) {
-                    const result = await response.json();
-                    if (result.success) {
-                        window.location.href = result.redirectUrl;
-                    } else {
-                        alert('Có lỗi xảy ra khi xử lý đơn hàng');
-                    }
-                } else {
-                    const error = await response.json();
-                    alert(error.message || 'Có lỗi xảy ra khi xử lý đơn hàng');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Có lỗi xảy ra khi gửi đơn hàng');
-            }
-        });
-
-        async function initMap() {
-            try {
-                // Khởi tạo bản đồ với vị trí mặc định trước
-                const defaultLocation = [10.8231, 106.6297]; // TP.HCM
-                map = L.map('map', {
-                    center: defaultLocation,
-                    zoom: 15,
-                    scrollWheelZoom: false
-                });
-
-                // Thêm layer OpenStreetMap
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    maxZoom: 19,
-                    attribution: '© OpenStreetMap contributors'
-                }).addTo(map);
-
-                // Thêm marker
-                marker = L.marker(defaultLocation).addTo(map);
-
-                // Fix cho vấn đề render và cập nhật vị trí ban đầu
-                setTimeout(async () => {
-                    map.invalidateSize();
-                    
-                    // Lấy địa chỉ hiện tại
-                    const addressElement = document.querySelector('.address-text');
-                    if (addressElement) {
-                        const address = addressElement.textContent + ', Vietnam';
-                        console.log('Địa chỉ ban đầu:', address);
-                        
-                        const results = await provider.search({ query: address });
-                        if (results.length > 0) {
-                            const { x: lng, y: lat } = results[0];
-                            console.log('Tọa độ ban đầu:', lat, lng);
-                            map.setView([lat, lng], 15);
-                            marker.setLatLng([lat, lng]);
-                            marker.bindPopup(addressElement.textContent).openPopup();
-                        }
-                    }
-                }, 100);
-
-            } catch (error) {
-                console.error('Lỗi khởi tạo bản đồ:', error);
-            }
-        }
-
-        // Hàm cập nhật vị trí trên bản đồ
-        async function updateMapFromAddress(address) {
-            if (!address) {
+                // Lấy thông tin địa chỉ
                 const addressElement = document.querySelector('.address-text');
-                if (!addressElement) return;
-                address = addressElement.textContent;
-            }
+                const nameElement = document.querySelector('#currentAddress strong');
+                const currentAddressText = document.querySelector('#currentAddress').textContent;
+                const phoneMatch = currentAddressText.match(/- (\d+)/);
+                const phone = phoneMatch ? phoneMatch[1].trim() : '';
 
-            // Thêm ', Vietnam' nếu chưa có
-            if (!address.toLowerCase().includes('vietnam')) {
-                address += ', Vietnam';
-            }
-
-            console.log('Đang cập nhật địa chỉ:', address);
-
-            try {
-                const results = await provider.search({ query: address });
-                console.log('Kết quả tìm kiếm:', results);
-                
-                if (results.length > 0) {
-                    const { x: lng, y: lat } = results[0];
-                    console.log('Tọa độ mới:', lat, lng);
-                    
-                    // Sử dụng flyTo để có animation
-                    map.flyTo([lat, lng], 15, {
-                        duration: 1.5
-                    });
-                    marker.setLatLng([lat, lng]);
-                    marker.bindPopup(address.replace(', Vietnam', '')).openPopup();
+                if (!addressElement || !nameElement || !phone) {
+                    if (!document.querySelector('#currentAddress .address-text')) {
+                        alert('Vui lòng chọn địa chỉ nhận hàng');
+                        return;
+                    }
                 }
-            } catch (error) {
-                console.error('Không thể tìm thấy địa chỉ:', error);
-            }
-        }
 
-        // Chọn và cập nhật địa chỉ mới
-        async function selectAddress() {
-            const selectedRadio = document.querySelector('input[name="selectedAddress"]:checked');
-            if (!selectedRadio) {
-                alert("Vui lòng chọn một địa chỉ!");
-                return;
-            }
+                // Lấy thông tin sản phẩm
+                const cartItems = [];
+                document.querySelectorAll('.payment-table tbody tr').forEach(row => {
+                    const item = {
+                        ProductID: row.getAttribute('data-product-id'),
+                        ProductName: row.cells[1].textContent.trim(),
+                        Image: row.cells[0].querySelector('img').src,
+                        Quantity: parseInt(row.cells[2].textContent),
+                        UnitPrice: parseInt(row.cells[3].textContent.replace(/[^\d]/g, ''))
+                    };
+                    cartItems.push(item);
+                });
 
-            // Lấy thông tin địa chỉ
-            const addressOption = selectedRadio.parentElement;
-            const nameElement = addressOption.querySelector("strong");
-            const addressDetails = addressOption.querySelector(".address-details");
+                // Tạo object chứa toàn bộ thông tin đơn hàng
+                const orderData = {
+                    UserID: @(ViewBag.User?.Id ?? 0),
+                    Items: cartItems,
+                    TotalAmount: @ViewBag.TotalAmount,
+                    PaymentMethod: document.getElementById('paymentMethod').value,
+                    Status: "Pending",
+                    CreatedAt: new Date().toISOString(),
+                    ReceiveInfo: {
+                        Name: nameElement.textContent.trim(),
+                        Phone: phone,
+                        Address: addressElement.textContent.trim()
+                    }
+                };
 
-            if (!nameElement || !addressDetails) {
-                alert("Không thể lấy thông tin địa chỉ.");
-                return;
-            }
+                try {
+                    const response = await fetch('/Payment/ProcessOrder', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(orderData)
+                    });
 
-            const name = nameElement.textContent;
-            const phone = addressOption.textContent.split('-')[1].trim().split('\n')[0];
-            const address = addressDetails.textContent;
-
-            // Cập nhật hiển thị
-            document.getElementById("currentAddress").innerHTML = `
-                <strong>${name}</strong> (${phone})
-                <span class="address-text">${address}</span>
-                <a class="change-link" onclick="showAddressList()">Thay đổi</a>
-            `;
-
-            // Cập nhật vị trí trên bản đồ với địa chỉ mới
-            await updateMapFromAddress(address);
-            hideAddressList();
-        }
-
-        // Gán các hàm vào window để có thể gọi từ onclick
-        window.selectAddress = selectAddress;
-        window.updateMapFromAddress = updateMapFromAddress;
-
-        // Khởi tạo bản đồ
-        initMap();
-    });
-
-    // Ẩn/Hiện danh sách địa chỉ người nhận
-    function showAddressList() {
-        document.getElementById("addressList").classList.remove("hidden");
-    }
-
-    function hideAddressList() {
-        document.getElementById("addressList").classList.add("hidden");
-    }
-
-	// Ẩn/hiện form thêm địa chỉ mới
-    function showAddForm() {
-        document.getElementById("newAddressForm").classList.remove("hidden");
-        document.querySelector(".add-address-btn").classList.add("hidden");
-    }
-
-    function hideAddForm() {
-        document.getElementById("newAddressForm").classList.add("hidden");
-        document.querySelector(".add-address-btn").classList.remove("hidden");
-        clearForm();
-    }
-
-    // Clear Form
-    function clearForm() {
-        const elements = ['fullName', 'phone', 'addressLine', 'details'];
-        elements.forEach(id => {
-            const element = document.getElementById(id);
-            if (element) {
-                element.value = '';
-            }
-        });
-        
-        // Reset select elements if they exist
-        const selects = ['province', 'district', 'ward'];
-        selects.forEach(id => {
-            const element = document.getElementById(id);
-            if (element) {
-                element.selectedIndex = 0;
-            }
-        });
-    }
-
-    // Số điện thoại đúng chuẩn
-    function isValidPhone(phone) {
-        return /^\d{10}$/.test(phone);
-    }
-
-    // Thêm địa chỉ
-    async function addAddress() {
-        const name = document.getElementById("fullName").value.trim();
-        const phone = document.getElementById("phone").value.trim();
-        const province = document.getElementById("province").options[document.getElementById("province").selectedIndex].text;
-        const district = document.getElementById("district").options[document.getElementById("district").selectedIndex].text;
-        const ward = document.getElementById("ward").value;
-        const details = document.getElementById("details").value.trim();
-
-        if (!name || !phone || !province || !district || !ward || !details) {
-            alert("Vui lòng nhập đầy đủ thông tin địa chỉ.");
-            return;
-        }
-		if (!isValidPhone(phone)) {
-			alert("Số điện thoại không hợp lệ. Vui lòng nhập lại.");
-			return;
-		}
-        const fullAddress = `${details}, ${ward}, ${district}, ${province}`;
-
-        try {
-            const response = await fetch('/Authenticate/AddAddress', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: `name=${encodeURIComponent(name)}&phone=${encodeURIComponent(phone)}&address=${encodeURIComponent(fullAddress)}`
+                    if (response.ok) {
+                        const result = await response.json();
+                        if (result.success) {
+                            window.location.href = result.redirectUrl;
+                        } else {
+                            alert('Có lỗi xảy ra khi xử lý đơn hàng');
+                        }
+                    } else {
+                        const error = await response.json();
+                        alert(error.message || 'Có lỗi xảy ra khi xử lý đơn hàng');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Có lỗi xảy ra khi gửi đơn hàng');
+                }
             });
 
-            const result = await response.json();
-            console.log('Response:', result);
+            async function initMap() {
+                try {
+                    // Khởi tạo bản đồ với vị trí mặc định trước
+                    const defaultLocation = [10.8231, 106.6297]; // TP.HCM
+                    map = L.map('map', {
+                        center: defaultLocation,
+                        zoom: 15,
+                        scrollWheelZoom: false
+                    });
 
-            if (result.success) {
-                // Thêm địa chỉ mới vào danh sách hiển thị
-                const newAddressHTML = `
-                    <label class="address-option">
-                        <input type="radio" name="selectedAddress" checked />
-                        <div>
-                            <strong>${name}</strong> - ${phone}
-                            <div class="address-details">${fullAddress}</div>
-                        </div>
-                    </label>
-                `;
-                document.getElementById("additionalAddresses").insertAdjacentHTML('beforeend', newAddressHTML);
-                
-                // Cập nhật địa chỉ hiện tại
+                    // Thêm layer OpenStreetMap
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        maxZoom: 19,
+                        attribution: '© OpenStreetMap contributors'
+                    }).addTo(map);
+
+                    // Thêm marker
+                    marker = L.marker(defaultLocation).addTo(map);
+
+                    // Fix cho vấn đề render và cập nhật vị trí ban đầu
+                    setTimeout(async () => {
+                        map.invalidateSize();
+                        
+                        // Lấy địa chỉ hiện tại
+                        const addressElement = document.querySelector('.address-text');
+                        if (addressElement) {
+                            const address = addressElement.textContent + ', Vietnam';
+                            console.log('Địa chỉ ban đầu:', address);
+                            
+                            const results = await provider.search({ query: address });
+                            if (results.length > 0) {
+                                const { x: lng, y: lat } = results[0];
+                                console.log('Tọa độ ban đầu:', lat, lng);
+                                map.setView([lat, lng], 15);
+                                marker.setLatLng([lat, lng]);
+                                marker.bindPopup(addressElement.textContent).openPopup();
+                            }
+                        }
+                    }, 100);
+
+                } catch (error) {
+                    console.error('Lỗi khởi tạo bản đồ:', error);
+                }
+            }
+
+            // Hàm cập nhật vị trí trên bản đồ
+            async function updateMapFromAddress(address) {
+                if (!address) {
+                    const addressElement = document.querySelector('.address-text');
+                    if (!addressElement) return;
+                    address = addressElement.textContent;
+                }
+
+                // Thêm ', Vietnam' nếu chưa có
+                if (!address.toLowerCase().includes('vietnam')) {
+                    address += ', Vietnam';
+                }
+
+                console.log('Đang cập nhật địa chỉ:', address);
+
+                try {
+                    const results = await provider.search({ query: address });
+                    console.log('Kết quả tìm kiếm:', results);
+                    
+                    if (results.length > 0) {
+                        const { x: lng, y: lat } = results[0];
+                        console.log('Tọa độ mới:', lat, lng);
+                        
+                        // Sử dụng flyTo để có animation
+                        map.flyTo([lat, lng], 15, {
+                            duration: 1.5
+                        });
+                        marker.setLatLng([lat, lng]);
+                        marker.bindPopup(address.replace(', Vietnam', '')).openPopup();
+                    }
+                } catch (error) {
+                    console.error('Không thể tìm thấy địa chỉ:', error);
+                }
+            }
+
+            // Chọn và cập nhật địa chỉ mới
+            async function selectAddress() {
+                const selectedRadio = document.querySelector('input[name="selectedAddress"]:checked');
+                if (!selectedRadio) {
+                    alert("Vui lòng chọn một địa chỉ!");
+                    return;
+                }
+
+                // Lấy thông tin địa chỉ
+                const addressOption = selectedRadio.parentElement;
+                const nameElement = addressOption.querySelector("strong");
+                const phoneElement = addressOption.textContent.split('-')[1];
+                const addressDetails = addressOption.querySelector(".address-details");
+
+                if (!nameElement || !addressDetails || !phoneElement) {
+                    alert("Không thể lấy thông tin địa chỉ.");
+                    return;
+                }
+
+                const name = nameElement.textContent;
+                const phone = phoneElement.trim();
+                const address = addressDetails.textContent;
+
+                // Cập nhật hiển thị
                 document.getElementById("currentAddress").innerHTML = `
-                    <strong>${name}</strong> ${phone}
-                    <span class="address-text">${fullAddress}</span>
+                    <strong>${name}</strong> - ${phone}
+                    <span class="address-text">${address}</span>
                     <a class="change-link" onclick="showAddressList()">Thay đổi</a>
                 `;
 
-                // Cập nhật vị trí trên bản đồ
-                await updateMapFromAddress(fullAddress);
-                
-                hideAddForm();
+                // Cập nhật vị trí trên bản đồ với địa chỉ mới
+                await updateMapFromAddress(address);
                 hideAddressList();
-                alert('Thêm địa chỉ thành công!');
-            } else {
-                throw new Error(result.message || 'Không thể thêm địa chỉ');
             }
-        } catch (error) {
-            console.error('Error:', error);
-            alert("Có lỗi xảy ra khi thêm địa chỉ. Vui lòng thử lại.");
+
+            // Gán các hàm vào window để có thể gọi từ onclick
+            window.selectAddress = selectAddress;
+            window.updateMapFromAddress = updateMapFromAddress;
+
+            // Khởi tạo bản đồ
+            initMap();
+        });
+
+        // Ẩn/Hiện danh sách địa chỉ người nhận
+        function showAddressList() {
+            document.getElementById("addressList").classList.remove("hidden");
         }
-    }
 
-	// Tải danh sách tỉnh/thành phố
-    const apiBase = "https://provinces.open-api.vn/api";
+        function hideAddressList() {
+            document.getElementById("addressList").classList.add("hidden");
+        }
 
-    window.onload = function () {
-        fetch(`${apiBase}/p/`)
-            .then(res => res.json())
-            .then(data => {
-                const provinceSelect = document.getElementById("province");
-                data.forEach(province => {
-                    const option = document.createElement("option");
-                    option.value = province.code;
-                    option.textContent = province.name;
-                    provinceSelect.appendChild(option);
-                });
+        // Ẩn/hiện form thêm địa chỉ mới
+        function showAddForm() {
+            document.getElementById("newAddressForm").classList.remove("hidden");
+            document.querySelector(".add-address-btn").classList.add("hidden");
+        }
+
+        function hideAddForm() {
+            document.getElementById("newAddressForm").classList.add("hidden");
+            document.querySelector(".add-address-btn").classList.remove("hidden");
+            clearForm();
+        }
+
+        // Clear Form
+        function clearForm() {
+            const elements = ['fullName', 'phone', 'addressLine', 'details'];
+            elements.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.value = '';
+                }
             });
-    };
-
-    function loadDistricts() {
-        const provinceCode = document.getElementById("province").value;
-        const districtSelect = document.getElementById("district");
-        const wardSelect = document.getElementById("ward");
-        districtSelect.innerHTML = '<option value="">Chọn Quận/Huyện</option>';
-        wardSelect.innerHTML = '<option value="">Chọn Phường/Xã</option>';
-
-        if (!provinceCode) return;
-
-        fetch(`${apiBase}/p/${provinceCode}?depth=2`)
-            .then(res => res.json())
-            .then(data => {
-                data.districts.forEach(district => {
-                    const option = document.createElement("option");
-                    option.value = district.code;
-                    option.textContent = district.name;
-                    districtSelect.appendChild(option);
-                });
+            
+            // Reset select elements if they exist
+            const selects = ['province', 'district', 'ward'];
+            selects.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.selectedIndex = 0;
+                }
             });
-    }
+        }
 
-    function loadWards() {
-        const districtCode = document.getElementById("district").value;
-        const wardSelect = document.getElementById("ward");
-        wardSelect.innerHTML = '<option value="">Chọn Phường/Xã</option>';
+        // Số điện thoại đúng chuẩn
+        function isValidPhone(phone) {
+            return /^\d{10}$/.test(phone);
+        }
 
-        if (!districtCode) return;
+        // Thêm địa chỉ
+        async function addAddress() {
+            const name = document.getElementById("fullName").value.trim();
+            const phone = document.getElementById("phone").value.trim();
+            const province = document.getElementById("province").options[document.getElementById("province").selectedIndex].text;
+            const district = document.getElementById("district").options[document.getElementById("district").selectedIndex].text;
+            const ward = document.getElementById("ward").value;
+            const details = document.getElementById("details").value.trim();
 
-        fetch(`${apiBase}/d/${districtCode}?depth=2`)
-            .then(res => res.json())
-            .then(data => {
-                data.wards.forEach(ward => {
-                    const option = document.createElement("option");
-                    option.value = ward.name;
-                    option.textContent = ward.name;
-                    wardSelect.appendChild(option);
+            if (!name || !phone || !province || !district || !ward || !details) {
+                alert("Vui lòng nhập đầy đủ thông tin địa chỉ.");
+                return;
+            }
+            if (!isValidPhone(phone)) {
+                alert("Số điện thoại không hợp lệ. Vui lòng nhập lại.");
+                return;
+            }
+            const fullAddress = `${details}, ${ward}, ${district}, ${province}`;
+
+            try {
+                const response = await fetch('/Authenticate/AddAddress', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `name=${encodeURIComponent(name)}&phone=${encodeURIComponent(phone)}&address=${encodeURIComponent(fullAddress)}`
                 });
-            });
-    }
 
-	// Chọn phương thức thanh toán
-    function selectPaymentMethod(button, method) {
-        document.querySelectorAll(".payment-option").forEach(btn => btn.classList.remove("active"));
-        button.classList.add("active");
-        document.getElementById("paymentMethod").value = method;
-    }
+                const result = await response.json();
+                console.log('Response:', result);
 
-</script>
+                if (result.success) {
+                    // Thêm địa chỉ mới vào danh sách hiển thị
+                    const newAddressHTML = `
+                        <label class="address-option">
+                            <input type="radio" name="selectedAddress" checked />
+                            <div>
+                                <strong>${name}</strong> - ${phone}
+                                <div class="address-details">${fullAddress}</div>
+                            </div>
+                        </label>
+                    `;
+                    document.getElementById("additionalAddresses").insertAdjacentHTML('beforeend', newAddressHTML);
+                    
+                    // Cập nhật địa chỉ hiện tại
+                    document.getElementById("currentAddress").innerHTML = `
+                        <strong>${name}</strong> - ${phone}
+                        <span class="address-text">${fullAddress}</span>
+                        <a class="change-link" onclick="showAddressList()">Thay đổi</a>
+                    `;
+
+                    // Cập nhật vị trí trên bản đồ
+                    await updateMapFromAddress(fullAddress);
+                    
+                    hideAddForm();
+                    hideAddressList();
+                    alert('Thêm địa chỉ thành công!');
+                } else {
+                    throw new Error(result.message || 'Không thể thêm địa chỉ');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert("Có lỗi xảy ra khi thêm địa chỉ. Vui lòng thử lại.");
+            }
+        }
+
+        // Tải danh sách tỉnh/thành phố
+        const apiBase = "https://provinces.open-api.vn/api";
+
+        window.onload = function () {
+            fetch(`${apiBase}/p/`)
+                .then(res => res.json())
+                .then(data => {
+                    const provinceSelect = document.getElementById("province");
+                    data.forEach(province => {
+                        const option = document.createElement("option");
+                        option.value = province.code;
+                        option.textContent = province.name;
+                        provinceSelect.appendChild(option);
+                    });
+                });
+        };
+
+        function loadDistricts() {
+            const provinceCode = document.getElementById("province").value;
+            const districtSelect = document.getElementById("district");
+            const wardSelect = document.getElementById("ward");
+            districtSelect.innerHTML = '<option value="">Chọn Quận/Huyện</option>';
+            wardSelect.innerHTML = '<option value="">Chọn Phường/Xã</option>';
+
+            if (!provinceCode) return;
+
+            fetch(`${apiBase}/p/${provinceCode}?depth=2`)
+                .then(res => res.json())
+                .then(data => {
+                    data.districts.forEach(district => {
+                        const option = document.createElement("option");
+                        option.value = district.code;
+                        option.textContent = district.name;
+                        districtSelect.appendChild(option);
+                    });
+                });
+        }
+
+        function loadWards() {
+            const districtCode = document.getElementById("district").value;
+            const wardSelect = document.getElementById("ward");
+            wardSelect.innerHTML = '<option value="">Chọn Phường/Xã</option>';
+
+            if (!districtCode) return;
+
+            fetch(`${apiBase}/d/${districtCode}?depth=2`)
+                .then(res => res.json())
+                .then(data => {
+                    data.wards.forEach(ward => {
+                        const option = document.createElement("option");
+                        option.value = ward.name;
+                        option.textContent = ward.name;
+                        wardSelect.appendChild(option);
+                    });
+                });
+        }
+
+        // Chọn phương thức thanh toán
+        function selectPaymentMethod(button, method) {
+            document.querySelectorAll(".payment-option").forEach(btn => btn.classList.remove("active"));
+            button.classList.add("active");
+            document.getElementById("paymentMethod").value = method;
+        }
+    </script>
+}
 
 <!-- 
     Leaflet: Thư viện bản đồ chính
