@@ -58,8 +58,14 @@ namespace Webdev_project.Controllers
         public async Task<IActionResult> RemoveItem(string productId)
         {
             string sessionId = Request.Cookies["SessionId"];
-            var userId = authenticationRepository.RetrieveFromSession(sessionId).Id;
-
+            
+            var user = authenticationRepository.RetrieveFromSession(HttpContext.Request.Cookies["sessionId"]);
+            
+            if (user == null)
+            {
+                return RedirectToAction("MyLogin", "Authenticate");
+            }
+            var userId = user.Id;
             await userDetailRepository.RemoveCartItemAsync(userId, productId);
             string? cartItemNumberStr = HttpContext.Request.Cookies["CartItemNumber"];
             int cartItemNumber = 0;

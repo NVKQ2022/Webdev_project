@@ -55,11 +55,15 @@ namespace Webdev_project.Controllers
         [Route("AddReview")]
         public async Task<IActionResult> AddReview(IFormCollection form)
         {
+            var user = authenticationRepository.RetrieveFromSession(HttpContext.Request.Cookies["sessionId"]);
+            if (user == null)
+            {
+                return RedirectToAction("MyLogin", "Authenticate");
+            }
             string productId = form["productId"];
             string comment = form["comment"];
             int.TryParse(form["rating"], out int stars);
             // Replace with your logic to get the current user ID
-            var user = authenticationRepository.RetrieveFromSession(HttpContext.Request.Cookies["SessionId"]);
 
             int userId = user.Id; // Example hardcoded user ID
 
