@@ -112,7 +112,7 @@ namespace Webdev_project.Controllers
         //}
 
         [HttpPost]
-        public IActionResult AddToCart([FromBody] CartItem item)
+        public async Task<IActionResult> AddToCart([FromBody] CartItem item)
         {
             if (item == null)
                 return BadRequest("Invalid cart item");
@@ -124,19 +124,19 @@ namespace Webdev_project.Controllers
                 return Unauthorized("Session invalid");
 
             // Add item to the cart
-            userDetailRepository.AddCartItemAsync(user.Id, item);
+            bool addNewItem = await userDetailRepository.AddCartItemAsync(user.Id, item);
 
             // Read current cookie value and increment
             string? cartItemNumberStr = HttpContext.Request.Cookies["CartItemNumber"];
             int cartItemNumber = 0;
-
-            if (!string.IsNullOrEmpty(cartItemNumberStr) && int.TryParse(cartItemNumberStr, out int currentCount))
+            int currentCount = 0;
+            if (!string.IsNullOrEmpty(cartItemNumberStr) && int.TryParse(cartItemNumberStr, out currentCount)&& addNewItem)
             {
                 cartItemNumber = currentCount + 1;
             }
             else
             {
-                cartItemNumber = 1;
+                cartItemNumber = currentCount;
             }
 
             // Update the cookie

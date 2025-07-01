@@ -110,28 +110,57 @@ namespace Webdev_project.Controllers
         //    productRepository.AddAsync(product);
         //    return View();
         //}
+
+
+
+
         [HttpPost]
-        public async Task<IActionResult>MyLogin(string email, string password)
+        public async Task<IActionResult> MyLogin(string email, string password, bool remember)
         {
-            
             string? ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
             DateTime requestTime = DateTime.UtcNow;
-            var userAgent =Request.Headers["User-Agent"].ToString();
-            string? salt= await authenticationRepository.GetSaltByEmailAsync(email);
+            var userAgent = Request.Headers["User-Agent"].ToString();
+
+       
+            string? salt = await authenticationRepository.GetSaltByEmailAsync(email);
+            if (salt == null)
+            {
+                ViewBag.Message = "Sai thông tin!";
+                return View("MyLogin");
+            }
+
+          
             string hashPassword = SecurityHelper.HashPassword(password, salt);
             User? user = authenticationRepository.AuthenticateUser(email, hashPassword);
-            if (user != null)
-            {   
-                HttpContext.Response.Cookies.Append("SessionId", authenticationRepository.CreateSession(user, ipAddress, requestTime, userAgent));
-                HttpContext.Response.Cookies.Append("Username", user.Username);
-                int cartItemNumber= await userDetailRepository.CountCartItems(user.Id);
-                HttpContext.Response.Cookies.Append("CartItemNumber", cartItemNumber.ToString());
-                
-                return RedirectToAction("Index", "Home");
 
+          
+            if (user != null)
+            { 
+                var sessionId = authenticationRepository.CreateSession(user, ipAddress, requestTime, userAgent);
+
+               
+                var cookieOptions = new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = true, // Bảo mật cookie, yêu cầu HTTPS
+                    SameSite = SameSiteMode.Strict,
+                    Expires = remember ? DateTimeOffset.UtcNow.AddDays(7) : DateTimeOffset.UtcNow.AddHours(1) // Cookie sẽ hết hạn sau 7 ngày nếu chọn "Remember Me", 1 giờ nếu không
+                };
+
+                // Lưu thông tin người dùng và session vào cookie
+                HttpContext.Response.Cookies.Append("SessionId", sessionId, cookieOptions);
+                HttpContext.Response.Cookies.Append("Username", user.Username, cookieOptions);
+
+               
+                int cartItemNumber = await userDetailRepository.CountCartItems(user.Id);
+                HttpContext.Response.Cookies.Append("CartItemNumber", cartItemNumber.ToString(), cookieOptions);
+
+               
+                return RedirectToAction("Index", "Home");
             }
+
+          
             ViewBag.Message = "Sai thông tin!";
-            
             return View("MyLogin");
         }
 

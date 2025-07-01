@@ -223,6 +223,7 @@ namespace Webdev_project.Data
         }
         public User? RetrieveFromSession(string? sessionId)
         {
+            if (sessionId == null) return null;
             using var connection = new SqlConnection(_connectionString);
             string query = @"SELECT UserId, Username, IsAdmin FROM session WHERE SessionId = @SessionId  ";
             using var cmd = new SqlCommand(query, connection);

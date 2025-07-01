@@ -57,6 +57,7 @@ namespace Webdev_project.Data
         public async Task AddOrderAsync(Order order)
         {
             await _orders.InsertOneAsync(order);
+            // decrease // stock of each product in the order
         }
         public async Task<bool> UpdateOrderStatusAsync(string orderId, string newStatus)
         {

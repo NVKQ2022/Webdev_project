@@ -77,11 +77,43 @@ namespace Webdev_project.Data
                        .Select(pair => pair.Key)
                        .ToList();
         }
-        public async Task AddCartItemAsync(int userId, CartItem item)
+        public async Task<bool> AddCartItemAsync(int userId, CartItem item)
         {
             var filter = Builders<UserDetail>.Filter.Eq(u => u.UserId, userId);
-            var update = Builders<UserDetail>.Update.Push(u => u.Cart, item);
-            await _userDetail.UpdateOneAsync(filter, update);
+            //var update = Builders<UserDetail>.Update.Push(u => u.Cart, item);
+            //await _userDetail.UpdateOneAsync(filter, update);
+
+            var user = await _userDetail.Find(filter).FirstOrDefaultAsync();
+            if (user == null)
+            {
+                throw new Exception("User not found.");
+            }
+
+            var existingItem = user.Cart.FirstOrDefault(i => i.ProductId == item.ProductId); 
+
+            if (existingItem != null)
+            {
+                //// Update quantity (you can customize what "updating" means)
+                //var update = Builders<UserDetail>.Update
+                //    .Set(u => u.Cart[-1].Quantity, existingItem.Quantity + item.Quantity);
+
+                //// Match user and the specific cart item by product ID
+                //var arrayFilter = Builders<UserDetail>.Filter.And(
+                //    filter,
+                //    Builders<UserDetail>.Filter.ElemMatch(u => u.Cart, i => i.ProductId == item.ProductId)
+                //);
+
+                InsertCartItemQuantityAsync(userId, item.ProductId, existingItem.Quantity + item.Quantity);
+                //await _userDetail.UpdateOneAsync(arrayFilter, update);
+                return false;
+            }
+            else
+            {
+                // Add new cart item
+                var update = Builders<UserDetail>.Update.Push(u => u.Cart, item);
+                await _userDetail.UpdateOneAsync(filter, update);
+                return true; // New item addedS
+            }
         }
 
         //public async Task<int?> UpdateCartItemQuantityAsync(int userId, string productId, int changeAmount)
