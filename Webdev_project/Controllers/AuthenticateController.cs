@@ -144,7 +144,7 @@ namespace Webdev_project.Controllers
                     HttpOnly = true,
                     //Secure = true, // Bảo mật cookie, yêu cầu HTTPS( need HTTPs)
                     SameSite = SameSiteMode.Strict,
-                    Expires = remember ? DateTimeOffset.UtcNow.AddDays(7) : DateTimeOffset.UtcNow.AddHours(1) // Cookie sẽ hết hạn sau 7 ngày nếu chọn "Remember Me", 1 giờ nếu không
+                    Expires = remember ? DateTimeOffset.UtcNow.AddDays(7) : DateTimeOffset.UtcNow.AddSeconds(0) // Cookie sẽ hết hạn sau 7 ngày nếu chọn "Remember Me", 1 giờ nếu không
                 };
 
                 // Lưu thông tin người dùng và session vào cookie
