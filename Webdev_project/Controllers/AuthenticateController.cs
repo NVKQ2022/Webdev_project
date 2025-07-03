@@ -186,6 +186,7 @@ namespace Webdev_project.Controllers
 
             var user = new User
             {
+                Id = authenticationRepository.GetCurrentUserId() + 1, // get current user id from database then increase it by 1
                 Email = email,
                 Username = username,
                 Password = hashedPassword,
@@ -211,9 +212,9 @@ namespace Webdev_project.Controllers
             try
             {
                 var categories = await productRepository.GetAllCategoriesAsync();
-                authenticationRepository.AddUser(user);
-                authenticationRepository.UpdateCurrentUserId();
-                await userDetailRepository.AddUserDetailAsync(userDetail);
+                authenticationRepository.AddUser(user); // add user in to database
+                authenticationRepository.UpdateCurrentUserId();// update current user id in database
+                await userDetailRepository.AddUserDetailAsync(userDetail);// add the detail of user in to database
                 await userDetailRepository.InsertUserCategoriesAsync(userDetail.UserId, categories);
                 ViewBag.Message = "Đăng ký thành công! Bạn có thể đăng nhập.";
                 return RedirectToAction("MyLogin");

@@ -24,9 +24,10 @@ namespace Webdev_project.Data
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                string query = "INSERT INTO users (Email, Username, Password, Salt, IsAdmin) VALUES (@Email, @Username, @Password, @Salt, @IsAdmin)";
+                string query = "INSERT INTO users (Id, Email, Username, Password, Salt, IsAdmin) VALUES (@Id,@Email, @Username, @Password, @Salt, @IsAdmin)";
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
+                    command.Parameters.AddWithValue("@Id", user.Id);
                     command.Parameters.AddWithValue("@Email", user.Email);
                     command.Parameters.AddWithValue("@Username", user.Username);
                     command.Parameters.AddWithValue("@Password", user.Password);
